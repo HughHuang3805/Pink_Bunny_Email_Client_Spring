@@ -10,9 +10,6 @@ public class SpringEmailClient {
 		{
 			@SuppressWarnings("unused")
 			GUIController x = new GUIController(new GUI());
-			/*Socket emailClient =  new Socket("192.168.0.137", 465);
-			out = new PrintWriter(emailClient.getOutputStream(), true);
-			in = new BufferedReader(new InputStreamReader(emailClient.getInputStream()));*/
 		}
 		catch (UnknownHostException e)
 		{
