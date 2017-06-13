@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -53,7 +54,12 @@ public class GUIController implements ActionListener{
 			mailServer.setSMTP_AUTH_USER(myGui.getEmail());
 			mailServer.setSMTP_AUTH_PWD(myGui.getPassword());
 			mailServer.setMyGui(myGui);
-			emailAuthenticated = mailServer.connect();//first check to see if it is a correct email/password combo
+			try {
+				emailAuthenticated = mailServer.connect();
+			} catch (GeneralSecurityException e3) {
+				// TODO Auto-generated catch block
+				e3.printStackTrace();
+			}//first check to see if it is a correct email/password combo
 			
 			try {//otp verification
 				if(emailAuthenticated){//if the password and username are correct

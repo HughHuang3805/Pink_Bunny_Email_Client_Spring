@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.security.GeneralSecurityException;
 import java.security.NoSuchProviderException;
 import java.util.Properties;
 
@@ -22,6 +23,8 @@ import javax.mail.internet.MimeMultipart;
 import javax.swing.JOptionPane;
 
 import org.bouncycastle.openpgp.PGPException;
+
+import com.sun.mail.util.MailSSLSocketFactory;
 
 
 public class SSLMailServer {
@@ -79,13 +82,16 @@ public class SSLMailServer {
 		transport.close();
 	}
 
-	public boolean connect(){
+	public boolean connect() throws GeneralSecurityException{
 		Properties props = new Properties();
-
+		
+		props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
 		props.put("mail.transport.protocol", "smtps");
 		props.put("mail.smtps.host", SMTP_HOST_NAME);
 		props.put("mail.smtps.auth", "true");
-
+		//props.put("mail.smtps.ssl.trust", "*");
+		//props.put("mail.smtps.quitwait", "false");
+		
 		Session mailSession = Session.getDefaultInstance(props);
 		Transport transport;
 		try {
@@ -99,6 +105,7 @@ public class SSLMailServer {
 			return false;
 		} catch(Exception e){
 			JOptionPane.showMessageDialog(myGui, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
+			e.printStackTrace();
 			return false;
 		}
 		return true;
