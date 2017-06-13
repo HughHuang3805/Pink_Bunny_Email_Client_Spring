@@ -23,6 +23,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 
+@SuppressWarnings("deprecation")
 public class GUIController implements ActionListener{
 
 	GUI myGui;
@@ -56,6 +57,7 @@ public class GUIController implements ActionListener{
 			
 			try {//otp verification
 				if(emailAuthenticated){//if the password and username are correct
+					@SuppressWarnings({ "resource" })
 					HttpClient client = new DefaultHttpClient();
 					HttpPost post = new HttpPost("http://localhost:8080/Pink_Bunny_Email_Server_Spring/authenticate");
 					int counter = 0;
