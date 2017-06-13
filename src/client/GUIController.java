@@ -12,7 +12,6 @@ import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.apache.http.HttpResponse;
@@ -28,17 +27,10 @@ import org.apache.http.message.BasicNameValuePair;
 public class GUIController implements ActionListener{
 
 	GUI myGui;
-	Scanner initialScannerForInputFile; //scanner of input file from initial command line argument
 	SSLMailServer mailServer = new SSLMailServer();
 
 	public GUIController(GUI g) throws Exception{//constructor for no command line arguments
 		myGui = g;
-		myGui.setButtonListener(this);
-	}
-
-	public GUIController(GUI g, Scanner myScanner1, String outfileName) throws Exception{//constructor for yes command line arguments
-		myGui = g;
-		initialScannerForInputFile = myScanner1;
 		myGui.setButtonListener(this);
 	}
 
@@ -63,19 +55,19 @@ public class GUIController implements ActionListener{
 			
 			try {//otp verification
 				if(emailAuthenticated){//if the password and username are correct
-					@SuppressWarnings({ "resource" })
+					@SuppressWarnings("resource")
 					HttpClient client = new DefaultHttpClient();
 					//https://boiling-fjord-84786.herokuapp.com/authenticate
-					HttpPost post = new HttpPost("https://boiling-fjord-84786.herokuapp.com/authenticate");
+					HttpPost post = new HttpPost("http://localhost:8080/Pink_Bunny_Email_Server_Spring/authenticate");
 					int counter = 0;
 					//this line is used to process verificationString
-					while(verificationString == "" || verificationString == null){
+					while(verificationString == ""){
 						try {
 							List<NameValuePair> params = new ArrayList<NameValuePair>();
 						    params.add(new BasicNameValuePair(myGui.getEmail(), myGui.getYubikey()));
 							post.setEntity(new UrlEncodedFormEntity(params));//email and yubikey POST as the body of request
 							HttpResponse response = client.execute(post);//wait for a response from the server
-							BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));//response
+							BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));//read the response
 							verificationString = rd.readLine();
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
@@ -83,20 +75,20 @@ public class GUIController implements ActionListener{
 						}
 						counter++;
 						System.out.println(verificationString);
-						if(counter == 5){
+						if(counter == 5){//if verification is not successful, quit the program
 							JOptionPane.showMessageDialog(myGui, "Error encountered when connecting, please restart program.", "Error", JOptionPane.ERROR_MESSAGE);
 							myGui.dispose();
 							System.exit(0);
 							break;
 						}
 					}
-					if(verificationString.charAt(0) == '1'){
+					if(verificationString.charAt(0) == '1'){//check if email and yubikey binding is correct
 						yubikeyAuthenticated = true;
 					} else{
 						JOptionPane.showMessageDialog(myGui, "Not a valid YubiKey.", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 
-					if(yubikeyAuthenticated && verificationString.charAt(1) == '1'){
+					if(yubikeyAuthenticated && verificationString.charAt(1) == '1'){//check if binding is correct and correct OTP
 						otpAuthenticated = true;
 						JOptionPane.showMessageDialog(myGui, "Successfully verified OTP(One-Time-Password)", "Succeed", JOptionPane.INFORMATION_MESSAGE);
 					} else{
@@ -107,7 +99,7 @@ public class GUIController implements ActionListener{
 				JOptionPane.showMessageDialog(myGui, "Not a valid OTP(One-Time-Password) format.", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 
-			if(emailAuthenticated && otpAuthenticated && yubikeyAuthenticated){//if everything is correct, then show messages and functionalities
+			if(emailAuthenticated && otpAuthenticated && yubikeyAuthenticated){//if everything is correct, then show messages and allow log in
 				myGui.loginPanel.setVisible(false);
 				myGui.setEmailBodyTextArea();
 				myGui.menu1.setEnabled(true);

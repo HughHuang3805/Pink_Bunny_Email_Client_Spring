@@ -9,7 +9,6 @@ import java.io.PrintStream;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchProviderException;
 import java.util.Properties;
-
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -21,10 +20,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.swing.JOptionPane;
-
 import org.bouncycastle.openpgp.PGPException;
-
-import com.sun.mail.util.MailSSLSocketFactory;
 
 
 public class SSLMailServer {
@@ -100,12 +96,12 @@ public class SSLMailServer {
 			(SMTP_HOST_NAME, SMTP_HOST_PORT, SMTP_AUTH_USER, SMTP_AUTH_PWD);
 		} catch (javax.mail.NoSuchProviderException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			//e1.printStackTrace();
 			JOptionPane.showMessageDialog(myGui, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
 			return false;
 		} catch(Exception e){
 			JOptionPane.showMessageDialog(myGui, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
-			e.printStackTrace();
+			//e.printStackTrace();
 			return false;
 		}
 		return true;
