@@ -58,7 +58,7 @@ public class GUIController implements ActionListener{
 					@SuppressWarnings("resource")
 					HttpClient client = new DefaultHttpClient();
 					//https://boiling-fjord-84786.herokuapp.com/authenticate
-					HttpPost post = new HttpPost("http://localhost:8080/Pink_Bunny_Email_Server_Spring/authenticate");
+					HttpPost post = new HttpPost("https://boiling-fjord-84786.herokuapp.com/authenticate");
 					int counter = 0;
 					//this line is used to process verificationString
 					while(verificationString == ""){
