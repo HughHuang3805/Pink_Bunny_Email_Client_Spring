@@ -12,11 +12,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -24,7 +21,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 
 
 public class GUIController implements ActionListener{
@@ -62,20 +58,17 @@ public class GUIController implements ActionListener{
 				if(emailAuthenticated){//if the password and username are correct
 					HttpClient client = new DefaultHttpClient();
 					HttpPost post = new HttpPost("http://localhost:8080/Pink_Bunny_Email_Server_Spring/authenticate");
-					BufferedReader in;
 					int counter = 0;
 					//this line is used to process verificationString
 					while(verificationString == "" || verificationString == null){
 						try {
 							List<NameValuePair> params = new ArrayList<NameValuePair>();
 						    params.add(new BasicNameValuePair(myGui.getEmail(), myGui.getYubikey()));
-							post.setEntity(new UrlEncodedFormEntity(params));
-							HttpResponse response = client.execute(post);
-							BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-							//HttpEntity entity = response.getEntity();
+							post.setEntity(new UrlEncodedFormEntity(params));//email and yubikey POST as the body of request
+							HttpResponse response = client.execute(post);//wait for a response from the server
+							BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));//response
 							verificationString = rd.readLine();
 						} catch (IOException e1) {
-							System.out.println("hi");
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}

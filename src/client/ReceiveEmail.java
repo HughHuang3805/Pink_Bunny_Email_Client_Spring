@@ -17,8 +17,8 @@ public class ReceiveEmail{
 
 	static String host = "imap.gmail.com";
 	String mailStoreType = "imap";  
-	static String username= "PinkBunnyChickenMarsala2@gmail.com";  
-	static String password= "pbcmcs381";
+	static String username = "";  
+	static String password = "";
 	
 	public static void receiveEmail() throws Exception {  
 		try {  

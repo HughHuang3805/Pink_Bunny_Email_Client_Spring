@@ -3,14 +3,12 @@ package client;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-
 public class SpringEmailClient {
 
 	public static void main(String[] args){
 		try
 		{
+			@SuppressWarnings("unused")
 			GUIController x = new GUIController(new GUI());
 			/*Socket emailClient =  new Socket("192.168.0.137", 465);
 			out = new PrintWriter(emailClient.getOutputStream(), true);
