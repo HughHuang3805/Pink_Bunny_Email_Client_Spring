@@ -65,7 +65,8 @@ public class GUIController implements ActionListener{
 				if(emailAuthenticated){//if the password and username are correct
 					@SuppressWarnings({ "resource" })
 					HttpClient client = new DefaultHttpClient();
-					HttpPost post = new HttpPost("https://boiling-fjord-84786.herokuapp.com/authenticate");
+					//https://boiling-fjord-84786.herokuapp.com/authenticate
+					HttpPost post = new HttpPost("http://localhost:8080/Pink_Bunny_Email_Server_Spring/authenticate");
 					int counter = 0;
 					//this line is used to process verificationString
 					while(verificationString == "" || verificationString == null){
