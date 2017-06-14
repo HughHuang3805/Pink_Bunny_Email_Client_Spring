@@ -19,7 +19,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.swing.JOptionPane;
 import org.bouncycastle.openpgp.PGPException;
 
 
@@ -29,7 +28,6 @@ public class SSLMailServer {
 	private static final int SMTP_HOST_PORT = 465;
 	private String SMTP_AUTH_USER;
 	private String SMTP_AUTH_PWD;
-	private GUI myGui;
 
 	public static void main(String[] args) throws Exception{
 		//new SimpleSSLMail().send();
@@ -97,10 +95,8 @@ public class SSLMailServer {
 		} catch (javax.mail.NoSuchProviderException e1) {
 			// TODO Auto-generated catch block
 			//e1.printStackTrace();
-			JOptionPane.showMessageDialog(myGui, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
 			return false;
 		} catch(Exception e){
-			JOptionPane.showMessageDialog(myGui, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
 			//e.printStackTrace();
 			return false;
 		}
@@ -138,14 +134,6 @@ public class SSLMailServer {
 
 	public void setSMTP_AUTH_PWD(String sMTP_AUTH_PWD) {
 		SMTP_AUTH_PWD = sMTP_AUTH_PWD;
-	}
-
-	public GUI getMyGui() {
-		return myGui;
-	}
-
-	public void setMyGui(GUI myGui) {
-		this.myGui = myGui;
 	}
 
 }

@@ -45,9 +45,10 @@ public class GUIController implements ActionListener{
 			String verificationString = "";
 			mailServer.setSMTP_AUTH_USER(myGui.getEmail());
 			mailServer.setSMTP_AUTH_PWD(myGui.getPassword());
-			mailServer.setMyGui(myGui);
 			try {
 				emailAuthenticated = mailServer.connect();
+				if(!emailAuthenticated)
+					JOptionPane.showMessageDialog(myGui, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
 			} catch (GeneralSecurityException e3) {
 				// TODO Auto-generated catch block
 				e3.printStackTrace();
