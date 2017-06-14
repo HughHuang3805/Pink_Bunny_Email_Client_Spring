@@ -74,7 +74,6 @@ public class GUIController implements ActionListener{
 							e1.printStackTrace();
 						}
 						counter++;
-						System.out.println(verificationString);
 						if(counter == 5){//if verification is not successful, quit the program
 							JOptionPane.showMessageDialog(myGui, "Error encountered when connecting, please restart program.", "Error", JOptionPane.ERROR_MESSAGE);
 							myGui.dispose();

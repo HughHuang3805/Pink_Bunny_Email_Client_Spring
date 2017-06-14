@@ -16,7 +16,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
@@ -238,11 +237,6 @@ public class GUI extends JFrame{
 	public String getYubikey(){
 		String passText = new String(yubikeyText.getPassword());
 		return passText;
-	}
-
-	//show message if user name or password is incorrect
-	public void showIncorrectUNorPWDialog(){
-		JOptionPane.showMessageDialog(this, "Incorrect username or password", "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
 	public void clearGUI(){
