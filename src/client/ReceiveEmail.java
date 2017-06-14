@@ -15,7 +15,7 @@ import javax.mail.internet.MimeBodyPart;
 
 public class ReceiveEmail{  
 
-	static String host = "imap.gmail.com";
+	static String host = "imap.gmail.com ";
 	String mailStoreType = "imap";  
 	static String username = "";  
 	static String password = "";
