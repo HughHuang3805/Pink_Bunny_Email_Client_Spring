@@ -28,6 +28,11 @@ public class GUIController implements ActionListener{
 	GUI myGui;
 	SSLMailServer mailServer = new SSLMailServer();
 
+	final String[][] smtpServers = {
+			{"GMAIL", "smtp.gamil.com", "465"}
+			
+	};
+	
 	public GUIController(GUI g) throws Exception{//constructor for no command line arguments
 		myGui = g;
 		myGui.setButtonListener(this);
@@ -98,7 +103,7 @@ public class GUIController implements ActionListener{
 			}
 
 			if(emailAuthenticated && otpAuthenticated && yubikeyAuthenticated){//if everything is correct, then show messages and allow log in
-				myGui.loginPanel.setVisible(false);
+				myGui.emailPanel.setVisible(false);
 				myGui.setEmailBodyTextArea();
 				myGui.menu1.setEnabled(true);
 				myGui.panel = new JPanel();
@@ -107,6 +112,17 @@ public class GUIController implements ActionListener{
 			}
 			break;
 
+		case "Next":
+			boolean hasYubikey = false;
+			myGui.emailPanel.setVisible(false);//fisrt hide email panel
+			myGui.buttonPanel.setVisible(false);//hide button panel
+			myGui.buttonPanel.removeAll();//remove whatever is in button panel
+			myGui.repaint();//repaint the gui
+			myGui.setPasswordPanel();//set up password panel
+			myGui.passwordPanel.setVisible(true);//make the password panel visible
+			myGui.repaint();//repaint the gui
+			break;
+			
 		case "Cancel":
 			myGui.dispose();
 			break;

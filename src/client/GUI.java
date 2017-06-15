@@ -10,6 +10,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Vector;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,16 +28,19 @@ import javax.swing.border.LineBorder;
 public class GUI extends JFrame{
 
 	private static final long serialVersionUID = 1L;
-	JMenuItem[] menuItems = new JMenuItem[3];
+	Vector<JMenuItem> menuItems = new Vector<JMenuItem>();
 	JTextArea textArea = new JTextArea();
-	JPanel loginPanel = new JPanel();
+	JPanel emailPanel = new JPanel();
+	JPanel passwordPanel = new JPanel();
+	JPanel yubikeyPanel = new JPanel();
 	JPanel buttonPanel;
-	JButton signInButton, cancelButton;
+	JButton signInButton = new JButton("Sign-in");
+	JButton cancelButton = new JButton("Cancel");;
+	JButton nextButton = new JButton("Next");
 	JTextField emailText;
 	JPasswordField passwordText, yubikeyText;
 	JScrollPane jsp;
 	JPanel panel;
-	JMenuItem item1, item2, item3, item4, item5, item6;
 	JMenu menu1;
 	JTextArea x;
 	JScrollPane jspForBody;
@@ -46,7 +51,7 @@ public class GUI extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setMenuItems();
 		setLocationRelativeTo(null);
-		askForEmailPasswordAndYubikey();
+		setEmailPanel();
 		getContentPane().setBackground(new Color(51, 102, 255));
 		setVisible(true);
 	}
@@ -55,6 +60,7 @@ public class GUI extends JFrame{
 	public void setButtonListener(ActionListener a){
 		signInButton.addActionListener(a);
 		cancelButton.addActionListener(a);
+		nextButton.addActionListener(a);
 		for(JMenuItem x : menuItems){
 			x.addActionListener(a);
 		}
@@ -62,25 +68,19 @@ public class GUI extends JFrame{
 
 	public void setMenuItems(){
 		JMenuBar menuBar = new JMenuBar();
-		menu1 = new JMenu("Tools");
+		//JMenuItem item1, item2, item3, item4, item5, item6;
+		menu1 = new JMenu("File");
 
-		item1 = new JMenuItem("Send");
-		item2 = new JMenuItem("Receive");
-		item3 = new JMenuItem("Exit");
-		item1.setFont(new Font("Serif", Font.PLAIN, 20));
-		item2.setFont(new Font("Serif", Font.PLAIN, 20));
-		item3.setFont(new Font("Serif", Font.PLAIN, 20));
-
-		menuItems[0] = item1;
-		menuItems[1] = item2;
-		menuItems[2] = item3;
-
-		menu1.add(item1);
+		/*	menuItems.add(item1);
+		menuItems.add(item2);
+		menuItems.add(item3);
+		 */
+		menu1.add(new JMenuItem("Get All New Messages"));
+		//menu1.addSeparator();
+		menu1.add(new JMenuItem("Write"));
 		menu1.addSeparator();
-		menu1.add(item2);
-		menu1.addSeparator();
-		menu1.add(item3);
-		menu1.setFont(new Font("Serif", Font.PLAIN, 18));
+		menu1.add(new JMenuItem("Exit"));
+		//menu1.setFont(new Font("DejaVu Sans Mono", Font.PLAIN, 14));
 
 		menuBar.add(menu1);
 		//menuBar.add(menu2);
@@ -144,9 +144,9 @@ public class GUI extends JFrame{
 		setVisible(true);
 	}
 
-	public void askForEmailPasswordAndYubikey(){//ask for email password and yubikey in the login screen
-		
-		loginPanel.setLayout(new GridBagLayout());
+	public void setEmailPanel(){//ask for email password and yubikey in the login screen
+
+		emailPanel.setLayout(new GridBagLayout());
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 		cs.fill = GridBagConstraints.HORIZONTAL;
 
@@ -158,7 +158,7 @@ public class GUI extends JFrame{
 		cs.gridwidth = 1;
 		cs.weightx = 1.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
 		cs.weighty = 0;
-		loginPanel.add(emailLabel, cs);
+		emailPanel.add(emailLabel, cs);
 
 		emailText = new JTextField(13);
 		emailText.setFont(new Font("Serif", Font.PLAIN, 40));
@@ -167,32 +167,78 @@ public class GUI extends JFrame{
 		cs.gridwidth = 2;
 		cs.weightx = 1.0;
 		cs.weighty = 0;
-		loginPanel.add(emailText, cs);
+		emailPanel.add(emailText, cs);
 
+		emailPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
+
+		//create next and cancel button
+		nextButton.setFont(new Font("Serif", Font.PLAIN, 30));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
+
+		buttonPanel = new JPanel();//create a panel for the buttons
+		buttonPanel.add(nextButton);
+		buttonPanel.add(cancelButton);
+
+		//the default button that will be clicked when press "enter"
+		getRootPane().setDefaultButton(nextButton);
+		add(emailPanel, BorderLayout.CENTER);
+		add(buttonPanel, BorderLayout.PAGE_END);
+
+		pack(); //let layout managers in charge of the frame size
+		setResizable(false);
+		setVisible(true);
+	}
+
+	public void setPasswordPanel(){
+		passwordPanel.setLayout(new GridBagLayout());
+		GridBagConstraints cs = new GridBagConstraints();//constraints
+		cs.fill = GridBagConstraints.HORIZONTAL;
 		//Password label and password textfield
 		JLabel passwordLabel = new JLabel("Password: ");
 		passwordLabel.setFont(new Font("Serif", Font.PLAIN, 40));
 		cs.gridx = 0;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
-		loginPanel.add(passwordLabel, cs);
+		passwordPanel.add(passwordLabel, cs);
 
 		passwordText = new JPasswordField(13);
 		passwordText.setFont(new Font("Serif", Font.PLAIN, 40));
 		cs.gridx = 1;
 		cs.gridy = 1;
 		cs.gridwidth = 2;
-		loginPanel.add(passwordText, cs);
+		passwordPanel.add(passwordText, cs);
+		
+		passwordPanel.setBorder(new LineBorder(Color.GRAY));
+		
+		signInButton.setFont(new Font("Serif", Font.PLAIN, 30));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
 
+		buttonPanel = new JPanel();//create a panel for the buttons
+		buttonPanel.add(signInButton);
+		buttonPanel.add(cancelButton);
+		
+		getRootPane().setDefaultButton(signInButton);
+		add(passwordPanel, BorderLayout.CENTER);
+		add(buttonPanel, BorderLayout.PAGE_END);
+
+		pack(); //let layout managers in charge of the frame size
+		setResizable(false);
+		setVisible(true);
+	}
+
+	public void setYubikeyPanel(){
+		yubikeyPanel.setLayout(new GridBagLayout());
+		GridBagConstraints cs = new GridBagConstraints();//constraints
+		cs.fill = GridBagConstraints.HORIZONTAL;
 		//Yubikey label and yubikey password
-		JLabel databaseLabel = new JLabel("YubiKey: ");
-		databaseLabel.setFont(new Font("Serif", Font.PLAIN, 40));
+		JLabel yubikeyLabel = new JLabel("YubiKey: ");
+		yubikeyLabel.setFont(new Font("Serif", Font.PLAIN, 40));
 		cs.gridx = 0;
 		cs.gridy = 2;
 		cs.gridwidth = 1;
 		cs.weightx = 1.0;
 		cs.weighty = 0;
-		loginPanel.add(databaseLabel, cs);
+		yubikeyPanel.add(yubikeyLabel, cs);
 
 		yubikeyText = new JPasswordField(13);
 		yubikeyText.setFont(new Font("Serif", Font.PLAIN, 40));
@@ -201,24 +247,12 @@ public class GUI extends JFrame{
 		cs.gridwidth = 2;
 		cs.weightx = 1.0;
 		cs.weighty = 0;
-		loginPanel.add(yubikeyText, cs);
-		loginPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
+		yubikeyPanel.add(yubikeyText, cs);
 		
-		//create sign in and cancel button
-		signInButton = new JButton("Sign-in");
-		signInButton.setFont(new Font("Serif", Font.PLAIN, 30));
-		cancelButton = new JButton("Cancel");
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
-		
-		buttonPanel = new JPanel();//create a panel for the buttons
-		buttonPanel.add(signInButton);
-		buttonPanel.add(cancelButton);
-
-		//the default button that will be clicked when press "enter"
-		getRootPane().setDefaultButton(signInButton);
-		add(loginPanel, BorderLayout.CENTER);
+		getRootPane().setDefaultButton(nextButton);
+		add(yubikeyPanel, BorderLayout.CENTER);
 		add(buttonPanel, BorderLayout.PAGE_END);
-		
+
 		pack(); //let layout managers in charge of the frame size
 		setResizable(false);
 		setVisible(true);
