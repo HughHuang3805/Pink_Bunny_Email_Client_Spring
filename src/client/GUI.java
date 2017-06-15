@@ -35,14 +35,15 @@ public class GUI extends JFrame{
 	JPanel yubikeyPanel = new JPanel();
 	JPanel buttonPanel;
 	JButton signInButton = new JButton("Sign-in");
-	JButton cancelButton = new JButton("Cancel");;
+	JButton cancelButton = new JButton("Cancel");
+	JButton verifyButton = new JButton("Verify");
 	JButton nextButton = new JButton("Next");
 	JTextField emailText;
 	JPasswordField passwordText, yubikeyText;
 	JScrollPane jsp;
 	JPanel panel;
 	JMenu menu1;
-	JTextArea x;
+	JTextArea emailTextArea;
 	JScrollPane jspForBody;
 
 	public GUI(){
@@ -61,6 +62,7 @@ public class GUI extends JFrame{
 		signInButton.addActionListener(a);
 		cancelButton.addActionListener(a);
 		nextButton.addActionListener(a);
+		verifyButton.addActionListener(a);
 		for(JMenuItem x : menuItems){
 			x.addActionListener(a);
 		}
@@ -94,14 +96,14 @@ public class GUI extends JFrame{
 	}
 
 	public void setEmailBodyTextArea(){
-
-		if(x == null)
-			x = new JTextArea("Enter your email body ...");
+		setSize(1250, 800);
+		if(emailTextArea == null)
+			emailTextArea = new JTextArea("Enter your email body ...");
 		else
-			x.setText("Enter your email body ...");
-		x.setEditable(true);
-		x.setFont(new Font("Serif", Font.PLAIN, 60));
-		jspForBody = new JScrollPane(x);
+			emailTextArea.setText("Enter your email body ...");
+		emailTextArea.setEditable(true);
+		emailTextArea.setFont(new Font("Serif", Font.PLAIN, 60));
+		jspForBody = new JScrollPane(emailTextArea);
 
 		panel = new JPanel();
 		panel.setLayout(new BorderLayout());
@@ -122,8 +124,8 @@ public class GUI extends JFrame{
 			while ((line = br.readLine()) != null) {
 				debug = debug + line + "\n";
 			}
-			x.setText(debug);
-			x.setEditable(false);
+			emailTextArea.setText(debug);
+			emailTextArea.setEditable(false);
 
 			repaint();
 			setVisible(true);
@@ -137,8 +139,8 @@ public class GUI extends JFrame{
 	}
 
 	public void setReceivedEmailTextArea(String message){
-		x.setText(message);
-		x.setEditable(false);
+		emailTextArea.setText(message);
+		emailTextArea.setEditable(false);
 
 		repaint();
 		setVisible(true);
@@ -249,10 +251,19 @@ public class GUI extends JFrame{
 		cs.weighty = 0;
 		yubikeyPanel.add(yubikeyText, cs);
 		
-		getRootPane().setDefaultButton(nextButton);
+		yubikeyPanel.setBorder(new LineBorder(Color.GRAY));
+		
+		verifyButton.setFont(new Font("Serif", Font.PLAIN, 30));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
+		
+		buttonPanel = new JPanel();//create a panel for the buttons
+		buttonPanel.add(verifyButton);
+		buttonPanel.add(cancelButton);
+		
+		getRootPane().setDefaultButton(verifyButton);
 		add(yubikeyPanel, BorderLayout.CENTER);
 		add(buttonPanel, BorderLayout.PAGE_END);
-
+		
 		pack(); //let layout managers in charge of the frame size
 		setResizable(false);
 		setVisible(true);
