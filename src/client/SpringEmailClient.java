@@ -1,7 +1,6 @@
 package client;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 public class SpringEmailClient {
 
@@ -10,10 +9,6 @@ public class SpringEmailClient {
 		{
 			@SuppressWarnings("unused")
 			GUIController x = new GUIController(new GUI());
-		}
-		catch (UnknownHostException e)
-		{
-			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

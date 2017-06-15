@@ -67,10 +67,7 @@ public class SSLMailServer {
 		message.addRecipient(Message.RecipientType.TO,
 				new InternetAddress("PinkBunnyChickenMarsala2@gmail.com"));
 
-		System.out.println(SMTP_AUTH_USER);
-		System.out.println(SMTP_AUTH_PWD);
-		transport.connect
-		(SMTP_HOST_NAME, SMTP_HOST_PORT, SMTP_AUTH_USER, SMTP_AUTH_PWD);
+		transport.connect(SMTP_HOST_NAME, SMTP_HOST_PORT, SMTP_AUTH_USER, SMTP_AUTH_PWD);
 		transport.sendMessage(message,
 				message.getRecipients(Message.RecipientType.TO));
 		transport.close();

@@ -19,11 +19,10 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 
 
-@SuppressWarnings("deprecation")
 public class GUIController implements ActionListener{
 
 	GUI myGui;
@@ -56,8 +55,7 @@ public class GUIController implements ActionListener{
 			
 			try {//otp verification
 				if(emailAuthenticated){//if the password and username are correct
-					@SuppressWarnings("resource")
-					HttpClient client = new DefaultHttpClient();
+					HttpClient client = HttpClients.createDefault();
 					//https://boiling-fjord-84786.herokuapp.com/authenticate
 					HttpPost post = new HttpPost("https://boiling-fjord-84786.herokuapp.com/authenticate");
 					int counter = 0;
