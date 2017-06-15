@@ -24,16 +24,12 @@ import org.bouncycastle.openpgp.PGPException;
 
 public class SSLMailServer {
 
-	private static final String SMTP_HOST_NAME = "smtp.gmail.com";
-	private static final int SMTP_HOST_PORT = 465;
+	private String SMTP_HOST_NAME;
+	private int SMTP_HOST_PORT;
 	private String SMTP_AUTH_USER;
 	private String SMTP_AUTH_PWD;
 
-	public static void main(String[] args) throws Exception{
-		//new SimpleSSLMail().send();
-	}
-
-	public void send() throws Exception{
+	public void send(String host) throws Exception{
 		TestBCOpenPGP x = new TestBCOpenPGP();
 		x.encrypt();
 
@@ -73,16 +69,27 @@ public class SSLMailServer {
 		transport.close();
 	}
 
-	public boolean connect() throws GeneralSecurityException{
+	public boolean connect(String host) throws GeneralSecurityException{
 		Properties props = new Properties();
 		
-		props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
-		props.put("mail.transport.protocol", "smtps");
-		props.put("mail.smtps.host", SMTP_HOST_NAME);
-		props.put("mail.smtps.auth", "true");
-		//props.put("mail.smtps.ssl.trust", "*");
-		//props.put("mail.smtps.quitwait", "false");
-		
+		switch(host){
+
+		case "gmail":
+			props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+			props.put("mail.transport.protocol", "smtps");
+			props.put("mail.smtps.host", SMTP_HOST_NAME);
+			props.put("mail.smtps.auth", "true");
+			//props.put("mail.smtps.ssl.trust", "*");
+			//props.put("mail.smtps.quitwait", "false");
+			break;
+
+		case "hotmail":
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.transport.protocol", "smtp");
+			props.put("mail.host", SMTP_HOST_NAME);
+			props.put("mail.smtps.auth", "true");
+			break;
+		}
 		Session mailSession = Session.getDefaultInstance(props);
 		Transport transport;
 		try {
@@ -91,10 +98,10 @@ public class SSLMailServer {
 			(SMTP_HOST_NAME, SMTP_HOST_PORT, SMTP_AUTH_USER, SMTP_AUTH_PWD);
 		} catch (javax.mail.NoSuchProviderException e1) {
 			// TODO Auto-generated catch block
-			//e1.printStackTrace();
+			e1.printStackTrace();
 			return false;
 		} catch(Exception e){
-			//e.printStackTrace();
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -107,14 +114,14 @@ public class SSLMailServer {
 		FileInputStream file = new FileInputStream("cypher-text.dat");
 		try( BufferedReader br =
 				new BufferedReader( new InputStreamReader(file)))
-				{
+		{
 			StringBuilder sb = new StringBuilder();
 			while(( encryptedString = br.readLine()) != null ) {
 				sb.append( encryptedString );
 				sb.append( '\n' );
 			}
 			return sb.toString();
-				}
+		}
 	}
 
 	public String getSMTP_AUTH_USER() {
@@ -131,6 +138,22 @@ public class SSLMailServer {
 
 	public void setSMTP_AUTH_PWD(String sMTP_AUTH_PWD) {
 		SMTP_AUTH_PWD = sMTP_AUTH_PWD;
+	}
+
+	public String getSMTP_HOST_NAME() {
+		return SMTP_HOST_NAME;
+	}
+
+	public void setSMTP_HOST_NAME(String sMTP_HOST_NAME) {
+		SMTP_HOST_NAME = sMTP_HOST_NAME;
+	}
+
+	public int getSMTP_HOST_PORT() {
+		return SMTP_HOST_PORT;
+	}
+
+	public void setSMTP_HOST_PORT(int sMTP_HOST_PORT) {
+		SMTP_HOST_PORT = sMTP_HOST_PORT;
 	}
 
 }

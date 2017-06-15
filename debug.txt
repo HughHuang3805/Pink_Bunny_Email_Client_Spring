@@ -1,0 +1,85 @@
+DEBUG: getProvider() returning javax.mail.Provider[TRANSPORT,smtp,com.sun.mail.smtp.SMTPTransport,Oracle]
+DEBUG SMTP: useEhlo true, useAuth false
+DEBUG SMTP: trying to connect to host "smtp-mail.outlook.com", port 587, isSSL false
+220 BLU437-SMTP33.smtp.hotmail.com Microsoft ESMTP MAIL Service, Version: 8.0.9200.16384 ready at  Thu, 15 Jun 2017 14:42:47 -0700 
+DEBUG SMTP: connected to host "smtp-mail.outlook.com", port: 587
+
+EHLO Hugh-PC
+250-BLU437-SMTP33.smtp.hotmail.com Hello [108.46.182.99]
+250-TURN
+250-SIZE 41943040
+250-ETRN
+250-PIPELINING
+250-DSN
+250-ENHANCEDSTATUSCODES
+250-8bitmime
+250-BINARYMIME
+250-CHUNKING
+250-VRFY
+250-TLS
+250-STARTTLS
+250 OK
+DEBUG SMTP: Found extension "TURN", arg ""
+DEBUG SMTP: Found extension "SIZE", arg "41943040"
+DEBUG SMTP: Found extension "ETRN", arg ""
+DEBUG SMTP: Found extension "PIPELINING", arg ""
+DEBUG SMTP: Found extension "DSN", arg ""
+DEBUG SMTP: Found extension "ENHANCEDSTATUSCODES", arg ""
+DEBUG SMTP: Found extension "8bitmime", arg ""
+DEBUG SMTP: Found extension "BINARYMIME", arg ""
+DEBUG SMTP: Found extension "CHUNKING", arg ""
+DEBUG SMTP: Found extension "VRFY", arg ""
+DEBUG SMTP: Found extension "TLS", arg ""
+DEBUG SMTP: Found extension "STARTTLS", arg ""
+DEBUG SMTP: Found extension "OK", arg ""
+DEBUG SMTP: use8bit false
+MAIL FROM:<Hugh@Hugh-PC>
+530 5.7.0 Must issue a STARTTLS command first
+DEBUG SMTP: got response code 530, with response: 530 5.7.0 Must issue a STARTTLS command first
+
+RSET
+530 5.7.0 Must issue a STARTTLS command first
+DEBUG SMTP: MessagingException while sending, THROW: 
+com.sun.mail.smtp.SMTPSendFailedException: 530 5.7.0 Must issue a STARTTLS command first
+
+	at com.sun.mail.smtp.SMTPTransport.issueSendCommand(SMTPTransport.java:2267)
+	at com.sun.mail.smtp.SMTPTransport.mailFrom(SMTPTransport.java:1758)
+	at com.sun.mail.smtp.SMTPTransport.sendMessage(SMTPTransport.java:1257)
+	at client.SSLMailServer.send(SSLMailServer.java:67)
+	at client.GUIController.actionPerformed(GUIController.java:183)
+	at javax.swing.AbstractButton.fireActionPerformed(Unknown Source)
+	at javax.swing.AbstractButton$Handler.actionPerformed(Unknown Source)
+	at javax.swing.DefaultButtonModel.fireActionPerformed(Unknown Source)
+	at javax.swing.DefaultButtonModel.setPressed(Unknown Source)
+	at javax.swing.plaf.basic.BasicButtonListener.mouseReleased(Unknown Source)
+	at java.awt.Component.processMouseEvent(Unknown Source)
+	at javax.swing.JComponent.processMouseEvent(Unknown Source)
+	at java.awt.Component.processEvent(Unknown Source)
+	at java.awt.Container.processEvent(Unknown Source)
+	at java.awt.Component.dispatchEventImpl(Unknown Source)
+	at java.awt.Container.dispatchEventImpl(Unknown Source)
+	at java.awt.Component.dispatchEvent(Unknown Source)
+	at java.awt.LightweightDispatcher.retargetMouseEvent(Unknown Source)
+	at java.awt.LightweightDispatcher.processMouseEvent(Unknown Source)
+	at java.awt.LightweightDispatcher.dispatchEvent(Unknown Source)
+	at java.awt.Container.dispatchEventImpl(Unknown Source)
+	at java.awt.Window.dispatchEventImpl(Unknown Source)
+	at java.awt.Component.dispatchEvent(Unknown Source)
+	at java.awt.EventQueue.dispatchEventImpl(Unknown Source)
+	at java.awt.EventQueue.access$500(Unknown Source)
+	at java.awt.EventQueue$3.run(Unknown Source)
+	at java.awt.EventQueue$3.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(Unknown Source)
+	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(Unknown Source)
+	at java.awt.EventQueue$4.run(Unknown Source)
+	at java.awt.EventQueue$4.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(Unknown Source)
+	at java.awt.EventQueue.dispatchEvent(Unknown Source)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+	at java.awt.EventDispatchThread.run(Unknown Source)
