@@ -22,7 +22,7 @@ import javax.mail.internet.MimeMultipart;
 import org.bouncycastle.openpgp.PGPException;
 
 
-public class SSLMailServer {
+public class SecureMailService {
 
 	private String SMTP_HOST_NAME;
 	private int SMTP_HOST_PORT;

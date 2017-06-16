@@ -27,7 +27,7 @@ import org.apache.http.message.BasicNameValuePair;
 public class GUIController implements ActionListener{
 
 	GUI myGui;
-	SSLMailServer mailServer = new SSLMailServer();
+	SecureMailService mailServer = new SecureMailService();
 	private static String smtpServer = "";
 	private static String portNumber = "";
 	private static String email = "";
