@@ -211,7 +211,8 @@ public class GUIController implements ActionListener{
 				myGui.buttonPanel.setVisible(false);//hide button panel
 				myGui.buttonPanel.removeAll();//remove whatever is in button panel
 				myGui.repaint();
-				myGui.setEmailBodyTextArea();
+				//myGui.setEmailBodyTextArea();
+				myGui.setSize(1250, 800);
 				myGui.menu1.setEnabled(true);
 				myGui.textAreaPanel = new JPanel();
 				myGui.setResizable(true);

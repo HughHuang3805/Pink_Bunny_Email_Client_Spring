@@ -73,7 +73,7 @@ public class GUI extends JFrame{
 		JMenuItem item1, item2, item3, item4, item5, item6;
 		menu1 = new JMenu("File");
 
-		item1 = new JMenuItem("Get All New Messages");
+		item1 = new JMenuItem("Get New Messages");
 		item2 = new JMenuItem("Write");
 		item3 = new JMenuItem("Exit");
 		
@@ -113,14 +113,15 @@ public class GUI extends JFrame{
 		textAreaPanel.setLayout(new BorderLayout());
 		textAreaPanel.add(jspForBody, BorderLayout.CENTER);
 		textAreaPanel.repaint();
-		sendButton.setFont(new Font("Serif", Font.PLAIN, 30));
+		/*sendButton.setFont(new Font("Serif", Font.PLAIN, 30));
 		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
 
 		buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(sendButton);
-		buttonPanel.add(cancelButton);
+		buttonPanel.add(cancelButton);*/
 		add(textAreaPanel, BorderLayout.CENTER);
-		add(buttonPanel, BorderLayout.PAGE_END);
+		//add(buttonPanel, BorderLayout.PAGE_END);
+		
 		repaint();
 		setVisible(true);
 	}
@@ -282,6 +283,30 @@ public class GUI extends JFrame{
 	public void setWritePanel(){
 		JFrame writeFrame = new JFrame("New Email");
 		writeFrame.setSize(1000, 800);
+		writeFrame.setVisible(true);
+		
+		if(emailTextArea == null)
+			emailTextArea = new JTextArea("Enter your email body ...");
+		else
+			emailTextArea.setText("Enter your email body ...");
+		emailTextArea.setEditable(true);
+		emailTextArea.setFont(new Font("Serif", Font.PLAIN, 60));
+		jspForBody = new JScrollPane(emailTextArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+		textAreaPanel = new JPanel();
+		textAreaPanel.setLayout(new BorderLayout());
+		textAreaPanel.add(jspForBody, BorderLayout.CENTER);
+		textAreaPanel.repaint();
+		sendButton.setFont(new Font("Serif", Font.PLAIN, 30));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
+
+		buttonPanel = new JPanel();//create a panel for the buttons
+		buttonPanel.add(sendButton);
+		writeFrame.add(textAreaPanel, BorderLayout.CENTER);
+		writeFrame.add(buttonPanel, BorderLayout.PAGE_END);
+		writeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
+		writeFrame.repaint();
 		writeFrame.setVisible(true);
 	}
 
