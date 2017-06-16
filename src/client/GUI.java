@@ -11,7 +11,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -33,15 +32,17 @@ public class GUI extends JFrame{
 	JPanel emailPanel = new JPanel();
 	JPanel passwordPanel = new JPanel();
 	JPanel yubikeyPanel = new JPanel();
+	JPanel textAreaPanel = new JPanel();;
 	JPanel buttonPanel;
 	JButton signInButton = new JButton("Sign-in");
 	JButton cancelButton = new JButton("Cancel");
 	JButton verifyButton = new JButton("Verify");
 	JButton nextButton = new JButton("Next");
+	JButton sendButton = new JButton("Send");
 	JTextField emailText;
 	JPasswordField passwordText, yubikeyText;
 	JScrollPane jsp;
-	JPanel panel;
+	
 	JMenu menu1;
 	JTextArea emailTextArea;
 	JScrollPane jspForBody;
@@ -63,25 +64,28 @@ public class GUI extends JFrame{
 		cancelButton.addActionListener(a);
 		nextButton.addActionListener(a);
 		verifyButton.addActionListener(a);
-		for(JMenuItem x : menuItems){
+		for(JMenuItem x : menuItems)
 			x.addActionListener(a);
-		}
 	}
 
 	public void setMenuItems(){
 		JMenuBar menuBar = new JMenuBar();
-		//JMenuItem item1, item2, item3, item4, item5, item6;
+		JMenuItem item1, item2, item3, item4, item5, item6;
 		menu1 = new JMenu("File");
 
-		/*	menuItems.add(item1);
+		item1 = new JMenuItem("Get All New Messages");
+		item2 = new JMenuItem("Write");
+		item3 = new JMenuItem("Exit");
+		
+		menuItems.add(item1);
 		menuItems.add(item2);
 		menuItems.add(item3);
-		 */
-		menu1.add(new JMenuItem("Get All New Messages"));
+		 
+		menu1.add(item1);
 		//menu1.addSeparator();
-		menu1.add(new JMenuItem("Write"));
+		menu1.add(item2);
 		menu1.addSeparator();
-		menu1.add(new JMenuItem("Exit"));
+		menu1.add(item3);
 		//menu1.setFont(new Font("DejaVu Sans Mono", Font.PLAIN, 14));
 
 		menuBar.add(menu1);
@@ -92,10 +96,10 @@ public class GUI extends JFrame{
 	}
 
 	public void clearInsertPanel(){
-		panel.setVisible(false);
+		textAreaPanel.setVisible(false);
 	}
 
-	public void setEmailBodyTextArea(){
+	public void setEmailBodyTextArea(){//text area for user to type email content
 		setSize(1250, 800);
 		if(emailTextArea == null)
 			emailTextArea = new JTextArea("Enter your email body ...");
@@ -103,14 +107,20 @@ public class GUI extends JFrame{
 			emailTextArea.setText("Enter your email body ...");
 		emailTextArea.setEditable(true);
 		emailTextArea.setFont(new Font("Serif", Font.PLAIN, 60));
-		jspForBody = new JScrollPane(emailTextArea);
+		jspForBody = new JScrollPane(emailTextArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-		panel = new JPanel();
-		panel.setLayout(new BorderLayout());
-		panel.add(jspForBody, BorderLayout.CENTER);
-		panel.repaint();
+		textAreaPanel = new JPanel();
+		textAreaPanel.setLayout(new BorderLayout());
+		textAreaPanel.add(jspForBody, BorderLayout.CENTER);
+		textAreaPanel.repaint();
+		sendButton.setFont(new Font("Serif", Font.PLAIN, 30));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
 
-		add(panel);
+		buttonPanel = new JPanel();//create a panel for the buttons
+		buttonPanel.add(sendButton);
+		buttonPanel.add(cancelButton);
+		add(textAreaPanel, BorderLayout.CENTER);
+		add(buttonPanel, BorderLayout.PAGE_END);
 		repaint();
 		setVisible(true);
 	}
@@ -146,7 +156,7 @@ public class GUI extends JFrame{
 		setVisible(true);
 	}
 
-	public void setEmailPanel(){//ask for email password and yubikey in the login screen
+	public void setEmailPanel(){//ask for email on emailPanel
 
 		emailPanel.setLayout(new GridBagLayout());
 		GridBagConstraints cs = new GridBagConstraints();//constraints
@@ -191,7 +201,7 @@ public class GUI extends JFrame{
 		setVisible(true);
 	}
 
-	public void setPasswordPanel(){
+	public void setPasswordPanel(){//ask for password on passwordPanel
 		passwordPanel.setLayout(new GridBagLayout());
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 		cs.fill = GridBagConstraints.HORIZONTAL;
@@ -228,7 +238,7 @@ public class GUI extends JFrame{
 		setVisible(true);
 	}
 
-	public void setYubikeyPanel(){
+	public void setYubikeyPanel(){//ask for yubikey on yubikeyPanel
 		yubikeyPanel.setLayout(new GridBagLayout());
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 		cs.fill = GridBagConstraints.HORIZONTAL;

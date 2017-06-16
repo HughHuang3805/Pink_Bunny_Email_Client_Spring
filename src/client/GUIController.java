@@ -46,237 +46,238 @@ public class GUIController implements ActionListener{
 			put("YAHOO", "smtp.mail.yahoo.com");
 			put("AOL", "smtp.aol.com");
 			put("HOTMAIL", "smtp-mail.outlook.com");
-		}};
+		}
 
-		private final static Hashtable<String, String> portNumbers = new Hashtable<String, String>() {/**
-		 * 
-		 */
-			private static final long serialVersionUID = 1L;
+	};
 
-			{
-				put("GMAIL", "465");
-				put("OUTLOOK", "587");
-				put("OFFICE365", "587");
-				put("YAHOO", "465");
-				put("AOL", "587");
-				put("HOTMAIL", "587");
-			}};
+	private final static Hashtable<String, String> portNumbers = new Hashtable<String, String>() {/**
+	 * 
+	 */
+		private static final long serialVersionUID = 1L;
 
-			public GUIController(GUI g) throws Exception{
-				myGui = g;
-				myGui.setButtonListener(this);
+		{
+			put("GMAIL", "465");
+			put("OUTLOOK", "587");
+			put("OFFICE365", "587");
+			put("YAHOO", "465");
+			put("AOL", "587");
+			put("HOTMAIL", "587");
+		}
+	};
+
+	public GUIController(GUI g) throws Exception{
+		myGui = g;
+		myGui.setButtonListener(this);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e){
+		String buttonName = e.getActionCommand();
+
+		switch(buttonName){
+
+		case "Next":
+			email = myGui.getEmail();//get the email
+			host = email.substring(email.indexOf("@") + 1, email.indexOf("."));//see what kind of host the user is using
+			smtpServer = smtpServers.get(host.toUpperCase());//check what smtp server it is using for that host
+			portNumber = portNumbers.get(host.toUpperCase());//check what port it is using for that host
+			mailServer.setSMTP_HOST_NAME(smtpServer);//set smtp server
+			mailServer.setSMTP_HOST_PORT(Integer.parseInt(portNumber));//set port number
+			mailServer.setSMTP_AUTH_USER(email);//set user email
+			System.out.println(smtpServer);
+			System.out.println(portNumber);
+			System.out.println(host);
+			System.out.println(email);
+			//used to check if this email has a yubikey attached to it
+			HttpClient yubikeyClient = HttpClients.createDefault();
+			//https://boiling-fjord-84786.herokuapp.com/yubikey
+			HttpPost yubikeyPost = new HttpPost("https://boiling-fjord-84786.herokuapp.com/yubikey");
+			List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+			parameters.add(new BasicNameValuePair("Email", email));
+
+			try{
+				yubikeyPost.setEntity(new UrlEncodedFormEntity(parameters));//email and yubikey POST as the body of request
+				HttpResponse response1 = yubikeyClient.execute(yubikeyPost);//wait for a response from the server
+				BufferedReader rd1 = new BufferedReader(new InputStreamReader(response1.getEntity().getContent()));//reader for the response
+				String hasYubikeyString = rd1.readLine();//read the response
+				System.out.println(hasYubikeyString);
+				if(hasYubikeyString != null){
+					if(hasYubikeyString.charAt(0) == '0')//if response is 0, false
+						hasYubikey = false;
+					else if(hasYubikeyString.charAt(0) == '1')//if response is 1, true
+						hasYubikey = true;
+				}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 
-			@Override
-			public void actionPerformed(ActionEvent e){
-				String buttonName = e.getActionCommand();
+			myGui.emailPanel.setVisible(false);//fisrt hide email panel
+			myGui.buttonPanel.setVisible(false);//hide button panel
+			myGui.buttonPanel.removeAll();//remove whatever is in button panel
+			myGui.repaint();//repaint the gui
 
-				switch(buttonName){
+			myGui.setPasswordPanel();//set up password panel
+			myGui.passwordPanel.setVisible(true);//make the password panel visible
+			myGui.repaint();//repaint the gui
 
-				case "Next":
-					email = myGui.getEmail();
-					host = email.substring(email.indexOf("@") + 1, email.indexOf("."));
-					smtpServer = smtpServers.get(host.toUpperCase());
-					portNumber = portNumbers.get(host.toUpperCase());
-					mailServer.setSMTP_HOST_NAME(smtpServer);
-					mailServer.setSMTP_HOST_PORT(Integer.parseInt(portNumber));
-					mailServer.setSMTP_AUTH_USER(email);
-					System.out.println(smtpServer);
-					System.out.println(portNumber);
-					System.out.println(host);
-					System.out.println(email);
-					HttpClient yubikeyClient = HttpClients.createDefault();
-					//https://boiling-fjord-84786.herokuapp.com/authenticate
-					HttpPost yubikeyPost = new HttpPost("http://localhost:8080/Pink_Bunny_Email_Server_Spring/yubikey");
-					List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-					parameters.add(new BasicNameValuePair("Email", email));
+			break;
 
-					try{
-						yubikeyPost.setEntity(new UrlEncodedFormEntity(parameters));//email and yubikey POST as the body of request
-						HttpResponse response1 = yubikeyClient.execute(yubikeyPost);//wait for a response from the server
-						BufferedReader rd1 = new BufferedReader(new InputStreamReader(response1.getEntity().getContent()));//read the response
-						String hasYubikeyString = rd1.readLine();
-						System.out.println(hasYubikeyString);
-						if(hasYubikeyString != null){
-							if(hasYubikeyString.charAt(0) == '0')
-								hasYubikey = false;
-							else if(hasYubikeyString.charAt(0) == '1')
-								hasYubikey = true;
-						}
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+		case "Sign-in":
+			boolean emailAuthenticated = false;
+			mailServer.setSMTP_AUTH_PWD(myGui.getPassword());
+			try {
+				emailAuthenticated = mailServer.connect(host);//try to connect
+				if(!emailAuthenticated)
+					JOptionPane.showMessageDialog(myGui, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
+			} catch (GeneralSecurityException e3) {
+				// TODO Auto-generated catch block
+				e3.printStackTrace();
+			}//first check to see if it is a correct email/password combo
 
-					myGui.emailPanel.setVisible(false);//fisrt hide email panel
-					myGui.buttonPanel.setVisible(false);//hide button panel
-					myGui.buttonPanel.removeAll();//remove whatever is in button panel
-					myGui.repaint();//repaint the gui
-
-					myGui.setPasswordPanel();//set up password panel
-					myGui.passwordPanel.setVisible(true);//make the password panel visible
-					myGui.repaint();//repaint the gui
-
-					break;
-
-				case "Sign-in":
-					boolean emailAuthenticated = false;
-					//mailServer.setSMTP_AUTH_USER(myGui.getEmail());
-					mailServer.setSMTP_AUTH_PWD(myGui.getPassword());
-					try {
-						emailAuthenticated = mailServer.connect(host);
-						if(!emailAuthenticated)
-							JOptionPane.showMessageDialog(myGui, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
-					} catch (GeneralSecurityException e3) {
-						// TODO Auto-generated catch block
-						e3.printStackTrace();
-					}//first check to see if it is a correct email/password combo
-
-					try {//otp verification
-						System.out.println(hasYubikey);
-						if(emailAuthenticated){//if the password and username are correct
-							if(hasYubikey){
-								myGui.passwordPanel.setVisible(false);//fisrt hide email panel
-								myGui.buttonPanel.setVisible(false);//hide button panel
-								myGui.buttonPanel.removeAll();//remove whatever is in button panel
-								myGui.repaint();//repaint the gui
-
-								myGui.setYubikeyPanel();//set up yubikey panel
-								myGui.yubikeyPanel.setVisible(true);//make the password panel visible
-								myGui.repaint();//repaint the gui
-							} else {
-								myGui.passwordPanel.setVisible(false);
-								myGui.repaint();
-								myGui.setEmailBodyTextArea();
-								myGui.menu1.setEnabled(true);
-								myGui.panel = new JPanel();
-								myGui.setResizable(true);
-								myGui.signInButton.setText("Send");
-							}
-						}
-					} catch (IllegalArgumentException iae){
-						JOptionPane.showMessageDialog(myGui, "Not a valid OTP(One-Time-Password) format.", "Error", JOptionPane.ERROR_MESSAGE);
-					} 
-
-
-					break;
-
-				case "Verify":
-					boolean yubikeyAuthenticated = false, otpAuthenticated = false;
-					String verificationString = "";
-					HttpClient authenticationClient = HttpClients.createDefault();
-					//https://boiling-fjord-84786.herokuapp.com/authenticate
-					HttpPost authenticationPost = new HttpPost("https://boiling-fjord-84786.herokuapp.com/authenticate");
-					int counter = 0;
-					//this line is used to process verificationString
-					while(verificationString == ""){
-						try {
-							List<NameValuePair> params = new ArrayList<NameValuePair>();
-							params.add(new BasicNameValuePair(myGui.getEmail(), myGui.getYubikey()));
-							System.out.println(myGui.getEmail());
-							authenticationPost.setEntity(new UrlEncodedFormEntity(params));//email and yubikey POST as the body of request
-							HttpResponse response2 = authenticationClient.execute(authenticationPost);//wait for a response from the server
-							BufferedReader rd2 = new BufferedReader(new InputStreamReader(response2.getEntity().getContent()));//read the response
-							verificationString = rd2.readLine();
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						counter++;
-						if(counter == 5){//if verification is not successful, quit the program
-							JOptionPane.showMessageDialog(myGui, "Error encountered when verifying, please restart program.", "Error", JOptionPane.ERROR_MESSAGE);
-							myGui.dispose();
-							System.exit(0);
-							break;
-						}
-					}
-					if(verificationString.charAt(0) == '1'){//check if email and yubikey binding is correct
-						yubikeyAuthenticated = true;
-					} else{
-						JOptionPane.showMessageDialog(myGui, "Not a valid YubiKey.", "Error", JOptionPane.ERROR_MESSAGE);
-					}
-
-					if(yubikeyAuthenticated && verificationString.charAt(1) == '1'){//check if binding is correct and correct OTP
-						otpAuthenticated = true;
-						JOptionPane.showMessageDialog(myGui, "Successfully verified OTP(One-Time-Password)", "Succeed", JOptionPane.INFORMATION_MESSAGE);
-					} else{
-						JOptionPane.showMessageDialog(myGui, "Failed to verify OTP(One-Time-Password)", "Failed", JOptionPane.ERROR_MESSAGE);
-					}
-					System.out.println(verificationString);
-					System.out.println(yubikeyAuthenticated);
-					System.out.println(otpAuthenticated);
-					if(yubikeyAuthenticated && otpAuthenticated){//if everything is correct, then show messages and allow log in
-						myGui.yubikeyPanel.setVisible(false);
+			try {//otp verification
+				System.out.println("Has yubikey: " + hasYubikey);
+				if(emailAuthenticated){//if the password and username are correct
+					if(hasYubikey){
+						myGui.passwordPanel.setVisible(false);//fisrt hide password panel
+						myGui.buttonPanel.setVisible(false);//hide button panel
+						myGui.buttonPanel.removeAll();//remove whatever is in button panel
+						myGui.repaint();//repaint the gui
+						
+						myGui.setYubikeyPanel();//set up yubikey panel
+						myGui.yubikeyPanel.setVisible(true);//make the yubikey panel visible
+						myGui.repaint();//repaint the gui
+					} else {//if this email doesnt have yubikey 
+						myGui.passwordPanel.setVisible(false);//hide password panel
 						myGui.repaint();
-						myGui.setEmailBodyTextArea();
-						myGui.menu1.setEnabled(true);
-						myGui.panel = new JPanel();
-						myGui.setResizable(true);
-						myGui.signInButton.setText("Send");
-					} 
-					break;
-					
-				case "Cancel":
+						myGui.setEmailBodyTextArea();//set up text area for email writing
+						myGui.menu1.setEnabled(true);//enable menu
+						myGui.textAreaPanel = new JPanel();
+						myGui.setResizable(true);//make it resizable
+					}
+				}
+			} catch (IllegalArgumentException iae){
+				JOptionPane.showMessageDialog(myGui, "Not a valid OTP(One-Time-Password) format.", "Error", JOptionPane.ERROR_MESSAGE);
+			} 
+			break;
+
+		case "Verify":
+			boolean yubikeyAuthenticated = false, otpAuthenticated = false;
+			String verificationString = "";
+			HttpClient authenticationClient = HttpClients.createDefault();
+			//https://boiling-fjord-84786.herokuapp.com/authenticate
+			HttpPost authenticationPost = new HttpPost("https://boiling-fjord-84786.herokuapp.com/authenticate");
+			int counter = 0;
+			while(verificationString == ""){
+				try {
+					List<NameValuePair> params = new ArrayList<NameValuePair>();
+					params.add(new BasicNameValuePair(myGui.getEmail(), myGui.getYubikey()));
+					System.out.println(myGui.getEmail());
+					authenticationPost.setEntity(new UrlEncodedFormEntity(params));//email and yubikey POST as the body of request
+					HttpResponse response2 = authenticationClient.execute(authenticationPost);//wait for a response from the server
+					BufferedReader rd2 = new BufferedReader(new InputStreamReader(response2.getEntity().getContent()));//read the response
+					verificationString = rd2.readLine();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				counter++;
+				if(counter == 5){//if verification is not successful, quit the program
+					JOptionPane.showMessageDialog(myGui, "Error encountered when verifying, please restart program.", "Error", JOptionPane.ERROR_MESSAGE);
 					myGui.dispose();
-					break;
-
-				case "Send":
-					BufferedWriter bw;
-					try {
-						bw = new BufferedWriter(new FileWriter("plain-text.txt"));
-						myGui.emailTextArea.write(bw);
-						//myGui.setEmailBodyTextArea();
-					} catch (IOException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
-					}
-
-					try {
-						mailServer.send(host);
-						myGui.setSendDebugTextArea();
-						JOptionPane.showMessageDialog(myGui, "Message sent!");
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					break;
-
-				case "Get All New Messages":
-					try {
-						ReceiveEmail.receiveEmail();
-						BufferedReader br = new BufferedReader(new FileReader("dec-plain-text.txt"));
-						String message = "";
-
-						String line = null;
-						while ((line = br.readLine()) != null) {
-							message = message + line + "\n";
-						}
-						br.close();
-						myGui.panel.setVisible(false);
-						myGui.repaint();
-						myGui.setReceivedEmailTextArea(message);
-						myGui.repaint();
-						JOptionPane.showMessageDialog(myGui, "Message received!");
-					} catch (FileNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-
-					break;
-
-				case "Exit":
 					System.exit(0);
-					break;	
-
-				default:
 					break;
-
 				}
 			}
+			if(verificationString.charAt(0) == '1'){//check if email and yubikey binding is correct
+				yubikeyAuthenticated = true;
+			} else{
+				JOptionPane.showMessageDialog(myGui, "Not a valid YubiKey.", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+
+			if(yubikeyAuthenticated && verificationString.charAt(1) == '1'){//check if binding is correct and correct OTP
+				otpAuthenticated = true;
+				JOptionPane.showMessageDialog(myGui, "Successfully verified OTP(One-Time-Password)", "Succeed", JOptionPane.INFORMATION_MESSAGE);
+			} else{
+				JOptionPane.showMessageDialog(myGui, "Failed to verify OTP(One-Time-Password)", "Failed", JOptionPane.ERROR_MESSAGE);
+			}
+			System.out.println(verificationString);
+			System.out.println(yubikeyAuthenticated);
+			System.out.println(otpAuthenticated);
+			if(yubikeyAuthenticated && otpAuthenticated){//if everything is correct, then show messages and allow log in
+				myGui.yubikeyPanel.setVisible(false);
+				myGui.buttonPanel.setVisible(false);//hide button panel
+				myGui.buttonPanel.removeAll();//remove whatever is in button panel
+				myGui.repaint();
+				myGui.setEmailBodyTextArea();
+				myGui.menu1.setEnabled(true);
+				myGui.textAreaPanel = new JPanel();
+				myGui.setResizable(true);
+				myGui.signInButton.setText("Send");
+			} 
+			break;
+
+		case "Cancel":
+			myGui.dispose();
+			break;
+
+		case "Send":
+			BufferedWriter bw;
+			try {
+				bw = new BufferedWriter(new FileWriter("plain-text.txt"));
+				myGui.emailTextArea.write(bw);
+				//myGui.setEmailBodyTextArea();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+
+			try {
+				mailServer.send(host);
+				myGui.setSendDebugTextArea();
+				JOptionPane.showMessageDialog(myGui, "Message sent!");
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			break;
+
+		case "Get All New Messages":
+			try {
+				ReceiveEmail.receiveEmail();
+				BufferedReader br = new BufferedReader(new FileReader("dec-plain-text.txt"));
+				String message = "";
+
+				String line = null;
+				while ((line = br.readLine()) != null) {
+					message = message + line + "\n";
+				}
+				br.close();
+				myGui.textAreaPanel.setVisible(false);
+				myGui.repaint();
+				myGui.setReceivedEmailTextArea(message);
+				myGui.repaint();
+				JOptionPane.showMessageDialog(myGui, "Message received!");
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			break;
+
+		case "Exit":
+			System.exit(0);
+			break;	
+
+		default:
+			break;
+
+		}
+	}
 }
