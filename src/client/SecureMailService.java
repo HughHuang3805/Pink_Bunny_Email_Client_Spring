@@ -89,7 +89,38 @@ public class SecureMailService {
 			props.put("mail.host", SMTP_HOST_NAME);
 			props.put("mail.smtps.auth", "true");
 			break;
+			
+		case "outlook":
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.transport.protocol", "smtp");
+			props.put("mail.host", SMTP_HOST_NAME);
+			props.put("mail.smtps.auth", "true");
+			break;
+			
+		case "office365":
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.transport.protocol", "smtp");
+			props.put("mail.host", SMTP_HOST_NAME);
+			props.put("mail.smtps.auth", "true");
+			break;
+			
+		case "aol":
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.transport.protocol", "smtp");
+			props.put("mail.host", SMTP_HOST_NAME);
+			props.put("mail.smtps.auth", "true");
+			break;
+			
+		case "yahoo":
+			props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+			props.put("mail.transport.protocol", "smtps");
+			props.put("mail.smtps.host", SMTP_HOST_NAME);
+			props.put("mail.smtps.auth", "true");
+			//props.put("mail.smtps.ssl.trust", "*");
+			//props.put("mail.smtps.quitwait", "false");
+			break;
 		}
+		System.out.println(host);
 		Session mailSession = Session.getDefaultInstance(props);
 		Transport transport;
 		try {
