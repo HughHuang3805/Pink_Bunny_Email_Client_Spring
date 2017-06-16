@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -13,6 +14,10 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.apache.http.HttpResponse;
@@ -139,23 +144,9 @@ public class GUIController implements ActionListener{
 				System.out.println("Has yubikey: " + hasYubikey);
 				if(emailAuthenticated){//if the password and username are correct
 					if(hasYubikey){
-						myGui.passwordPanel.setVisible(false);//fisrt hide password panel
-						myGui.buttonPanel.setVisible(false);//hide button panel
-						myGui.buttonPanel.removeAll();//remove whatever is in button panel
-						myGui.repaint();//repaint the gui
-						
 						myGui.setYubikeyPanel();//set up yubikey panel
-						myGui.yubikeyPanel.setVisible(true);//make the yubikey panel visible
-						myGui.repaint();//repaint the gui
 					} else {//if this email doesnt have yubikey 
-						myGui.passwordPanel.setVisible(false);//hide password panel
-						myGui.buttonPanel.setVisible(false);//hide button panel
-						myGui.buttonPanel.removeAll();//remove whatever is in button panel
-						myGui.repaint();
-						myGui.setEmailBodyTextArea();//set up text area for email writing
-						myGui.menu1.setEnabled(true);//enable menu
-						myGui.textAreaPanel = new JPanel();
-						myGui.setResizable(true);//make it resizable
+						myGui.setWelcomeScreen();
 					}
 				}
 			} catch (IllegalArgumentException iae){
@@ -207,16 +198,7 @@ public class GUIController implements ActionListener{
 			System.out.println(yubikeyAuthenticated);
 			System.out.println(otpAuthenticated);
 			if(yubikeyAuthenticated && otpAuthenticated){//if everything is correct, then show messages and allow log in
-				myGui.yubikeyPanel.setVisible(false);
-				myGui.buttonPanel.setVisible(false);//hide button panel
-				myGui.buttonPanel.removeAll();//remove whatever is in button panel
-				myGui.repaint();
-				//myGui.setEmailBodyTextArea();
-				myGui.setSize(1250, 800);
-				myGui.menu1.setEnabled(true);
-				myGui.textAreaPanel = new JPanel();
-				myGui.setResizable(true);
-				myGui.signInButton.setText("Send");
+				myGui.setWelcomeScreen();
 			} 
 			break;
 

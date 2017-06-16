@@ -7,10 +7,14 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -42,7 +46,7 @@ public class GUI extends JFrame{
 	JTextField emailText;
 	JPasswordField passwordText, yubikeyText;
 	JScrollPane jsp;
-	
+
 	JMenu menu1;
 	JTextArea emailTextArea;
 	JScrollPane jspForBody;
@@ -54,7 +58,8 @@ public class GUI extends JFrame{
 		setMenuItems();
 		setLocationRelativeTo(null);
 		setEmailPanel();
-		getContentPane().setBackground(new Color(51, 102, 255));
+		//getContentPane().setBackground(new Color(51, 102, 255));
+		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 
@@ -76,11 +81,11 @@ public class GUI extends JFrame{
 		item1 = new JMenuItem("Get New Messages");
 		item2 = new JMenuItem("Write");
 		item3 = new JMenuItem("Exit");
-		
+
 		menuItems.add(item1);
 		menuItems.add(item2);
 		menuItems.add(item3);
-		 
+
 		menu1.add(item1);
 		//menu1.addSeparator();
 		menu1.add(item2);
@@ -121,7 +126,7 @@ public class GUI extends JFrame{
 		buttonPanel.add(cancelButton);*/
 		add(textAreaPanel, BorderLayout.CENTER);
 		//add(buttonPanel, BorderLayout.PAGE_END);
-		
+
 		repaint();
 		setVisible(true);
 	}
@@ -220,16 +225,16 @@ public class GUI extends JFrame{
 		cs.gridy = 1;
 		cs.gridwidth = 2;
 		passwordPanel.add(passwordText, cs);
-		
+
 		passwordPanel.setBorder(new LineBorder(Color.GRAY));
-		
+
 		signInButton.setFont(new Font("Serif", Font.PLAIN, 30));
 		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
 
 		buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(signInButton);
 		buttonPanel.add(cancelButton);
-		
+
 		getRootPane().setDefaultButton(signInButton);
 		add(passwordPanel, BorderLayout.CENTER);
 		add(buttonPanel, BorderLayout.PAGE_END);
@@ -240,6 +245,10 @@ public class GUI extends JFrame{
 	}
 
 	public void setYubikeyPanel(){//ask for yubikey on yubikeyPanel
+		passwordPanel.setVisible(false);//fisrt hide password panel
+		buttonPanel.setVisible(false);//hide button panel
+		buttonPanel.removeAll();//remove whatever is in button panel
+		repaint();//repaint the gui
 		yubikeyPanel.setLayout(new GridBagLayout());
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 		cs.fill = GridBagConstraints.HORIZONTAL;
@@ -261,30 +270,30 @@ public class GUI extends JFrame{
 		cs.weightx = 1.0;
 		cs.weighty = 0;
 		yubikeyPanel.add(yubikeyText, cs);
-		
+
 		yubikeyPanel.setBorder(new LineBorder(Color.GRAY));
-		
+
 		verifyButton.setFont(new Font("Serif", Font.PLAIN, 30));
 		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
-		
+
 		buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(verifyButton);
 		buttonPanel.add(cancelButton);
-		
+
 		getRootPane().setDefaultButton(verifyButton);
 		add(yubikeyPanel, BorderLayout.CENTER);
 		add(buttonPanel, BorderLayout.PAGE_END);
-		
+
 		pack(); //let layout managers in charge of the frame size
 		setResizable(false);
 		setVisible(true);
 	}
-	
+
 	public void setWritePanel(){
 		JFrame writeFrame = new JFrame("New Email");
 		writeFrame.setSize(1000, 800);
 		writeFrame.setVisible(true);
-		
+
 		if(emailTextArea == null)
 			emailTextArea = new JTextArea("Enter your email body ...");
 		else
@@ -305,9 +314,29 @@ public class GUI extends JFrame{
 		writeFrame.add(textAreaPanel, BorderLayout.CENTER);
 		writeFrame.add(buttonPanel, BorderLayout.PAGE_END);
 		writeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		
+
 		writeFrame.repaint();
+		writeFrame.setLocationRelativeTo(null);
 		writeFrame.setVisible(true);
+		
+	}
+
+	public void setWelcomeScreen(){
+
+		yubikeyPanel.setVisible(false);
+		buttonPanel.setVisible(false);//hide button panel
+		buttonPanel.removeAll();//remove whatever is in button panel
+		repaint();
+		setSize(1250, 800);
+		//setContentPane(new JLabel(new ImageIcon(ImageIO.read(new File("wallpaper17_l4CpC0Q.jpg")))));
+		//pack();
+		repaint();
+		revalidate();
+
+		menu1.setEnabled(true);
+		textAreaPanel = new JPanel();
+		setLocationRelativeTo(null);
+		setResizable(true);
 	}
 
 	public String getEmail(){
