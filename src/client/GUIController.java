@@ -149,6 +149,8 @@ public class GUIController implements ActionListener{
 						myGui.repaint();//repaint the gui
 					} else {//if this email doesnt have yubikey 
 						myGui.passwordPanel.setVisible(false);//hide password panel
+						myGui.buttonPanel.setVisible(false);//hide button panel
+						myGui.buttonPanel.removeAll();//remove whatever is in button panel
 						myGui.repaint();
 						myGui.setEmailBodyTextArea();//set up text area for email writing
 						myGui.menu1.setEnabled(true);//enable menu
