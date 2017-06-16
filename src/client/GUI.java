@@ -328,7 +328,7 @@ public class GUI extends JFrame{
 		buttonPanel.removeAll();//remove whatever is in button panel
 		repaint();
 		setSize(1250, 800);
-		//setContentPane(new JLabel(new ImageIcon(ImageIO.read(new File("wallpaper17_l4CpC0Q.jpg")))));
+		//setContentPane(new JLabel(new ImageIcon(ImageIO.read(new File("wallpaper.jpg")))));
 		//pack();
 		repaint();
 		revalidate();
