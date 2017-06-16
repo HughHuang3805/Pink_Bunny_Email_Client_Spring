@@ -278,6 +278,12 @@ public class GUI extends JFrame{
 		setResizable(false);
 		setVisible(true);
 	}
+	
+	public void setWritePanel(){
+		JFrame writeFrame = new JFrame("New Email");
+		writeFrame.setSize(1000, 800);
+		writeFrame.setVisible(true);
+	}
 
 	public String getEmail(){
 		//get rid of any space in the username

@@ -244,7 +244,7 @@ public class GUIController implements ActionListener{
 			}
 			break;
 
-		case "Get All New Messages":
+		case "Get New Messages":
 			try {
 				ReceiveEmail.receiveEmail();
 				BufferedReader br = new BufferedReader(new FileReader("dec-plain-text.txt"));
@@ -273,6 +273,10 @@ public class GUIController implements ActionListener{
 
 			break;
 
+		case "Write":
+			myGui.setWritePanel();
+			break;
+			
 		case "Exit":
 			System.exit(0);
 			break;	
