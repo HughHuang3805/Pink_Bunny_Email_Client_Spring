@@ -220,7 +220,7 @@ public class GUIController implements ActionListener{
 			try {
 				mailServer.send(host);
 				myGui.setSendDebugTextArea();
-				JOptionPane.showMessageDialog(myGui, "Message sent!");
+				JOptionPane.showMessageDialog(myGui.writeFrame, "Message sent!");
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

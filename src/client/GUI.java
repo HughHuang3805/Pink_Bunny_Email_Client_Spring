@@ -46,8 +46,9 @@ public class GUI extends JFrame{
 	JTextField emailText;
 	JPasswordField passwordText, yubikeyText;
 	JScrollPane jsp;
+	JFrame writeFrame;
 
-	JMenu menu1;
+	JMenu fileMenu, sourceMenu;
 	JTextArea emailTextArea;
 	JScrollPane jspForBody;
 
@@ -69,34 +70,41 @@ public class GUI extends JFrame{
 		cancelButton.addActionListener(a);
 		nextButton.addActionListener(a);
 		verifyButton.addActionListener(a);
+		sendButton.addActionListener(a);
 		for(JMenuItem x : menuItems)
 			x.addActionListener(a);
 	}
 
 	public void setMenuItems(){
 		JMenuBar menuBar = new JMenuBar();
-		JMenuItem item1, item2, item3, item4, item5, item6;
-		menu1 = new JMenu("File");
-
-		item1 = new JMenuItem("Get New Messages");
-		item2 = new JMenuItem("Write");
-		item3 = new JMenuItem("Exit");
-
-		menuItems.add(item1);
-		menuItems.add(item2);
-		menuItems.add(item3);
-
-		menu1.add(item1);
+		JMenuItem getNewMessagesItem, writeItem, exitItem, generateKeyPairItem, item5, item6;
+		fileMenu = new JMenu("File");
+		sourceMenu = new JMenu("Source"); 
+		
+		getNewMessagesItem = new JMenuItem("Get New Messages");
+		writeItem = new JMenuItem("Write");
+		exitItem = new JMenuItem("Exit");
+		generateKeyPairItem = new JMenuItem("Generate key pair");
+		
+		menuItems.add(getNewMessagesItem);//for adding actionlistener
+		menuItems.add(writeItem);
+		menuItems.add(exitItem);
+		menuItems.add(generateKeyPairItem);
+		
+		fileMenu.add(getNewMessagesItem);
 		//menu1.addSeparator();
-		menu1.add(item2);
-		menu1.addSeparator();
-		menu1.add(item3);
+		fileMenu.add(writeItem);
+		fileMenu.addSeparator();
+		fileMenu.add(exitItem);
 		//menu1.setFont(new Font("DejaVu Sans Mono", Font.PLAIN, 14));
+		
+		sourceMenu.add(generateKeyPairItem);
 
-		menuBar.add(menu1);
-		//menuBar.add(menu2);
+		menuBar.add(fileMenu);
+		menuBar.add(sourceMenu);
 
-		menu1.setEnabled(false);
+		fileMenu.setEnabled(false);
+		sourceMenu.setEnabled(false);
 		setJMenuBar(menuBar);
 	}
 
@@ -290,7 +298,7 @@ public class GUI extends JFrame{
 	}
 
 	public void setWritePanel(){
-		JFrame writeFrame = new JFrame("New Email");
+		writeFrame = new JFrame("New Email");
 		writeFrame.setSize(1000, 800);
 		writeFrame.setVisible(true);
 
@@ -333,7 +341,8 @@ public class GUI extends JFrame{
 		repaint();
 		revalidate();
 
-		menu1.setEnabled(true);
+		fileMenu.setEnabled(true);
+		sourceMenu.setEnabled(true);
 		textAreaPanel = new JPanel();
 		setLocationRelativeTo(null);
 		setResizable(true);
