@@ -330,7 +330,7 @@ public class GUI extends JFrame{
 	}
 
 	public void setWelcomeScreen(){
-
+		passwordPanel.setVisible(false);
 		yubikeyPanel.setVisible(false);
 		buttonPanel.setVisible(false);//hide button panel
 		buttonPanel.removeAll();//remove whatever is in button panel
