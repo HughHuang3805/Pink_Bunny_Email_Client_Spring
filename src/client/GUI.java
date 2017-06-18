@@ -5,16 +5,14 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -320,6 +318,7 @@ public class GUI extends JFrame{
 		writeFrame = new JFrame("New Email");
 		writeFrame.setSize(1000, 800);
 		writeFrame.setVisible(true);
+		writeFrame.setLayout(new GridLayout());
 
 		JPanel headerPanel = new JPanel();
 		headerPanel.setLayout(new GridBagLayout());
