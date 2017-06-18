@@ -321,9 +321,30 @@ public class GUI extends JFrame{
 		writeFrame.setSize(1000, 800);
 		writeFrame.setVisible(true);
 
+		JPanel headerPanel = new JPanel();
+		headerPanel.setLayout(new GridBagLayout());
+		GridBagConstraints cs = new GridBagConstraints();//constraints
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		
 		JLabel senderLabel = new JLabel("Sender: ");
-		JLabel receipientLabel = new JLabel("Receipient: ");
-		JTextField senderTextField = new JTextField();
+		cs.gridx = 0;//position in tje column
+		cs.gridy = 0;//position in the row
+		cs.gridwidth = 1;
+		cs.weightx = 1.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 0;
+		headerPanel.add(senderLabel, cs);
+
+		JTextField senderTextField = new JTextField(13);
+		cs.gridx = 1;
+		cs.gridy = 0;
+		cs.gridwidth = 2;
+		cs.weightx = 1.0;
+		cs.weighty = 0;
+		headerPanel.add(senderTextField, cs);
+
+		headerPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
+		
+		
 		if(emailTextArea == null)
 			emailTextArea = new JTextArea("Enter your email body ...");
 		else
@@ -341,12 +362,13 @@ public class GUI extends JFrame{
 
 		buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(sendButton);
-		/*writeFrame.add(senderLabel);
-		writeFrame.add(senderTextField);*/
+		
+		writeFrame.add(headerPanel);
 		writeFrame.add(textAreaPanel, BorderLayout.CENTER);
 		writeFrame.add(buttonPanel, BorderLayout.PAGE_END);
 		writeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
+		//writeFrame.pack();
 		writeFrame.repaint();
 		writeFrame.setLocationRelativeTo(null);
 		writeFrame.setVisible(true);
