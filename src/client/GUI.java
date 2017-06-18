@@ -323,7 +323,7 @@ public class GUI extends JFrame{
 
 		JLabel senderLabel = new JLabel("Sender: ");
 		JLabel receipientLabel = new JLabel("Receipient: ");
-		
+		JTextField senderTextField = new JTextField();
 		if(emailTextArea == null)
 			emailTextArea = new JTextArea("Enter your email body ...");
 		else
@@ -341,7 +341,8 @@ public class GUI extends JFrame{
 
 		buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(sendButton);
-		writeFrame.add(menubar);
+		/*writeFrame.add(senderLabel);
+		writeFrame.add(senderTextField);*/
 		writeFrame.add(textAreaPanel, BorderLayout.CENTER);
 		writeFrame.add(buttonPanel, BorderLayout.PAGE_END);
 		writeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
