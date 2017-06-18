@@ -41,7 +41,7 @@ public class TestBCOpenPGP {
 
 		KeyPairGenerator    kpg = KeyPairGenerator.getInstance("RSA", "BC");
 
-		kpg.initialize(1024);
+		kpg.initialize(2048);
 
 		KeyPair                    kp = kpg.generateKeyPair();
 
@@ -52,11 +52,6 @@ public class TestBCOpenPGP {
 
 
 	}
-
-	/*public static void main(String[] args) throws InvalidKeyException, NoSuchProviderException, SignatureException, NoSuchAlgorithmException, IOException, PGPException{
-		TestBCOpenPGP x = new TestBCOpenPGP();
-		x.genKeyPair();
-	}*/
 	
 	@Test
 	public void encrypt() throws NoSuchProviderException, IOException, PGPException{
