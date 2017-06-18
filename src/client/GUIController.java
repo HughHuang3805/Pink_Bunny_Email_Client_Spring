@@ -11,6 +11,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -27,6 +31,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.bouncycastle.openpgp.PGPException;
 
 
 public class GUIController implements ActionListener{
@@ -256,6 +261,17 @@ public class GUIController implements ActionListener{
 
 			break;
 
+		case "Generate key pair":
+			TestBCOpenPGP x = new TestBCOpenPGP();
+			try {
+				x.genKeyPair();
+			} catch (InvalidKeyException | NoSuchProviderException | SignatureException | NoSuchAlgorithmException
+					| IOException | PGPException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			break;
+			
 		case "Write":
 			myGui.setWritePanel();
 			break;

@@ -53,10 +53,10 @@ public class TestBCOpenPGP {
 
 	}
 
-	public static void main(String[] args) throws InvalidKeyException, NoSuchProviderException, SignatureException, NoSuchAlgorithmException, IOException, PGPException{
+	/*public static void main(String[] args) throws InvalidKeyException, NoSuchProviderException, SignatureException, NoSuchAlgorithmException, IOException, PGPException{
 		TestBCOpenPGP x = new TestBCOpenPGP();
 		x.genKeyPair();
-	}
+	}*/
 	
 	@Test
 	public void encrypt() throws NoSuchProviderException, IOException, PGPException{

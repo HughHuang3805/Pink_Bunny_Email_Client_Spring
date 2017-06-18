@@ -296,6 +296,25 @@ public class GUI extends JFrame{
 		setResizable(false);
 		setVisible(true);
 	}
+	
+	public void setWelcomeScreen(){
+		passwordPanel.setVisible(false);
+		yubikeyPanel.setVisible(false);
+		buttonPanel.setVisible(false);//hide button panel
+		buttonPanel.removeAll();//remove whatever is in button panel
+		repaint();
+		setSize(1250, 800);
+		//setContentPane(new JLabel(new ImageIcon(ImageIO.read(new File("wallpaper.jpg")))));
+		//pack();
+		repaint();
+		revalidate();
+
+		fileMenu.setEnabled(true);
+		sourceMenu.setEnabled(true);
+		textAreaPanel = new JPanel();
+		setLocationRelativeTo(null);
+		setResizable(true);
+	}
 
 	public void setWritePanel(){
 		writeFrame = new JFrame("New Email");
@@ -327,25 +346,6 @@ public class GUI extends JFrame{
 		writeFrame.setLocationRelativeTo(null);
 		writeFrame.setVisible(true);
 		
-	}
-
-	public void setWelcomeScreen(){
-		passwordPanel.setVisible(false);
-		yubikeyPanel.setVisible(false);
-		buttonPanel.setVisible(false);//hide button panel
-		buttonPanel.removeAll();//remove whatever is in button panel
-		repaint();
-		setSize(1250, 800);
-		//setContentPane(new JLabel(new ImageIcon(ImageIO.read(new File("wallpaper.jpg")))));
-		//pack();
-		repaint();
-		revalidate();
-
-		fileMenu.setEnabled(true);
-		sourceMenu.setEnabled(true);
-		textAreaPanel = new JPanel();
-		setLocationRelativeTo(null);
-		setResizable(true);
 	}
 
 	public String getEmail(){
