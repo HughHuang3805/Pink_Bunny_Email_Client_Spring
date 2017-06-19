@@ -42,6 +42,7 @@ public class GUI extends JFrame{
 	JButton verifyButton = new JButton("Verify");
 	JButton nextButton = new JButton("Next");
 	JButton sendButton = new JButton("Send");
+	JButton discardButton = new JButton("Discard");
 	JTextField emailText;
 	JPasswordField passwordText, yubikeyText;
 	JScrollPane jsp;
@@ -69,6 +70,7 @@ public class GUI extends JFrame{
 		nextButton.addActionListener(a);
 		verifyButton.addActionListener(a);
 		sendButton.addActionListener(a);
+		discardButton.addActionListener(a);
 		for(JMenuItem x : menuItems)
 			x.addActionListener(a);
 	}
@@ -326,7 +328,7 @@ public class GUI extends JFrame{
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 
 		JLabel senderLabel = new JLabel("Sender: ");
-		cs.gridx = 0;//position in the column
+		//cs.gridx = 0;//position in the column
 		cs.gridy = 0;//position in the row
 		cs.gridwidth = 1;
 		cs.gridheight = 1;
@@ -346,9 +348,7 @@ public class GUI extends JFrame{
 		cs.weighty = 100.0;
 		cs.insets = new Insets(5, 5, 5, 5);
 		cs.anchor = GridBagConstraints.WEST;
-		cs.fill = GridBagConstraints.NONE;
-		//headerPanel.add(senderTextField, cs);
-		//headerPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
+		cs.fill = GridBagConstraints.HORIZONTAL;
 		panel.add(senderTextField, cs);
 		
 		JLabel recipientLabel = new JLabel("Recipient: ");
@@ -374,6 +374,30 @@ public class GUI extends JFrame{
 		cs.anchor = GridBagConstraints.WEST;
 		cs.fill = GridBagConstraints.NONE;
 		panel.add(recipientTextField, cs);
+		
+		JLabel subjectLabel = new JLabel("Subject: ");
+		cs.gridx = 0;//position in the column
+		cs.gridy = 2;//position in the row
+		cs.gridwidth = 1;
+		cs.gridheight = 1;
+		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 100.0;
+		cs.insets = new Insets(5, 5, 5, 5);
+		cs.anchor = GridBagConstraints.EAST;
+		cs.fill = GridBagConstraints.NONE;
+		panel.add(subjectLabel, cs);
+
+		JTextField subjectTextField = new JTextField(13);
+		cs.gridx = 1;
+		cs.gridy = 2;
+		cs.gridwidth = 3;
+		cs.gridheight = 1;
+		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 100.0;
+		cs.insets = new Insets(5, 5, 5, 5);
+		cs.anchor = GridBagConstraints.WEST;
+		cs.fill = GridBagConstraints.NONE;
+		panel.add(subjectTextField, cs);
 
 		emailTextArea = new JTextArea("Enter your email body ...", 15, 40);
 		emailTextArea.setEditable(true);
@@ -381,7 +405,7 @@ public class GUI extends JFrame{
 		emailTextArea.setLineWrap(true);
 		jspForBody = new JScrollPane(emailTextArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		cs.gridx = 0;
-		cs.gridy = 2;
+		cs.gridy = 3;
 		//cs.gridwidth = 1;
 		//cs.gridheight = 1;
 		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
@@ -391,12 +415,12 @@ public class GUI extends JFrame{
 		panel.add(jspForBody, cs);
 
 		sendButton.setFont(new Font("Serif", Font.PLAIN, 30));
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
+		discardButton.setFont(new Font("Serif", Font.PLAIN, 30));
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(sendButton);
-		buttonPanel.add(cancelButton);
+		buttonPanel.add(discardButton);
 		cs.gridx = 0;
-		cs.gridy = 3;
+		cs.gridy = 4;
 		cs.gridwidth = 3;
 		cs.gridheight = 1;
 		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size

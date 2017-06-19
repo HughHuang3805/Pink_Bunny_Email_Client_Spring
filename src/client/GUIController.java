@@ -237,6 +237,10 @@ public class GUIController implements ActionListener{
 			}
 			break;
 
+		case "Discard":
+			myGui.writeFrame.dispose();
+			break;
+			
 		case "Get New Messages":
 			try {
 				ReceiveEmail.receiveEmail();
