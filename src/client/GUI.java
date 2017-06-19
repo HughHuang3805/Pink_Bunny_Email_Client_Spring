@@ -390,12 +390,20 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.NONE;
 		panel.add(jspForBody, cs);
 
-		/*sendButton.setFont(new Font("Serif", Font.PLAIN, 30));
+		sendButton.setFont(new Font("Serif", Font.PLAIN, 30));
 		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
-		buttonPanel = new JPanel();//create a panel for the buttons
+		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(sendButton);
-		buttonPanel.add(cancelButton);*/
-
+		buttonPanel.add(cancelButton);
+		cs.gridx = 0;
+		cs.gridy = 3;
+		cs.gridwidth = 3;
+		cs.gridheight = 1;
+		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 100.0;
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		panel.add(buttonPanel, cs);
+		
 		writeFrame.add(panel);
 		writeFrame.setResizable(false);
 		writeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
