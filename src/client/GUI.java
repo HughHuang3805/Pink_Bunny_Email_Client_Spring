@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -78,24 +79,24 @@ public class GUI extends JFrame{
 		JMenuItem getNewMessagesItem, writeItem, exitItem, generateKeyPairItem, item5, item6;
 		fileMenu = new JMenu("File");
 		sourceMenu = new JMenu("Source"); 
-		
+
 		getNewMessagesItem = new JMenuItem("Get New Messages");
 		writeItem = new JMenuItem("Write");
 		exitItem = new JMenuItem("Exit");
 		generateKeyPairItem = new JMenuItem("Generate key pair");
-		
+
 		menuItems.add(getNewMessagesItem);//for adding actionlistener
 		menuItems.add(writeItem);
 		menuItems.add(exitItem);
 		menuItems.add(generateKeyPairItem);
-		
+
 		fileMenu.add(getNewMessagesItem);
 		//menu1.addSeparator();
 		fileMenu.add(writeItem);
 		fileMenu.addSeparator();
 		fileMenu.add(exitItem);
 		//menu1.setFont(new Font("DejaVu Sans Mono", Font.PLAIN, 14));
-		
+
 		sourceMenu.add(generateKeyPairItem);
 
 		menuBar.add(fileMenu);
@@ -294,7 +295,7 @@ public class GUI extends JFrame{
 		setResizable(false);
 		setVisible(true);
 	}
-	
+
 	public void setWelcomeScreen(){
 		passwordPanel.setVisible(false);
 		yubikeyPanel.setVisible(false);
@@ -318,60 +319,92 @@ public class GUI extends JFrame{
 		writeFrame = new JFrame("New Email");
 		writeFrame.setSize(1000, 800);
 		writeFrame.setVisible(true);
-		writeFrame.setLayout(new GridLayout());
 
-		JPanel headerPanel = new JPanel();
-		headerPanel.setLayout(new GridBagLayout());
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
 		GridBagConstraints cs = new GridBagConstraints();//constraints
-		cs.fill = GridBagConstraints.HORIZONTAL;
-		
+
 		JLabel senderLabel = new JLabel("Sender: ");
-		cs.gridx = 0;//position in tje column
+		cs.gridx = 0;//position in the column
 		cs.gridy = 0;//position in the row
 		cs.gridwidth = 1;
-		cs.weightx = 1.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
-		cs.weighty = 0;
-		headerPanel.add(senderLabel, cs);
+		cs.gridheight = 1;
+		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 100.0;
+		cs.insets = new Insets(5, 5, 5, 5);
+		cs.anchor = GridBagConstraints.EAST;
+		cs.fill = GridBagConstraints.NONE;
+		panel.add(senderLabel, cs);
 
 		JTextField senderTextField = new JTextField(13);
 		cs.gridx = 1;
 		cs.gridy = 0;
-		cs.gridwidth = 2;
-		cs.weightx = 1.0;
-		cs.weighty = 0;
-		headerPanel.add(senderTextField, cs);
+		cs.gridwidth = 3;
+		cs.gridheight = 1;
+		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 100.0;
+		cs.insets = new Insets(5, 5, 5, 5);
+		cs.anchor = GridBagConstraints.WEST;
+		cs.fill = GridBagConstraints.NONE;
+		//headerPanel.add(senderTextField, cs);
+		//headerPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
+		panel.add(senderTextField, cs);
+		
+		JLabel recipientLabel = new JLabel("Recipient: ");
+		cs.gridx = 0;//position in the column
+		cs.gridy = 1;//position in the row
+		cs.gridwidth = 1;
+		cs.gridheight = 1;
+		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 100.0;
+		cs.insets = new Insets(5, 5, 5, 5);
+		cs.anchor = GridBagConstraints.EAST;
+		cs.fill = GridBagConstraints.NONE;
+		panel.add(recipientLabel, cs);
 
-		headerPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
-		
-		
-		if(emailTextArea == null)
-			emailTextArea = new JTextArea("Enter your email body ...");
-		else
-			emailTextArea.setText("Enter your email body ...");
+		JTextField recipientTextField = new JTextField(13);
+		cs.gridx = 1;
+		cs.gridy = 1;
+		cs.gridwidth = 3;
+		cs.gridheight = 1;
+		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 100.0;
+		cs.insets = new Insets(5, 5, 5, 5);
+		cs.anchor = GridBagConstraints.WEST;
+		cs.fill = GridBagConstraints.NONE;
+		panel.add(recipientTextField, cs);
+/*
+		emailTextArea = new JTextArea("Enter your email body ...");
 		emailTextArea.setEditable(true);
 		emailTextArea.setFont(new Font("Serif", Font.PLAIN, 60));
 		jspForBody = new JScrollPane(emailTextArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
+		
+		
 		textAreaPanel = new JPanel();
 		textAreaPanel.setLayout(new BorderLayout());
 		textAreaPanel.add(jspForBody, BorderLayout.CENTER);
 		textAreaPanel.repaint();
-		sendButton.setFont(new Font("Serif", Font.PLAIN, 30));
+		cs.gridx = 0;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		cs.weightx = 1.0;
+		cs.weighty = 0;
+		writeFrame.add(textAreaPanel, cs);
+*/
+		/*sendButton.setFont(new Font("Serif", Font.PLAIN, 30));
 		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
-
 		buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(sendButton);
-		
-		writeFrame.add(headerPanel);
-		writeFrame.add(textAreaPanel, BorderLayout.CENTER);
-		writeFrame.add(buttonPanel, BorderLayout.PAGE_END);
+		buttonPanel.add(cancelButton);*/
+
+		writeFrame.add(panel);
 		writeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		//writeFrame.pack();
+		writeFrame.pack();
 		writeFrame.repaint();
-		writeFrame.setLocationRelativeTo(null);
+		//writeFrame.setLocationRelativeTo(null);
 		writeFrame.setVisible(true);
-		
+
 	}
 
 	public String getEmail(){
