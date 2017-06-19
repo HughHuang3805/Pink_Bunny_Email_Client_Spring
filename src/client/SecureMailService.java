@@ -119,6 +119,9 @@ public class SecureMailService {
 			//props.put("mail.smtps.ssl.trust", "*");
 			//props.put("mail.smtps.quitwait", "false");
 			break;
+			
+		default:
+			return false;
 		}
 		System.out.println(host);
 		Session mailSession = Session.getDefaultInstance(props);

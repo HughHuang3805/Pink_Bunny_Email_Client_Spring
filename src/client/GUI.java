@@ -46,11 +46,10 @@ public class GUI extends JFrame{
 	JPasswordField passwordText, yubikeyText;
 	JScrollPane jsp;
 	JFrame writeFrame;
-
 	JMenu fileMenu, sourceMenu;
 	JTextArea emailTextArea;
 	JScrollPane jspForBody;
-
+	
 	public GUI(){
 		setTitle("Pink Bunny E-mail Client");
 		setSize(1250, 800);
@@ -125,12 +124,12 @@ public class GUI extends JFrame{
 		textAreaPanel.setLayout(new BorderLayout());
 		textAreaPanel.add(jspForBody, BorderLayout.CENTER);
 		textAreaPanel.repaint();
-		/*sendButton.setFont(new Font("Serif", Font.PLAIN, 30));
+		sendButton.setFont(new Font("Serif", Font.PLAIN, 30));
 		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
 
 		buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(sendButton);
-		buttonPanel.add(cancelButton);*/
+		buttonPanel.add(cancelButton);
 		add(textAreaPanel, BorderLayout.CENTER);
 		//add(buttonPanel, BorderLayout.PAGE_END);
 
@@ -319,7 +318,9 @@ public class GUI extends JFrame{
 		writeFrame = new JFrame("New Email");
 		writeFrame.setSize(1000, 800);
 		writeFrame.setVisible(true);
-
+		JTextArea emailTextArea;
+		JScrollPane jspForBody;
+		
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		GridBagConstraints cs = new GridBagConstraints();//constraints
@@ -339,7 +340,7 @@ public class GUI extends JFrame{
 		JTextField senderTextField = new JTextField(13);
 		cs.gridx = 1;
 		cs.gridy = 0;
-		cs.gridwidth = 3;
+		cs.gridwidth = 2;
 		cs.gridheight = 1;
 		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
 		cs.weighty = 100.0;
@@ -373,24 +374,22 @@ public class GUI extends JFrame{
 		cs.anchor = GridBagConstraints.WEST;
 		cs.fill = GridBagConstraints.NONE;
 		panel.add(recipientTextField, cs);
-/*
-		emailTextArea = new JTextArea("Enter your email body ...");
+
+		emailTextArea = new JTextArea("Enter your email body ...", 15, 40);
 		emailTextArea.setEditable(true);
-		emailTextArea.setFont(new Font("Serif", Font.PLAIN, 60));
+		emailTextArea.setFont(new Font("Serif", Font.PLAIN, 30));
+		emailTextArea.setLineWrap(true);
 		jspForBody = new JScrollPane(emailTextArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		
-		
-		textAreaPanel = new JPanel();
-		textAreaPanel.setLayout(new BorderLayout());
-		textAreaPanel.add(jspForBody, BorderLayout.CENTER);
-		textAreaPanel.repaint();
 		cs.gridx = 0;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		cs.weightx = 1.0;
-		cs.weighty = 0;
-		writeFrame.add(textAreaPanel, cs);
-*/
+		cs.gridy = 2;
+		//cs.gridwidth = 1;
+		//cs.gridheight = 1;
+		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 100.0;
+		cs.insets = new Insets(5, 5, 5, 5);
+		cs.fill = GridBagConstraints.NONE;
+		panel.add(jspForBody, cs);
+
 		/*sendButton.setFont(new Font("Serif", Font.PLAIN, 30));
 		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
 		buttonPanel = new JPanel();//create a panel for the buttons
@@ -398,11 +397,11 @@ public class GUI extends JFrame{
 		buttonPanel.add(cancelButton);*/
 
 		writeFrame.add(panel);
+		writeFrame.setResizable(false);
 		writeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
 		writeFrame.pack();
 		writeFrame.repaint();
-		//writeFrame.setLocationRelativeTo(null);
+		writeFrame.setLocationRelativeTo(null);
 		writeFrame.setVisible(true);
 
 	}

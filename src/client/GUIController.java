@@ -91,47 +91,52 @@ public class GUIController implements ActionListener{
 			host = email.substring(email.indexOf("@") + 1, email.indexOf("."));//see what kind of host the user is using
 			smtpServer = smtpServers.get(host.toUpperCase());//check what smtp server it is using for that host
 			portNumber = portNumbers.get(host.toUpperCase());//check what port it is using for that host
-			mailServer.setSMTP_HOST_NAME(smtpServer);//set smtp server
-			mailServer.setSMTP_HOST_PORT(Integer.parseInt(portNumber));//set port number
-			mailServer.setSMTP_AUTH_USER(email);//set user email
-			System.out.println(smtpServer);
-			System.out.println(portNumber);
-			System.out.println(host);
-			System.out.println(email);
-			//used to check if this email has a yubikey attached to it
-			HttpClient yubikeyClient = HttpClients.createDefault();
-			//https://boiling-fjord-84786.herokuapp.com/yubikey
-			HttpPost yubikeyPost = new HttpPost("https://boiling-fjord-84786.herokuapp.com/yubikey");
-			List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-			parameters.add(new BasicNameValuePair("Email", email));
+			if(smtpServer != null & portNumber != null){
+				mailServer.setSMTP_HOST_NAME(smtpServer);//set smtp server
+				mailServer.setSMTP_HOST_PORT(Integer.parseInt(portNumber));//set port number
+				mailServer.setSMTP_AUTH_USER(email);//set user email
+				System.out.println(smtpServer);
+				System.out.println(portNumber);
+				System.out.println(host);
+				System.out.println(email);
+				//used to check if this email has a yubikey attached to it
+				HttpClient yubikeyClient = HttpClients.createDefault();
+				//https://boiling-fjord-84786.herokuapp.com/yubikey
+				HttpPost yubikeyPost = new HttpPost("https://boiling-fjord-84786.herokuapp.com/yubikey");
+				List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+				parameters.add(new BasicNameValuePair("Email", email));
 
-			try{
-				yubikeyPost.setEntity(new UrlEncodedFormEntity(parameters));//email and yubikey POST as the body of request
-				HttpResponse response1 = yubikeyClient.execute(yubikeyPost);//wait for a response from the server
-				BufferedReader rd1 = new BufferedReader(new InputStreamReader(response1.getEntity().getContent()));//reader for the response
-				String hasYubikeyString = rd1.readLine();//read the response
-				System.out.println(hasYubikeyString);
-				if(hasYubikeyString != null){
-					if(hasYubikeyString.charAt(0) == '0')//if response is 0, false
-						hasYubikey = false;
-					else if(hasYubikeyString.charAt(0) == '1')//if response is 1, true
-						hasYubikey = true;
+				try{
+					yubikeyPost.setEntity(new UrlEncodedFormEntity(parameters));//email and yubikey POST as the body of request
+					HttpResponse response1 = yubikeyClient.execute(yubikeyPost);//wait for a response from the server
+					BufferedReader rd1 = new BufferedReader(new InputStreamReader(response1.getEntity().getContent()));//reader for the response
+					String hasYubikeyString = rd1.readLine();//read the response
+					System.out.println(hasYubikeyString);
+					if(hasYubikeyString != null){
+						if(hasYubikeyString.charAt(0) == '0')//if response is 0, false
+							hasYubikey = false;
+						else if(hasYubikeyString.charAt(0) == '1')//if response is 1, true
+							hasYubikey = true;
+					}
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+
+				myGui.emailPanel.setVisible(false);//fisrt hide email panel
+				myGui.buttonPanel.setVisible(false);//hide button panel
+				myGui.buttonPanel.removeAll();//remove whatever is in button panel
+				myGui.repaint();//repaint the gui
+
+				myGui.setPasswordPanel();//set up password panel
+				myGui.passwordPanel.setVisible(true);//make the password panel visible
+				myGui.repaint();//repaint the gui
+
+				break;
+			} else {
+				JOptionPane.showMessageDialog(myGui, "Email not supported, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
+				break;
 			}
-
-			myGui.emailPanel.setVisible(false);//fisrt hide email panel
-			myGui.buttonPanel.setVisible(false);//hide button panel
-			myGui.buttonPanel.removeAll();//remove whatever is in button panel
-			myGui.repaint();//repaint the gui
-
-			myGui.setPasswordPanel();//set up password panel
-			myGui.passwordPanel.setVisible(true);//make the password panel visible
-			myGui.repaint();//repaint the gui
-
-			break;
 
 		case "Sign-in":
 			boolean emailAuthenticated = false;
@@ -245,7 +250,7 @@ public class GUIController implements ActionListener{
 				br.close();
 				myGui.textAreaPanel.setVisible(false);
 				myGui.repaint();
-				myGui.setReceivedEmailTextArea(message);
+				//myGui.setReceivedEmailTextArea(message);
 				myGui.repaint();
 				JOptionPane.showMessageDialog(myGui, "Message received!");
 			} catch (FileNotFoundException e1) {
@@ -271,11 +276,11 @@ public class GUIController implements ActionListener{
 				e1.printStackTrace();
 			}
 			break;
-			
+
 		case "Write":
 			myGui.setWritePanel();
 			break;
-			
+
 		case "Exit":
 			System.exit(0);
 			break;	
