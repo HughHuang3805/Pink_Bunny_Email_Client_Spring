@@ -92,9 +92,9 @@ public class GUIController implements ActionListener{
 			smtpServer = smtpServers.get(host.toUpperCase());//check what smtp server it is using for that host
 			portNumber = portNumbers.get(host.toUpperCase());//check what port it is using for that host
 			if(smtpServer != null & portNumber != null){
-				mailServer.setSMTP_HOST_NAME(smtpServer);//set smtp server
-				mailServer.setSMTP_HOST_PORT(Integer.parseInt(portNumber));//set port number
-				mailServer.setSMTP_AUTH_USER(email);//set user email
+				mailServer.setHostName(smtpServer);//set smtp server
+				mailServer.setPort(Integer.parseInt(portNumber));//set port number
+				mailServer.setUser(email);//set user email
 				System.out.println(smtpServer);
 				System.out.println(portNumber);
 				System.out.println(host);
@@ -140,7 +140,7 @@ public class GUIController implements ActionListener{
 
 		case "Sign-in":
 			boolean emailAuthenticated = false;
-			mailServer.setSMTP_AUTH_PWD(myGui.getPassword());
+			mailServer.setPW(myGui.getPassword());
 			try {
 				emailAuthenticated = mailServer.connect(host);//try to connect
 				if(!emailAuthenticated)
@@ -218,9 +218,11 @@ public class GUIController implements ActionListener{
 
 		case "Send":
 			BufferedWriter bw;
+			mailServer.setRecipient(myGui.getRecipient());
+			mailServer.setSubject(myGui.getSubject());
 			try {
 				bw = new BufferedWriter(new FileWriter("plain-text.txt"));
-				myGui.emailTextArea.write(bw);
+				myGui.emailContentText.write(bw);
 				//myGui.setEmailBodyTextArea();
 			} catch (IOException e2) {
 				// TODO Auto-generated catch block

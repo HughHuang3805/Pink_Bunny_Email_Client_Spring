@@ -1,0 +1,61 @@
+DEBUG: getProvider() returning javax.mail.Provider[TRANSPORT,smtps,com.sun.mail.smtp.SMTPSSLTransport,Oracle]
+DEBUG SMTP: useEhlo true, useAuth true
+DEBUG SMTP: trying to connect to host "smtp.gmail.com", port 465, isSSL true
+220 smtp.gmail.com ESMTP e32sm8155743qte.1 - gsmtp
+DEBUG SMTP: connected to host "smtp.gmail.com", port: 465
+
+EHLO Hugh-PC
+250-smtp.gmail.com at your service, [108.46.182.99]
+250-SIZE 35882577
+250-8BITMIME
+250-AUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH
+250-ENHANCEDSTATUSCODES
+250-PIPELINING
+250-CHUNKING
+250 SMTPUTF8
+DEBUG SMTP: Found extension "SIZE", arg "35882577"
+DEBUG SMTP: Found extension "8BITMIME", arg ""
+DEBUG SMTP: Found extension "AUTH", arg "LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH"
+DEBUG SMTP: Found extension "ENHANCEDSTATUSCODES", arg ""
+DEBUG SMTP: Found extension "PIPELINING", arg ""
+DEBUG SMTP: Found extension "CHUNKING", arg ""
+DEBUG SMTP: Found extension "SMTPUTF8", arg ""
+DEBUG SMTP: protocolConnect login, host=smtp.gmail.com, user=pinkbunnychickenmarsala@gmail.com, password=<non-null>
+DEBUG SMTP: Attempt to authenticate using mechanisms: LOGIN PLAIN DIGEST-MD5 NTLM XOAUTH2 
+DEBUG SMTP: Using mechanism LOGIN
+DEBUG SMTP: AUTH LOGIN command trace suppressed
+DEBUG SMTP: AUTH LOGIN succeeded
+DEBUG SMTP: use8bit false
+MAIL FROM:<Hugh@Hugh-PC>
+250 2.1.0 OK e32sm8155743qte.1 - gsmtp
+RCPT TO:<hughxq@gmail.com>
+250 2.1.5 OK e32sm8155743qte.1 - gsmtp
+DEBUG SMTP: Verified Addresses
+DEBUG SMTP:   hughxq@gmail.com
+DATA
+354  Go ahead e32sm8155743qte.1 - gsmtp
+To: hughxq@gmail.com
+Message-ID: <1642368595.1.1497912180896@Hugh-PC>
+Subject: Testing sending email
+MIME-Version: 1.0
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_0_688969231.1497912179665"
+
+------=_Part_0_688969231.1497912179665
+Content-Type: application/octet-stream; name=cypher-text.dat
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename=cypher-text.dat
+
+hQEMAwdm8A0VUfFOAQf/Wwwt29rBBdaChh6AvszY5tV36swowgkW50jnuy3dcqBx9ZDTYBte3bLe
+6BTb929C4WlHoc4yXBrQjzr8VETcS0oYZ9Brvprw/TpZ95/fJkw4rSJXqXqxEaAlmfNM5FERdX2O
+Rc4W4Uu5IKfqdWuI5LBtKxO+mG6s7fqsYNmKLN2hO5R9e6mQ6/fk+4zVs2cLaMN+X+jC4lt+zmoX
+6BzMHs9dxqDtnAImp3h8uI2lih4cVNg00JQXTTfSbBhdFWPNhbAzffAn4h6pU1clJEfg4pL2Wgen
+o/UWhiKOX2Zmc2BwylV5BJk3PXUY/jtt3n5FWTHaPFY0m9QHp7KtEUT739JGAYVcX0gJfFdLT5Wn
+kg/k7nhYkHwP9+Z/uPNE/l0gNKgbD3vNJBQO9J3pjkc372o++NFV01ZBTzu5o90xXs2qDl6FLWm3
+TQ==
+------=_Part_0_688969231.1497912179665--
+.
+250 2.0.0 OK 1497912181 e32sm8155743qte.1 - gsmtp
+DEBUG SMTP: message successfully delivered to mail server
+QUIT
+221 2.0.0 closing connection e32sm8155743qte.1 - gsmtp

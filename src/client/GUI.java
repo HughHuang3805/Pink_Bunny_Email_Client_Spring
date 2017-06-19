@@ -48,7 +48,7 @@ public class GUI extends JFrame{
 	JScrollPane jsp;
 	JFrame writeFrame;
 	JMenu fileMenu, sourceMenu;
-	JTextArea emailTextArea;
+	JTextArea emailContentText;
 	JScrollPane jspForBody;
 	
 	public GUI(){
@@ -112,33 +112,6 @@ public class GUI extends JFrame{
 		textAreaPanel.setVisible(false);
 	}
 
-	public void setEmailBodyTextArea(){//text area for user to type email content
-		setSize(1250, 800);
-		if(emailTextArea == null)
-			emailTextArea = new JTextArea("Enter your email body ...");
-		else
-			emailTextArea.setText("Enter your email body ...");
-		emailTextArea.setEditable(true);
-		emailTextArea.setFont(new Font("Serif", Font.PLAIN, 60));
-		jspForBody = new JScrollPane(emailTextArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-		textAreaPanel = new JPanel();
-		textAreaPanel.setLayout(new BorderLayout());
-		textAreaPanel.add(jspForBody, BorderLayout.CENTER);
-		textAreaPanel.repaint();
-		sendButton.setFont(new Font("Serif", Font.PLAIN, 30));
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
-
-		buttonPanel = new JPanel();//create a panel for the buttons
-		buttonPanel.add(sendButton);
-		buttonPanel.add(cancelButton);
-		add(textAreaPanel, BorderLayout.CENTER);
-		//add(buttonPanel, BorderLayout.PAGE_END);
-
-		repaint();
-		setVisible(true);
-	}
-
 	public void setSendDebugTextArea(){
 		try {
 			@SuppressWarnings("resource")
@@ -148,8 +121,8 @@ public class GUI extends JFrame{
 			while ((line = br.readLine()) != null) {
 				debug = debug + line + "\n";
 			}
-			emailTextArea.setText(debug);
-			emailTextArea.setEditable(false);
+			emailContentText.setText(debug);
+			emailContentText.setEditable(false);
 
 			repaint();
 			setVisible(true);
@@ -163,8 +136,8 @@ public class GUI extends JFrame{
 	}
 
 	public void setReceivedEmailTextArea(String message){
-		emailTextArea.setText(message);
-		emailTextArea.setEditable(false);
+		emailContentText.setText(message);
+		emailContentText.setEditable(false);
 
 		repaint();
 		setVisible(true);
@@ -327,7 +300,7 @@ public class GUI extends JFrame{
 		
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 
-		JLabel senderLabel = new JLabel("Sender: ");
+		JLabel senderLabel = new JLabel("Sender: ");//sender
 		cs.gridx = 0;//position in the column
 		cs.gridy = 0;//position in the row
 		cs.gridwidth = 1;
@@ -353,7 +326,7 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		writePanel.add(senderTextField, cs);
 		
-		JLabel recipientLabel = new JLabel("Recipient: ");
+		JLabel recipientLabel = new JLabel("Recipient: ");//recipient
 		cs.gridx = 0;//position in the column
 		cs.gridy = 1;//position in the row
 		cs.gridwidth = 1;
@@ -377,7 +350,7 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		writePanel.add(recipientTextField, cs);
 		
-		JLabel subjectLabel = new JLabel("Subject: ");
+		JLabel subjectLabel = new JLabel("Subject: ");//subject
 		cs.gridx = 0;//position in the column
 		cs.gridy = 2;//position in the row
 		cs.gridwidth = 1;
@@ -401,11 +374,11 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		writePanel.add(subjectTextField, cs);
 
-		emailTextArea = new JTextArea("Enter your email body ...", 15, 25);
-		emailTextArea.setEditable(true);
-		emailTextArea.setFont(new Font("Serif", Font.PLAIN, 30));
-		emailTextArea.setLineWrap(true);
-		jspForBody = new JScrollPane(emailTextArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		emailContentText = new JTextArea("Enter your email body ...", 15, 25);//email content
+		emailContentText.setEditable(true);
+		emailContentText.setFont(new Font("Serif", Font.PLAIN, 30));
+		emailContentText.setLineWrap(true);
+		jspForBody = new JScrollPane(emailContentText, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		cs.gridx = 0;
 		cs.gridy = 3;
 		//cs.gridwidth = 1;

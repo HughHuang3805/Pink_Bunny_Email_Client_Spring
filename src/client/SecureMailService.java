@@ -28,7 +28,9 @@ public class SecureMailService {
 	private int SMTP_HOST_PORT;
 	private String SMTP_AUTH_USER;
 	private String SMTP_AUTH_PWD;
-
+	private String SMTP_RECIPIENT;
+	private String subject;
+	
 	public void send(String host) throws Exception{
 		TestBCOpenPGP x = new TestBCOpenPGP();
 		x.encrypt();
@@ -48,7 +50,7 @@ public class SecureMailService {
 		Transport transport = mailSession.getTransport();
 
 		MimeMessage message = new MimeMessage(mailSession);
-		message.setSubject("Testing SMTP-SSL");
+		message.setSubject(getSubject());
 
 		MimeBodyPart messageBodyPart = new MimeBodyPart();
 		String filename = "cypher-text.dat";
@@ -61,7 +63,7 @@ public class SecureMailService {
 		message.setContent(multipart);
 
 		message.addRecipient(Message.RecipientType.TO,
-				new InternetAddress("PinkBunnyChickenMarsala2@gmail.com"));
+				new InternetAddress(getRecipient()));
 
 		transport.connect(SMTP_HOST_NAME, SMTP_HOST_PORT, SMTP_AUTH_USER, SMTP_AUTH_PWD);
 		transport.sendMessage(message,
@@ -158,36 +160,48 @@ public class SecureMailService {
 		}
 	}
 
-	public String getSMTP_AUTH_USER() {
+	public String getUser() {
 		return SMTP_AUTH_USER;
 	}
 
-	public void setSMTP_AUTH_USER(String sMTP_AUTH_USER) {
+	public void setUser(String sMTP_AUTH_USER) {
 		SMTP_AUTH_USER = sMTP_AUTH_USER;
 	}
 
-	public String getSMTP_AUTH_PWD() {
-		return SMTP_AUTH_PWD;
-	}
-
-	public void setSMTP_AUTH_PWD(String sMTP_AUTH_PWD) {
+	public void setPW(String sMTP_AUTH_PWD) {
 		SMTP_AUTH_PWD = sMTP_AUTH_PWD;
 	}
 
-	public String getSMTP_HOST_NAME() {
+	public String getHostName() {
 		return SMTP_HOST_NAME;
 	}
 
-	public void setSMTP_HOST_NAME(String sMTP_HOST_NAME) {
+	public void setHostName(String sMTP_HOST_NAME) {
 		SMTP_HOST_NAME = sMTP_HOST_NAME;
 	}
 
-	public int getSMTP_HOST_PORT() {
+	public int getPort() {
 		return SMTP_HOST_PORT;
 	}
 
-	public void setSMTP_HOST_PORT(int sMTP_HOST_PORT) {
+	public void setPort(int sMTP_HOST_PORT) {
 		SMTP_HOST_PORT = sMTP_HOST_PORT;
 	}
+	
+	public String getRecipient() {
+		return SMTP_RECIPIENT;
+	}
 
+	public void setRecipient(String sMTP_RECIPIENT) {
+		SMTP_RECIPIENT = sMTP_RECIPIENT;
+	}
+	
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+	
 }
