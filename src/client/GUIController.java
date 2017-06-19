@@ -38,6 +38,7 @@ public class GUIController implements ActionListener{
 
 	GUI myGui;
 	SecureMailService mailServer = new SecureMailService();
+	ReceiveEmail receiveEmail = new ReceiveEmail();
 	private static String smtpServer = "";
 	private static String portNumber = "";
 	private static String email = "";
@@ -220,6 +221,8 @@ public class GUIController implements ActionListener{
 			BufferedWriter bw;
 			mailServer.setRecipient(myGui.getRecipient());
 			mailServer.setSubject(myGui.getSubject());
+			receiveEmail.setPassword(myGui.getPassword());
+			receiveEmail.setUsername(myGui.getEmail());
 			try {
 				bw = new BufferedWriter(new FileWriter("plain-text.txt"));
 				myGui.emailContentText.write(bw);
@@ -245,7 +248,7 @@ public class GUIController implements ActionListener{
 			
 		case "Get New Messages":
 			try {
-				ReceiveEmail.receiveEmail();
+				receiveEmail.receiveEmail();
 				BufferedReader br = new BufferedReader(new FileReader("dec-plain-text.txt"));
 				String message = "";
 

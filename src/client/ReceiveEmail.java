@@ -15,19 +15,18 @@ import javax.mail.internet.MimeBodyPart;
 
 public class ReceiveEmail{  
 
-	static String host = "imap.gmail.com ";
+	static String host = "imap.gmail.com";
 	String mailStoreType = "imap";  
-	static String username = "";  
-	static String password = "";
+	private String username = "";  
+	private String password = "";
 	
-	public static void receiveEmail() throws Exception {  
+	public void receiveEmail() throws Exception {  
 		try {  
 			//1) get the session object  
 			Properties props2=System.getProperties();
 
 			props2.setProperty("mail.store.protocol", "imaps");
 			//props2.put("mail.imaps.ssl.trust", "*");
-			// I used imaps protocol here
 
 			Session session2=Session.getDefaultInstance(props2, null);
 
@@ -73,7 +72,7 @@ public class ReceiveEmail{
 		catch (IOException e) {e.printStackTrace();}  
 	}  
 
-	public static void getMultipart(Message message) throws IOException, MessagingException{//download the cipher-text.dat
+	public void getMultipart(Message message) throws IOException, MessagingException{//download the cipher-text.dat
         Multipart multiPart = (Multipart) message.getContent();
         String attachFiles = "";
         @SuppressWarnings("unused")
@@ -97,11 +96,21 @@ public class ReceiveEmail{
             attachFiles = attachFiles.substring(0, attachFiles.length() - 2);
         }
 	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 	
-	public static void main(String[] args) throws Exception {  
-
-
-		//receiveEmail(host, mailStoreType, username, password);  
-
-	}  
 } 
