@@ -43,7 +43,7 @@ public class GUI extends JFrame{
 	JButton nextButton = new JButton("Next");
 	JButton sendButton = new JButton("Send");
 	JButton discardButton = new JButton("Discard");
-	JTextField emailText;
+	JTextField emailTextField, senderTextField, recipientTextField, subjectTextField;
 	JPasswordField passwordText, yubikeyText;
 	JScrollPane jsp;
 	JFrame writeFrame;
@@ -186,14 +186,14 @@ public class GUI extends JFrame{
 		cs.weighty = 0;
 		emailPanel.add(emailLabel, cs);
 
-		emailText = new JTextField(13);
-		emailText.setFont(new Font("Serif", Font.PLAIN, 40));
+		emailTextField = new JTextField(13);
+		emailTextField.setFont(new Font("Serif", Font.PLAIN, 40));
 		cs.gridx = 1;
 		cs.gridy = 0;
 		cs.gridwidth = 2;
 		cs.weightx = 1.0;
 		cs.weighty = 0;
-		emailPanel.add(emailText, cs);
+		emailPanel.add(emailTextField, cs);
 
 		emailPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
 
@@ -320,26 +320,28 @@ public class GUI extends JFrame{
 		writeFrame = new JFrame("New Email");
 		writeFrame.setSize(1000, 800);
 		writeFrame.setVisible(true);
-		JTextArea emailTextArea;
-		JScrollPane jspForBody;
 		
-		JPanel panel = new JPanel();
-		panel.setLayout(new GridBagLayout());
+		JPanel mainPanel = new JPanel();
+		JPanel writePanel = new JPanel();
+		writePanel.setLayout(new GridBagLayout());
+		
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 
 		JLabel senderLabel = new JLabel("Sender: ");
-		//cs.gridx = 0;//position in the column
+		cs.gridx = 0;//position in the column
 		cs.gridy = 0;//position in the row
 		cs.gridwidth = 1;
 		cs.gridheight = 1;
 		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
 		cs.weighty = 100.0;
 		cs.insets = new Insets(5, 5, 5, 5);
-		cs.anchor = GridBagConstraints.EAST;
+		cs.anchor = GridBagConstraints.WEST;
 		cs.fill = GridBagConstraints.NONE;
-		panel.add(senderLabel, cs);
+		writePanel.add(senderLabel, cs);
 
-		JTextField senderTextField = new JTextField(13);
+		senderTextField = new JTextField(13);
+		senderTextField.setText(this.getEmail());
+		senderTextField.setEditable(false);
 		cs.gridx = 1;
 		cs.gridy = 0;
 		cs.gridwidth = 2;
@@ -349,7 +351,7 @@ public class GUI extends JFrame{
 		cs.insets = new Insets(5, 5, 5, 5);
 		cs.anchor = GridBagConstraints.WEST;
 		cs.fill = GridBagConstraints.HORIZONTAL;
-		panel.add(senderTextField, cs);
+		writePanel.add(senderTextField, cs);
 		
 		JLabel recipientLabel = new JLabel("Recipient: ");
 		cs.gridx = 0;//position in the column
@@ -359,11 +361,11 @@ public class GUI extends JFrame{
 		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
 		cs.weighty = 100.0;
 		cs.insets = new Insets(5, 5, 5, 5);
-		cs.anchor = GridBagConstraints.EAST;
-		cs.fill = GridBagConstraints.NONE;
-		panel.add(recipientLabel, cs);
+		cs.anchor = GridBagConstraints.WEST;
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		writePanel.add(recipientLabel, cs);
 
-		JTextField recipientTextField = new JTextField(13);
+		recipientTextField = new JTextField(13);
 		cs.gridx = 1;
 		cs.gridy = 1;
 		cs.gridwidth = 3;
@@ -372,8 +374,8 @@ public class GUI extends JFrame{
 		cs.weighty = 100.0;
 		cs.insets = new Insets(5, 5, 5, 5);
 		cs.anchor = GridBagConstraints.WEST;
-		cs.fill = GridBagConstraints.NONE;
-		panel.add(recipientTextField, cs);
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		writePanel.add(recipientTextField, cs);
 		
 		JLabel subjectLabel = new JLabel("Subject: ");
 		cs.gridx = 0;//position in the column
@@ -383,11 +385,11 @@ public class GUI extends JFrame{
 		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
 		cs.weighty = 100.0;
 		cs.insets = new Insets(5, 5, 5, 5);
-		cs.anchor = GridBagConstraints.EAST;
-		cs.fill = GridBagConstraints.NONE;
-		panel.add(subjectLabel, cs);
+		cs.anchor = GridBagConstraints.WEST;
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		writePanel.add(subjectLabel, cs);
 
-		JTextField subjectTextField = new JTextField(13);
+		subjectTextField = new JTextField(13);
 		cs.gridx = 1;
 		cs.gridy = 2;
 		cs.gridwidth = 3;
@@ -396,10 +398,10 @@ public class GUI extends JFrame{
 		cs.weighty = 100.0;
 		cs.insets = new Insets(5, 5, 5, 5);
 		cs.anchor = GridBagConstraints.WEST;
-		cs.fill = GridBagConstraints.NONE;
-		panel.add(subjectTextField, cs);
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		writePanel.add(subjectTextField, cs);
 
-		emailTextArea = new JTextArea("Enter your email body ...", 15, 40);
+		emailTextArea = new JTextArea("Enter your email body ...", 15, 25);
 		emailTextArea.setEditable(true);
 		emailTextArea.setFont(new Font("Serif", Font.PLAIN, 30));
 		emailTextArea.setLineWrap(true);
@@ -412,7 +414,7 @@ public class GUI extends JFrame{
 		cs.weighty = 100.0;
 		cs.insets = new Insets(5, 5, 5, 5);
 		cs.fill = GridBagConstraints.NONE;
-		panel.add(jspForBody, cs);
+		writePanel.add(jspForBody, cs);
 
 		sendButton.setFont(new Font("Serif", Font.PLAIN, 30));
 		discardButton.setFont(new Font("Serif", Font.PLAIN, 30));
@@ -426,9 +428,10 @@ public class GUI extends JFrame{
 		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
 		cs.weighty = 100.0;
 		cs.fill = GridBagConstraints.HORIZONTAL;
-		panel.add(buttonPanel, cs);
+		writePanel.add(buttonPanel, cs);
 		
-		writeFrame.add(panel);
+		mainPanel.add(writePanel);
+		writeFrame.add(mainPanel);
 		writeFrame.setResizable(false);
 		writeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		writeFrame.pack();
@@ -440,7 +443,7 @@ public class GUI extends JFrame{
 
 	public String getEmail(){
 		//get rid of any space in the username
-		return emailText.getText().replaceAll("\\s+","");
+		return emailTextField.getText().replaceAll("\\s+","");
 	}
 
 	public String getPassword(){
@@ -457,4 +460,19 @@ public class GUI extends JFrame{
 		textArea.setText(null);
 	}
 
+	public String getRecipient() {
+		return recipientTextField.getText();
+	}
+
+	public void setRecipient(JTextField recipientTextField) {
+		this.recipientTextField = recipientTextField;
+	}
+
+	public String getSubject() {
+		return subjectTextField.getText();
+	}
+
+	public void setSubject(JTextField subjectTextField) {
+		this.subjectTextField = subjectTextField;
+	}
 }
