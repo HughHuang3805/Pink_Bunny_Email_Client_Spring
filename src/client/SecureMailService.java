@@ -31,7 +31,7 @@ public class SecureMailService {
 	private String SMTP_RECIPIENT;
 	private String subject;
 	
-	public void send(String host) throws Exception{
+	public void encryptedSend(String host) throws Exception{
 		TestBCOpenPGP x = new TestBCOpenPGP();
 		x.encrypt();
 
@@ -65,6 +65,34 @@ public class SecureMailService {
 		message.addRecipient(Message.RecipientType.TO,
 				new InternetAddress(getRecipient()));
 
+		transport.connect(SMTP_HOST_NAME, SMTP_HOST_PORT, SMTP_AUTH_USER, SMTP_AUTH_PWD);
+		transport.sendMessage(message,
+				message.getRecipients(Message.RecipientType.TO));
+		transport.close();
+	}
+	
+	public void send(String host, String messageContent) throws Exception{
+		Properties props = new Properties();
+
+		props.put("mail.transport.protocol", "smtps");
+		props.put("mail.smtps.host", SMTP_HOST_NAME);
+		props.put("mail.smtps.auth", "true");
+		//props.put("mail.smtps.ssl.trust", "*");
+		//props.put("mail.smtps.quitwait", "false");
+
+		Session mailSession = Session.getDefaultInstance(props);
+		mailSession.setDebug(true);
+		PrintStream ps = new PrintStream(new File("debug.txt"));//output to debug.txt
+		mailSession.setDebugOut(ps);
+		Transport transport = mailSession.getTransport();
+
+		MimeMessage message = new MimeMessage(mailSession);
+		message.setSubject(getSubject());
+		message.setFrom(new InternetAddress(getUser()));
+		message.addRecipient(Message.RecipientType.TO,
+				new InternetAddress(getRecipient()));
+		message.setText(messageContent);
+		
 		transport.connect(SMTP_HOST_NAME, SMTP_HOST_PORT, SMTP_AUTH_USER, SMTP_AUTH_PWD);
 		transport.sendMessage(message,
 				message.getRecipients(Message.RecipientType.TO));

@@ -42,14 +42,19 @@ public class GUI extends JFrame{
 	JButton verifyButton = new JButton("Verify");
 	JButton nextButton = new JButton("Next");
 	JButton sendButton = new JButton("Send");
+	JButton secureSendButton = new JButton("Secure Send");
 	JButton discardButton = new JButton("Discard");
+	JButton secureDiscardButton = new JButton("Secure Discard");
 	JTextField emailTextField, senderTextField, recipientTextField, subjectTextField;
+	JTextField secureEmailTextField, secureSenderTextField, secureRecipientTextField, secureSubjectTextField;
 	JPasswordField passwordText, yubikeyText;
 	JScrollPane jsp;
-	JFrame writeFrame;
+	JFrame writeFrame, secureWriteFrame;
 	JMenu fileMenu, sourceMenu;
 	JTextArea emailContentText;
+	JTextArea secureEmailContentText;
 	JScrollPane jspForBody;
+	JScrollPane secureJSPForBody;
 	
 	public GUI(){
 		setTitle("Pink Bunny E-mail Client");
@@ -70,28 +75,35 @@ public class GUI extends JFrame{
 		nextButton.addActionListener(a);
 		verifyButton.addActionListener(a);
 		sendButton.addActionListener(a);
+		secureSendButton.addActionListener(a);
 		discardButton.addActionListener(a);
+		secureDiscardButton.addActionListener(a);
 		for(JMenuItem x : menuItems)
 			x.addActionListener(a);
 	}
 
 	public void setMenuItems(){
 		JMenuBar menuBar = new JMenuBar();
-		JMenuItem getNewMessagesItem, writeItem, exitItem, generateKeyPairItem, item5, item6;
+		JMenuItem getNewMessagesItem, writeItem, exitItem, generateKeyPairItem, secureWriteItem, item6;
 		fileMenu = new JMenu("File");
 		sourceMenu = new JMenu("Source"); 
 
 		getNewMessagesItem = new JMenuItem("Get New Messages");
 		writeItem = new JMenuItem("Write");
+		writeItem.setToolTipText("Send Emails Un-Encrypted");
+		secureWriteItem = new JMenuItem("Secure Write");
+		secureWriteItem.setToolTipText("Send Emails Encrypted");
 		exitItem = new JMenuItem("Exit");
-		generateKeyPairItem = new JMenuItem("Generate key pair");
+		generateKeyPairItem = new JMenuItem("Generate Key Pair");
 
 		//add items to a list for adding actionlistener
 		menuItems.add(writeItem);
 		menuItems.add(getNewMessagesItem);
 		menuItems.add(exitItem);
 		menuItems.add(generateKeyPairItem);
+		menuItems.add(secureWriteItem);
 
+		fileMenu.add(secureWriteItem);
 		fileMenu.add(writeItem);
 		fileMenu.add(getNewMessagesItem);
 		//menu1.addSeparator();
@@ -136,6 +148,29 @@ public class GUI extends JFrame{
 		}
 	}
 
+	public void setSecureSendDebugTextArea(){
+		try {
+			@SuppressWarnings("resource")
+			BufferedReader br = new BufferedReader(new FileReader("debug.txt"));
+			String line = null;
+			String debug = "";
+			while ((line = br.readLine()) != null) {
+				debug = debug + line + "\n";
+			}
+			secureEmailContentText.setText(debug);
+			secureEmailContentText.setEditable(false);
+
+			repaint();
+			setVisible(true);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public void setReceivedEmailTextArea(String message){
 		emailContentText.setText(message);
 		emailContentText.setEditable(false);
@@ -290,8 +325,8 @@ public class GUI extends JFrame{
 		setResizable(true);
 	}
 
-	public void setWritePanel(){
-		writeFrame = new JFrame("New Email");
+	public void setWritePanel(){//write email
+		writeFrame = new JFrame("Write: New Email");
 		writeFrame.setSize(1000, 800);
 		writeFrame.setVisible(true);
 		
@@ -412,9 +447,132 @@ public class GUI extends JFrame{
 		writeFrame.repaint();
 		writeFrame.setLocationRelativeTo(null);
 		writeFrame.setVisible(true);
-
 	}
 
+	public void setSecureWritePanel(){
+		secureWriteFrame = new JFrame("Secure Write: New Email");
+		secureWriteFrame.setSize(1000, 800);
+		secureWriteFrame.setVisible(true);
+		
+		JPanel mainPanel = new JPanel();
+		JPanel writePanel = new JPanel();
+		writePanel.setLayout(new GridBagLayout());
+		
+		GridBagConstraints cs = new GridBagConstraints();//constraints
+
+		JLabel senderLabel = new JLabel("Sender: ");//sender
+		cs.gridx = 0;//position in the column
+		cs.gridy = 0;//position in the row
+		cs.gridwidth = 1;
+		cs.gridheight = 1;
+		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 100.0;
+		cs.insets = new Insets(5, 5, 5, 5);
+		cs.anchor = GridBagConstraints.WEST;
+		cs.fill = GridBagConstraints.NONE;
+		writePanel.add(senderLabel, cs);
+
+		secureSenderTextField = new JTextField(13);
+		secureSenderTextField.setText(this.getEmail());
+		secureSenderTextField.setEditable(false);
+		cs.gridx = 1;
+		cs.gridy = 0;
+		cs.gridwidth = 2;
+		cs.gridheight = 1;
+		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 100.0;
+		cs.insets = new Insets(5, 5, 5, 5);
+		cs.anchor = GridBagConstraints.WEST;
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		writePanel.add(secureSenderTextField, cs);
+		
+		JLabel recipientLabel = new JLabel("Recipient: ");//recipient
+		cs.gridx = 0;//position in the column
+		cs.gridy = 1;//position in the row
+		cs.gridwidth = 1;
+		cs.gridheight = 1;
+		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 100.0;
+		cs.insets = new Insets(5, 5, 5, 5);
+		cs.anchor = GridBagConstraints.WEST;
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		writePanel.add(recipientLabel, cs);
+
+		secureRecipientTextField = new JTextField(13);
+		cs.gridx = 1;
+		cs.gridy = 1;
+		cs.gridwidth = 3;
+		cs.gridheight = 1;
+		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 100.0;
+		cs.insets = new Insets(5, 5, 5, 5);
+		cs.anchor = GridBagConstraints.WEST;
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		writePanel.add(secureRecipientTextField, cs);
+		
+		JLabel subjectLabel = new JLabel("Subject: ");//subject
+		cs.gridx = 0;//position in the column
+		cs.gridy = 2;//position in the row
+		cs.gridwidth = 1;
+		cs.gridheight = 1;
+		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 100.0;
+		cs.insets = new Insets(5, 5, 5, 5);
+		cs.anchor = GridBagConstraints.WEST;
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		writePanel.add(subjectLabel, cs);
+
+		secureSubjectTextField = new JTextField(13);
+		cs.gridx = 1;
+		cs.gridy = 2;
+		cs.gridwidth = 3;
+		cs.gridheight = 1;
+		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 100.0;
+		cs.insets = new Insets(5, 5, 5, 5);
+		cs.anchor = GridBagConstraints.WEST;
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		writePanel.add(secureSubjectTextField, cs);
+
+		secureEmailContentText = new JTextArea("Enter your email body ...", 15, 25);//email content
+		secureEmailContentText.setEditable(true);
+		secureEmailContentText.setFont(new Font("Serif", Font.PLAIN, 30));
+		secureEmailContentText.setLineWrap(true);
+		secureJSPForBody = new JScrollPane(secureEmailContentText, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		cs.gridx = 0;
+		cs.gridy = 3;
+		//cs.gridwidth = 1;
+		//cs.gridheight = 1;
+		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 100.0;
+		cs.insets = new Insets(5, 5, 5, 5);
+		cs.fill = GridBagConstraints.NONE;
+		writePanel.add(secureJSPForBody, cs);
+
+		secureSendButton.setFont(new Font("Serif", Font.PLAIN, 25));
+		secureDiscardButton.setFont(new Font("Serif", Font.PLAIN, 25));
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.add(secureSendButton);
+		buttonPanel.add(secureDiscardButton);
+		cs.gridx = 0;
+		cs.gridy = 4;
+		cs.gridwidth = 3;
+		cs.gridheight = 1;
+		cs.weightx = 100.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 100.0;
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		writePanel.add(buttonPanel, cs);
+		
+		mainPanel.add(writePanel);
+		secureWriteFrame.add(mainPanel);
+		secureWriteFrame.setResizable(false);
+		secureWriteFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		secureWriteFrame.pack();
+		secureWriteFrame.repaint();
+		secureWriteFrame.setLocationRelativeTo(null);
+		secureWriteFrame.setVisible(true);
+	}
+	
 	public String getEmail(){
 		//get rid of any space in the username
 		return emailTextField.getText().replaceAll("\\s+","");
@@ -437,16 +595,56 @@ public class GUI extends JFrame{
 	public String getRecipient() {
 		return recipientTextField.getText();
 	}
+	
+	public String getSecureRecipient() {
+		return secureRecipientTextField.getText();
+	}
 
 	public void setRecipient(JTextField recipientTextField) {
 		this.recipientTextField = recipientTextField;
 	}
 
+	public void setSecureRecipient(JTextField secureRecipientTextField) {
+		this.secureRecipientTextField = secureRecipientTextField;
+	}
+	
 	public String getSubject() {
 		return subjectTextField.getText();
 	}
 
+	public String getSecureSubject() {
+		return secureSubjectTextField.getText();
+	}
+	
 	public void setSubject(JTextField subjectTextField) {
 		this.subjectTextField = subjectTextField;
+	}
+	
+	public void setSecureSubject(JTextField secureSubjectTextField) {
+		this.secureSubjectTextField = secureSubjectTextField;
+	}
+	
+	public JPanel getEmailPanel() {
+		return emailPanel;
+	}
+
+	public void setEmailPanel(JPanel emailPanel) {
+		this.emailPanel = emailPanel;
+	}
+
+	public String getEmailContentText() {
+		return emailContentText.getText();
+	}
+
+	public void setEmailContentText(JTextArea emailContentText) {
+		this.emailContentText = emailContentText;
+	}
+
+	public String getSecureEmailContentText() {
+		return secureEmailContentText.getText();
+	}
+
+	public void setSecureEmailContentText(JTextArea secureEmailContentText) {
+		this.secureEmailContentText = secureEmailContentText;
 	}
 }

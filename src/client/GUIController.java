@@ -215,7 +215,6 @@ public class GUIController implements ActionListener{
 			break;
 
 		case "Send":
-			BufferedWriter bw;
 			mailServer.setRecipient(myGui.getRecipient());
 			mailServer.setSubject(myGui.getSubject());
 			
@@ -223,16 +222,7 @@ public class GUIController implements ActionListener{
 			receiveEmail.setPassword(myGui.getPassword());
 			
 			try {
-				bw = new BufferedWriter(new FileWriter("plain-text.txt"));
-				myGui.emailContentText.write(bw);
-				//myGui.setEmailBodyTextArea();
-			} catch (IOException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			}
-
-			try {
-				mailServer.send(host);
+				mailServer.send(host, myGui.getEmailContentText());
 				myGui.setSendDebugTextArea();
 				JOptionPane.showMessageDialog(myGui.writeFrame, "Message sent!");
 			} catch (Exception e1) {
@@ -241,8 +231,39 @@ public class GUIController implements ActionListener{
 			}
 			break;
 
+		case "Secure Send":
+			BufferedWriter bw;
+			mailServer.setRecipient(myGui.getSecureRecipient());
+			mailServer.setSubject(myGui.getSecureSubject());
+			
+			receiveEmail.setUsername(myGui.getEmail());
+			receiveEmail.setPassword(myGui.getPassword());
+			
+			try {
+				bw = new BufferedWriter(new FileWriter("plain-text.txt"));
+				myGui.secureEmailContentText.write(bw);
+				//myGui.setEmailBodyTextArea();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			
+			try {
+				mailServer.encryptedSend(host);
+				myGui.setSecureSendDebugTextArea();;
+				JOptionPane.showMessageDialog(myGui.secureWriteFrame, "Message sent!");
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			break;
+			
 		case "Discard":
 			myGui.writeFrame.dispose();
+			break;
+			
+		case "Secure Discard":
+			myGui.secureWriteFrame.dispose();
 			break;
 			
 		case "Get New Messages":
@@ -289,6 +310,10 @@ public class GUIController implements ActionListener{
 			myGui.setWritePanel();
 			break;
 
+		case "Secure Write":
+			myGui.setSecureWritePanel();
+			break;
+			
 		case "Exit":
 			System.exit(0);
 			break;	
