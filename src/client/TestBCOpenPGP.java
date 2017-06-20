@@ -58,6 +58,7 @@ public class TestBCOpenPGP {
 		FileInputStream pubKeyIs = new FileInputStream(pubKeyFile);
 		FileOutputStream cipheredFileIs = new FileOutputStream(cipherTextFile);
 		PgpHelper.getInstance().encryptFile(cipheredFileIs, plainTextFile, PgpHelper.getInstance().readPublicKey(pubKeyIs), isArmored, integrityCheck);
+		//PgpHelper.getInstance().encrypt(input, PgpHelper.getInstance().readPublicKey(pubKeyIs), integrityCheck);
 		cipheredFileIs.close();
 		pubKeyIs.close();
 	}

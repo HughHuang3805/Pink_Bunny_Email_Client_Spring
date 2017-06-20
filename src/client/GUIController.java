@@ -295,7 +295,7 @@ public class GUIController implements ActionListener{
 
 			break;
 
-		case "Generate key pair":
+		case "Generate Key Pair":
 			TestBCOpenPGP x = new TestBCOpenPGP();
 			try {
 				x.genKeyPair();
