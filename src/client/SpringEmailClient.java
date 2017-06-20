@@ -2,6 +2,7 @@ package client;
 
 import java.io.IOException;
 
+
 public class SpringEmailClient {
 
 	public static void main(String[] args){
