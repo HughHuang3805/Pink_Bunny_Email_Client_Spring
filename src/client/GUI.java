@@ -86,14 +86,15 @@ public class GUI extends JFrame{
 		exitItem = new JMenuItem("Exit");
 		generateKeyPairItem = new JMenuItem("Generate key pair");
 
-		menuItems.add(getNewMessagesItem);//for adding actionlistener
+		//add items to a list for adding actionlistener
 		menuItems.add(writeItem);
+		menuItems.add(getNewMessagesItem);
 		menuItems.add(exitItem);
 		menuItems.add(generateKeyPairItem);
 
+		fileMenu.add(writeItem);
 		fileMenu.add(getNewMessagesItem);
 		//menu1.addSeparator();
-		fileMenu.add(writeItem);
 		fileMenu.addSeparator();
 		fileMenu.add(exitItem);
 		//menu1.setFont(new Font("DejaVu Sans Mono", Font.PLAIN, 14));
@@ -171,8 +172,8 @@ public class GUI extends JFrame{
 		emailPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
 
 		//create next and cancel button
-		nextButton.setFont(new Font("Serif", Font.PLAIN, 30));
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
+		nextButton.setFont(new Font("Serif", Font.PLAIN, 25));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 25));
 
 		buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(nextButton);
@@ -209,8 +210,8 @@ public class GUI extends JFrame{
 
 		passwordPanel.setBorder(new LineBorder(Color.GRAY));
 
-		signInButton.setFont(new Font("Serif", Font.PLAIN, 30));
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
+		signInButton.setFont(new Font("Serif", Font.PLAIN, 25));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 25));
 
 		buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(signInButton);
@@ -254,8 +255,8 @@ public class GUI extends JFrame{
 
 		yubikeyPanel.setBorder(new LineBorder(Color.GRAY));
 
-		verifyButton.setFont(new Font("Serif", Font.PLAIN, 30));
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 30));
+		verifyButton.setFont(new Font("Serif", Font.PLAIN, 25));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 25));
 
 		buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(verifyButton);
@@ -389,8 +390,8 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.NONE;
 		writePanel.add(jspForBody, cs);
 
-		sendButton.setFont(new Font("Serif", Font.PLAIN, 30));
-		discardButton.setFont(new Font("Serif", Font.PLAIN, 30));
+		sendButton.setFont(new Font("Serif", Font.PLAIN, 25));
+		discardButton.setFont(new Font("Serif", Font.PLAIN, 25));
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(sendButton);
 		buttonPanel.add(discardButton);

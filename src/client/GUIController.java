@@ -89,7 +89,7 @@ public class GUIController implements ActionListener{
 
 		case "Next":
 			email = myGui.getEmail();//get the email
-			host = email.substring(email.indexOf("@") + 1, email.indexOf("."));//see what kind of host the user is using
+			host = email.substring(email.indexOf("@") + 1, email.indexOf(".")).toLowerCase();//see what kind of host the user is using
 			smtpServer = smtpServers.get(host.toUpperCase());//check what smtp server it is using for that host
 			portNumber = portNumbers.get(host.toUpperCase());//check what port it is using for that host
 			if(smtpServer != null & portNumber != null){
@@ -144,22 +144,19 @@ public class GUIController implements ActionListener{
 			mailServer.setPW(myGui.getPassword());
 			try {
 				emailAuthenticated = mailServer.connect(host);//try to connect
+				System.out.println("Has yubikey: " + hasYubikey);
 				if(!emailAuthenticated)
 					JOptionPane.showMessageDialog(myGui, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
-			} catch (GeneralSecurityException e3) {
-				// TODO Auto-generated catch block
-				e3.printStackTrace();
-			}//first check to see if it is a correct email/password combo
-
-			try {//otp verification
-				System.out.println("Has yubikey: " + hasYubikey);
-				if(emailAuthenticated){//if the password and username are correct
+				else{
 					if(hasYubikey){
 						myGui.setYubikeyPanel();//set up yubikey panel
 					} else {//if this email doesnt have yubikey 
 						myGui.setWelcomeScreen();
 					}
 				}
+			} catch (GeneralSecurityException e3) {//first check to see if it is a correct email/password combo
+				// TODO Auto-generated catch block
+				e3.printStackTrace();
 			} catch (IllegalArgumentException iae){
 				JOptionPane.showMessageDialog(myGui, "Not a valid OTP(One-Time-Password) format.", "Error", JOptionPane.ERROR_MESSAGE);
 			} 
@@ -221,8 +218,10 @@ public class GUIController implements ActionListener{
 			BufferedWriter bw;
 			mailServer.setRecipient(myGui.getRecipient());
 			mailServer.setSubject(myGui.getSubject());
-			receiveEmail.setPassword(myGui.getPassword());
+			
 			receiveEmail.setUsername(myGui.getEmail());
+			receiveEmail.setPassword(myGui.getPassword());
+			
 			try {
 				bw = new BufferedWriter(new FileWriter("plain-text.txt"));
 				myGui.emailContentText.write(bw);
@@ -296,7 +295,6 @@ public class GUIController implements ActionListener{
 
 		default:
 			break;
-
 		}
 	}
 }
