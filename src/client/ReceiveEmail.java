@@ -2,6 +2,7 @@ package client;
 
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Scanner;
 
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -15,8 +16,8 @@ import javax.mail.internet.MimeBodyPart;
 
 public class ReceiveEmail{  
 
-	static String host = "imap.gmail.com";
-	String mailStoreType = "imap";  
+	private String host = "imap.gmail.com";
+	private String mailStoreType = "imap";  
 	private String username = "";  
 	private String password = "";
 	
@@ -45,9 +46,9 @@ public class ReceiveEmail{
 
 			//4) retrieve the messages from the folder in an array and print it  
 			Message[] messages = emailFolder.getMessages();  
-			for (int i = messages.length - 1; i > messages.length - 2 ; i--) {  
+			for (int i = messages.length - 1; i >= 0 ; i--) {  
 				Message message = messages[i];  
-				/*System.out.println("---------------------------------");  
+				System.out.println("---------------------------------");  
 				System.out.println("Email Number " + (i + 1));  
 				System.out.println("Subject: " + message.getSubject());  
 				System.out.println("From: " + message.getFrom()[0]);  
@@ -55,13 +56,13 @@ public class ReceiveEmail{
 				s = new Scanner(message.getInputStream()).useDelimiter("\\A");
 				String result = s.hasNext() ? s.next() : " ";
 				System.out.println(result);
-				encryptedEmail.println(result);  
-				encryptedEmail.close();
-				*/
-				getMultipart(message);
+				//encryptedEmail.println(result);  
+				//encryptedEmail.close();
+				
+				/*getMultipart(message);
 				TestBCOpenPGP x = new TestBCOpenPGP();
 				x.decrypt();//once the cipher-text.dat is downloaded, start to decrypt
-			}  
+*/			}  
 
 			//5) close the store and folder objects  
 			emailFolder.close(false);  
