@@ -66,7 +66,7 @@ public class GUI extends JFrame{
 		setEmailPanel();
 		//getContentPane().setBackground(new Color(51, 102, 255));
 		setLocationRelativeTo(null);
-		ImageIcon img = new ImageIcon("tomcat.png");
+		ImageIcon img = new ImageIcon("favicon.png");
 		setIconImage(img.getImage());
 		setVisible(true);
 	}
