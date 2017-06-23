@@ -3,7 +3,6 @@ package client;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Scanner;
-
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -14,11 +13,10 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.MimeBodyPart;
 
-import com.sun.mail.imap.IMAPStore;
-
 public class ReceiveEmail{  
 
 	private String host = "imap.gmail.com";
+	@SuppressWarnings("unused")
 	private String mailStoreType = "imap";  
 	private String username = "";  
 	private String password = "";
@@ -66,6 +64,7 @@ public class ReceiveEmail{
 		}
 	}*/
 	
+	@SuppressWarnings("resource")
 	public void receiveEmail() throws Exception {  
 		try {  
 			//1) get the session object  

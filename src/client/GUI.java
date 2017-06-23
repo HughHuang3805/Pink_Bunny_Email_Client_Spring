@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -13,7 +12,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -87,7 +85,7 @@ public class GUI extends JFrame{
 
 	public void setMenuItems(){
 		JMenuBar menuBar = new JMenuBar();
-		JMenuItem getNewMessagesItem, writeItem, exitItem, generateKeyPairItem, secureWriteItem, item6;
+		JMenuItem getNewMessagesItem, writeItem, exitItem, generateKeyPairItem, secureWriteItem;
 		fileMenu = new JMenu("File");
 		sourceMenu = new JMenu("Source"); 
 
