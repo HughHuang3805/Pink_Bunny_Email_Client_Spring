@@ -14,6 +14,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -65,6 +66,8 @@ public class GUI extends JFrame{
 		setEmailPanel();
 		//getContentPane().setBackground(new Color(51, 102, 255));
 		setLocationRelativeTo(null);
+		ImageIcon img = new ImageIcon("tomcat.png");
+		setIconImage(img.getImage());
 		setVisible(true);
 	}
 
