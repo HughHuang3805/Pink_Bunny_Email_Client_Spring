@@ -14,6 +14,7 @@ import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.mail.Message;
 import javax.mail.Session;
+import javax.mail.Store;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -70,6 +71,35 @@ public class SecureMailService {
 				message.getRecipients(Message.RecipientType.TO));
 		transport.close();
 	}
+	
+	/*public void send(String host, String messageContent) throws Exception{
+		Properties props = new Properties();
+		props.put("mail.imap.ssl.enable", "true"); // required for Gmail
+		props.put("mail.imap.auth.mechanisms", "XOAUTH2");
+		Session session = Session.getInstance(props);
+		Store store = session.getStore("imap");
+		store.connect("imap.gmail.com", SMTP_AUTH_USER, );
+		//props.put("mail.smtps.ssl.trust", "*");
+		//props.put("mail.smtps.quitwait", "false");
+
+		Session mailSession = Session.getDefaultInstance(props);
+		mailSession.setDebug(true);
+		PrintStream ps = new PrintStream(new File("debug.txt"));//output to debug.txt
+		mailSession.setDebugOut(ps);
+		Transport transport = mailSession.getTransport();
+
+		MimeMessage message = new MimeMessage(mailSession);
+		message.setSubject(getSubject());
+		message.setFrom(new InternetAddress(getUser()));
+		message.addRecipient(Message.RecipientType.TO,
+				new InternetAddress(getRecipient()));
+		message.setText(messageContent);
+		
+		transport.connect(SMTP_HOST_NAME, SMTP_HOST_PORT, SMTP_AUTH_USER, SMTP_AUTH_PWD);
+		transport.sendMessage(message,
+				message.getRecipients(Message.RecipientType.TO));
+		transport.close();
+	}*/
 	
 	public void send(String host, String messageContent) throws Exception{
 		Properties props = new Properties();

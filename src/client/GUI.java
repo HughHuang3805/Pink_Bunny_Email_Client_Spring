@@ -331,6 +331,8 @@ public class GUI extends JFrame{
 	public void setWritePanel(){//write email
 		writeFrame = new JFrame("Write: New Email");
 		writeFrame.setSize(1000, 800);
+		ImageIcon img = new ImageIcon("favicon.png");
+		writeFrame.setIconImage(img.getImage());
 		writeFrame.setVisible(true);
 		
 		JPanel mainPanel = new JPanel();
@@ -455,6 +457,8 @@ public class GUI extends JFrame{
 	public void setSecureWritePanel(){
 		secureWriteFrame = new JFrame("Secure Write: New Email");
 		secureWriteFrame.setSize(1000, 800);
+		ImageIcon img = new ImageIcon("favicon.png");
+		secureWriteFrame.setIconImage(img.getImage());
 		secureWriteFrame.setVisible(true);
 		
 		JPanel mainPanel = new JPanel();
