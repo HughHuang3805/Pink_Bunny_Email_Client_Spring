@@ -225,6 +225,10 @@ public class GUIController implements ActionListener{
 			}
 			break;
 
+		case "Add New Account":
+			myGui.setEmailPanel();
+			break;
+			
 		case "Secure Send":
 			BufferedWriter bw;
 			mailServer.setRecipient(myGui.getSecureRecipient());
