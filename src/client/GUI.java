@@ -61,7 +61,7 @@ public class GUI extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setMenuItems();
 		setLocationRelativeTo(null);
-		setEmailPanel();
+		//setEmailPanel();
 		//getContentPane().setBackground(new Color(51, 102, 255));
 		setLocationRelativeTo(null);
 		ImageIcon img = new ImageIcon("favicon.png");
@@ -85,10 +85,11 @@ public class GUI extends JFrame{
 
 	public void setMenuItems(){
 		JMenuBar menuBar = new JMenuBar();
-		JMenuItem getNewMessagesItem, writeItem, exitItem, generateKeyPairItem, secureWriteItem;
+		JMenuItem getNewMessagesItem, writeItem, exitItem, generateKeyPairItem, secureWriteItem, addNewAccountItem;
 		fileMenu = new JMenu("File");
 		sourceMenu = new JMenu("Source"); 
 
+		addNewAccountItem = new JMenuItem("Add New Account");
 		getNewMessagesItem = new JMenuItem("Get New Messages");
 		writeItem = new JMenuItem("Write");
 		writeItem.setToolTipText("Send Emails Un-Encrypted");
@@ -103,10 +104,15 @@ public class GUI extends JFrame{
 		menuItems.add(exitItem);
 		menuItems.add(generateKeyPairItem);
 		menuItems.add(secureWriteItem);
-
+		menuItems.add(addNewAccountItem);
+		
+		fileMenu.add(addNewAccountItem);
 		fileMenu.add(secureWriteItem);
+		secureWriteItem.setEnabled(false);
 		fileMenu.add(writeItem);
+		writeItem.setEnabled(false);
 		fileMenu.add(getNewMessagesItem);
+		getNewMessagesItem.setEnabled(false);
 		//menu1.addSeparator();
 		fileMenu.addSeparator();
 		fileMenu.add(exitItem);
@@ -117,7 +123,7 @@ public class GUI extends JFrame{
 		menuBar.add(fileMenu);
 		menuBar.add(sourceMenu);
 
-		fileMenu.setEnabled(false);
+		fileMenu.setEnabled(true);
 		sourceMenu.setEnabled(false);
 		setJMenuBar(menuBar);
 	}
