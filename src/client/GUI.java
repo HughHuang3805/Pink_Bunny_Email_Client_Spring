@@ -48,7 +48,7 @@ public class GUI extends JFrame{
 	JTextField secureEmailTextField, secureSenderTextField, secureRecipientTextField, secureSubjectTextField;
 	JPasswordField passwordText, yubikeyText;
 	JScrollPane jsp;
-	JFrame writeFrame, secureWriteFrame;
+	JFrame writeFrame, secureWriteFrame, emailFrame, passwordFrame, yubikeyFrame;
 	JMenu fileMenu, sourceMenu;
 	JTextArea emailContentText;
 	JTextArea secureEmailContentText;
@@ -187,7 +187,7 @@ public class GUI extends JFrame{
 	}
 
 	public void setEmailPanel(){//ask for email on emailPanel
-
+		emailFrame = new JFrame("Email");
 		emailPanel.setLayout(new GridBagLayout());
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 		cs.fill = GridBagConstraints.HORIZONTAL;
@@ -222,13 +222,15 @@ public class GUI extends JFrame{
 		buttonPanel.add(cancelButton);
 
 		//the default button that will be clicked when press "enter"
-		getRootPane().setDefaultButton(nextButton);
-		add(emailPanel, BorderLayout.CENTER);
-		add(buttonPanel, BorderLayout.PAGE_END);
-
-		pack(); //let layout managers in charge of the frame size
-		setResizable(false);
-		setVisible(true);
+		emailFrame.getRootPane().setDefaultButton(nextButton);
+		emailFrame.add(emailPanel, BorderLayout.CENTER);
+		emailFrame.add(buttonPanel, BorderLayout.PAGE_END);
+		
+		emailFrame.pack(); //let layout managers in charge of the frame size
+		emailFrame.setResizable(false);
+		emailFrame.setVisible(true);
+		emailFrame.setLocationRelativeTo(null);
+		//add(emailFrame);
 	}
 
 	public void setPasswordPanel(){//ask for password on passwordPanel
