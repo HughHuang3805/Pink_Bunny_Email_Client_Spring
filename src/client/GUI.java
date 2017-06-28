@@ -54,7 +54,7 @@ public class GUI extends JFrame{
 	JTextArea secureEmailContentText;
 	JScrollPane jspForBody;
 	JScrollPane secureJSPForBody;
-	
+
 	public GUI(){
 		setTitle("Pink Bunny E-mail Client");
 		setSize(1250, 800);
@@ -105,7 +105,7 @@ public class GUI extends JFrame{
 		menuItems.add(generateKeyPairItem);
 		menuItems.add(secureWriteItem);
 		menuItems.add(addNewAccountItem);
-		
+
 		fileMenu.add(addNewAccountItem);
 		fileMenu.add(secureWriteItem);
 		secureWriteItem.setEnabled(false);
@@ -177,7 +177,7 @@ public class GUI extends JFrame{
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void setReceivedEmailTextArea(String message){
 		emailContentText.setText(message);
 		emailContentText.setEditable(false);
@@ -187,49 +187,54 @@ public class GUI extends JFrame{
 	}
 
 	public void setEmailPanel(){//ask for email on emailPanel
-		emailFrame = new JFrame("Email");
-		emailPanel.setLayout(new GridBagLayout());
-		GridBagConstraints cs = new GridBagConstraints();//constraints
-		cs.fill = GridBagConstraints.HORIZONTAL;
+		if(emailFrame == null){
+			emailFrame = new JFrame("Email");
+			emailPanel.setLayout(new GridBagLayout());
+			GridBagConstraints cs = new GridBagConstraints();//constraints
+			cs.fill = GridBagConstraints.HORIZONTAL;
 
-		//Email label and email textfield
-		JLabel emailLabel = new JLabel("Email: ");
-		emailLabel.setFont(new Font("Serif", Font.PLAIN, 40));
-		cs.gridx = 0;//position in tje column
-		cs.gridy = 0;//position in the row
-		cs.gridwidth = 1;
-		cs.weightx = 1.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
-		cs.weighty = 0;
-		emailPanel.add(emailLabel, cs);
+			//Email label and email textfield
+			JLabel emailLabel = new JLabel("Email: ");
+			emailLabel.setFont(new Font("Serif", Font.PLAIN, 40));
+			cs.gridx = 0;//position in tje column
+			cs.gridy = 0;//position in the row
+			cs.gridwidth = 1;
+			cs.weightx = 1.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+			cs.weighty = 0;
+			emailPanel.add(emailLabel, cs);
 
-		emailTextField = new JTextField(13);
-		emailTextField.setFont(new Font("Serif", Font.PLAIN, 40));
-		cs.gridx = 1;
-		cs.gridy = 0;
-		cs.gridwidth = 2;
-		cs.weightx = 1.0;
-		cs.weighty = 0;
-		emailPanel.add(emailTextField, cs);
+			emailTextField = new JTextField(13);
+			emailTextField.setFont(new Font("Serif", Font.PLAIN, 40));
+			cs.gridx = 1;
+			cs.gridy = 0;
+			cs.gridwidth = 2;
+			cs.weightx = 1.0;
+			cs.weighty = 0;
+			emailPanel.add(emailTextField, cs);
 
-		emailPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
+			emailPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
 
-		//create next and cancel button
-		nextButton.setFont(new Font("Serif", Font.PLAIN, 25));
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 25));
+			//create next and cancel button
+			nextButton.setFont(new Font("Serif", Font.PLAIN, 25));
+			cancelButton.setFont(new Font("Serif", Font.PLAIN, 25));
 
-		buttonPanel = new JPanel();//create a panel for the buttons
-		buttonPanel.add(nextButton);
-		buttonPanel.add(cancelButton);
+			buttonPanel = new JPanel();//create a panel for the buttons
+			buttonPanel.add(nextButton);
+			buttonPanel.add(cancelButton);
 
-		//the default button that will be clicked when press "enter"
-		emailFrame.getRootPane().setDefaultButton(nextButton);
-		emailFrame.add(emailPanel, BorderLayout.CENTER);
-		emailFrame.add(buttonPanel, BorderLayout.PAGE_END);
-		
-		emailFrame.pack(); //let layout managers in charge of the frame size
-		emailFrame.setResizable(false);
-		emailFrame.setVisible(true);
-		emailFrame.setLocationRelativeTo(null);
+			//the default button that will be clicked when press "enter"
+			emailFrame.getRootPane().setDefaultButton(nextButton);
+			emailFrame.add(emailPanel, BorderLayout.CENTER);
+			emailFrame.add(buttonPanel, BorderLayout.PAGE_END);
+			emailFrame.setDefaultCloseOperation(emailFrame.DISPOSE_ON_CLOSE);
+			emailFrame.pack(); //let layout managers in charge of the frame size
+			emailFrame.setResizable(false);
+			emailFrame.setVisible(true);
+			emailFrame.setLocationRelativeTo(null);
+		} else{
+			emailFrame.getRootPane().setDefaultButton(nextButton);
+			emailFrame.setVisible(true);
+		}
 		//add(emailFrame);
 	}
 
@@ -340,11 +345,11 @@ public class GUI extends JFrame{
 		ImageIcon img = new ImageIcon("favicon.png");
 		writeFrame.setIconImage(img.getImage());
 		writeFrame.setVisible(true);
-		
+
 		JPanel mainPanel = new JPanel();
 		JPanel writePanel = new JPanel();
 		writePanel.setLayout(new GridBagLayout());
-		
+
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 
 		JLabel senderLabel = new JLabel("Sender: ");//sender
@@ -372,7 +377,7 @@ public class GUI extends JFrame{
 		cs.anchor = GridBagConstraints.WEST;
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		writePanel.add(senderTextField, cs);
-		
+
 		JLabel recipientLabel = new JLabel("Recipient: ");//recipient
 		cs.gridx = 0;//position in the column
 		cs.gridy = 1;//position in the row
@@ -396,7 +401,7 @@ public class GUI extends JFrame{
 		cs.anchor = GridBagConstraints.WEST;
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		writePanel.add(recipientTextField, cs);
-		
+
 		JLabel subjectLabel = new JLabel("Subject: ");//subject
 		cs.gridx = 0;//position in the column
 		cs.gridy = 2;//position in the row
@@ -449,7 +454,7 @@ public class GUI extends JFrame{
 		cs.weighty = 100.0;
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		writePanel.add(buttonPanel, cs);
-		
+
 		mainPanel.add(writePanel);
 		writeFrame.add(mainPanel);
 		writeFrame.setResizable(false);
@@ -466,11 +471,11 @@ public class GUI extends JFrame{
 		ImageIcon img = new ImageIcon("favicon.png");
 		secureWriteFrame.setIconImage(img.getImage());
 		secureWriteFrame.setVisible(true);
-		
+
 		JPanel mainPanel = new JPanel();
 		JPanel writePanel = new JPanel();
 		writePanel.setLayout(new GridBagLayout());
-		
+
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 
 		JLabel senderLabel = new JLabel("Sender: ");//sender
@@ -498,7 +503,7 @@ public class GUI extends JFrame{
 		cs.anchor = GridBagConstraints.WEST;
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		writePanel.add(secureSenderTextField, cs);
-		
+
 		JLabel recipientLabel = new JLabel("Recipient: ");//recipient
 		cs.gridx = 0;//position in the column
 		cs.gridy = 1;//position in the row
@@ -522,7 +527,7 @@ public class GUI extends JFrame{
 		cs.anchor = GridBagConstraints.WEST;
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		writePanel.add(secureRecipientTextField, cs);
-		
+
 		JLabel subjectLabel = new JLabel("Subject: ");//subject
 		cs.gridx = 0;//position in the column
 		cs.gridy = 2;//position in the row
@@ -575,7 +580,7 @@ public class GUI extends JFrame{
 		cs.weighty = 100.0;
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		writePanel.add(buttonPanel, cs);
-		
+
 		mainPanel.add(writePanel);
 		secureWriteFrame.add(mainPanel);
 		secureWriteFrame.setResizable(false);
@@ -585,7 +590,7 @@ public class GUI extends JFrame{
 		secureWriteFrame.setLocationRelativeTo(null);
 		secureWriteFrame.setVisible(true);
 	}
-	
+
 	public String getEmail(){
 		//get rid of any space in the username
 		return emailTextField.getText().replaceAll("\\s+","");
@@ -608,7 +613,7 @@ public class GUI extends JFrame{
 	public String getRecipient() {
 		return recipientTextField.getText();
 	}
-	
+
 	public String getSecureRecipient() {
 		return secureRecipientTextField.getText();
 	}
@@ -620,7 +625,7 @@ public class GUI extends JFrame{
 	public void setSecureRecipient(JTextField secureRecipientTextField) {
 		this.secureRecipientTextField = secureRecipientTextField;
 	}
-	
+
 	public String getSubject() {
 		return subjectTextField.getText();
 	}
@@ -628,15 +633,15 @@ public class GUI extends JFrame{
 	public String getSecureSubject() {
 		return secureSubjectTextField.getText();
 	}
-	
+
 	public void setSubject(JTextField subjectTextField) {
 		this.subjectTextField = subjectTextField;
 	}
-	
+
 	public void setSecureSubject(JTextField secureSubjectTextField) {
 		this.secureSubjectTextField = secureSubjectTextField;
 	}
-	
+
 	public JPanel getEmailPanel() {
 		return emailPanel;
 	}

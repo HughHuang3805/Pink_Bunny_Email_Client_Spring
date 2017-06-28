@@ -205,7 +205,7 @@ public class GUIController implements ActionListener{
 			break;
 
 		case "Cancel":
-			myGui.dispose();
+			myGui.emailFrame.dispose();
 			break;
 
 		case "Send":
