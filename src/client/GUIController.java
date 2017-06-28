@@ -122,19 +122,19 @@ public class GUIController implements ActionListener{
 					myGui.emailPanel.setVisible(false);//fisrt hide email panel
 					myGui.buttonPanel.setVisible(false);//hide button panel
 					myGui.buttonPanel.removeAll();//remove whatever is in button panel
-					myGui.emailFrame.repaint();//repaint the gui
+					myGui.loginFrame.repaint();//repaint the gui
 
 					myGui.setPasswordPanel();//set up password panel
 					myGui.passwordPanel.setVisible(true);//make the password panel visible
-					myGui.emailFrame.repaint();//repaint the gui
+					myGui.loginFrame.repaint();//repaint the gui
 
 					break;
 				} else {
-					JOptionPane.showMessageDialog(myGui.emailFrame, "Email not supported, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(myGui.loginFrame, "Email not supported, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
 					break;
 				}
 			} else {
-				JOptionPane.showMessageDialog(myGui.emailFrame, "Please enter an email.", "oops ...", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(myGui.loginFrame, "Please enter an email.", "oops ...", JOptionPane.WARNING_MESSAGE);
 				break;
 			}
 
@@ -145,7 +145,7 @@ public class GUIController implements ActionListener{
 				emailAuthenticated = mailServer.connect(host);//try to connect
 				System.out.println("Has yubikey: " + hasYubikey);
 				if(!emailAuthenticated)
-					JOptionPane.showMessageDialog(myGui.emailFrame, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(myGui.loginFrame, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
 				else{
 					if(hasYubikey){
 						myGui.setYubikeyPanel();//set up yubikey panel
@@ -157,7 +157,7 @@ public class GUIController implements ActionListener{
 				// TODO Auto-generated catch block
 				e3.printStackTrace();
 			} catch (IllegalArgumentException iae){
-				JOptionPane.showMessageDialog(myGui.emailFrame, "Not a valid OTP(One-Time-Password) format.", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(myGui.loginFrame, "Not a valid OTP(One-Time-Password) format.", "Error", JOptionPane.ERROR_MESSAGE);
 			} 
 			break;
 
@@ -183,7 +183,7 @@ public class GUIController implements ActionListener{
 				}
 				counter++;
 				if(counter == 5){//if verification is not successful, quit the program
-					JOptionPane.showMessageDialog(myGui, "Error encountered when verifying, please restart program.", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(myGui.loginFrame, "Error encountered when verifying, please restart program.", "Error", JOptionPane.ERROR_MESSAGE);
 					myGui.dispose();
 					System.exit(0);
 					break;
@@ -192,25 +192,26 @@ public class GUIController implements ActionListener{
 			if(verificationString.charAt(0) == '1'){//check if email and yubikey binding is correct
 				yubikeyAuthenticated = true;
 			} else{
-				JOptionPane.showMessageDialog(myGui, "Not a valid YubiKey.", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(myGui.loginFrame, "Not a valid YubiKey.", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 
 			if(yubikeyAuthenticated && verificationString.charAt(1) == '1'){//check if binding is correct and correct OTP
 				otpAuthenticated = true;
-				JOptionPane.showMessageDialog(myGui, "Successfully verified OTP(One-Time-Password)", "Succeed", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(myGui.loginFrame, "Successfully verified OTP(One-Time-Password)", "Succeed", JOptionPane.INFORMATION_MESSAGE);
 			} else{
-				JOptionPane.showMessageDialog(myGui, "Failed to verify OTP(One-Time-Password)", "Failed", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(myGui.loginFrame, "Failed to verify OTP(One-Time-Password)", "Failed", JOptionPane.ERROR_MESSAGE);
 			}
 			System.out.println(verificationString);
 			System.out.println(yubikeyAuthenticated);
 			System.out.println(otpAuthenticated);
 			if(yubikeyAuthenticated && otpAuthenticated){//if everything is correct, then show messages and allow log in
+				myGui.enableAllMenuItems();
 				myGui.setWelcomeScreen();
 			} 
 			break;
 
 		case "Cancel":
-			myGui.emailFrame.dispose();
+			myGui.loginFrame.dispose();
 			break;
 
 		case "Send":

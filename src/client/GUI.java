@@ -31,10 +31,10 @@ public class GUI extends JFrame{
 	private static final long serialVersionUID = 1L;
 	Vector<JMenuItem> menuItems = new Vector<JMenuItem>();
 	JTextArea textArea = new JTextArea();
-	JPanel emailPanel = new JPanel();
-	JPanel passwordPanel = new JPanel();
-	JPanel yubikeyPanel = new JPanel();
-	JPanel textAreaPanel = new JPanel();;
+	JPanel emailPanel;
+	JPanel passwordPanel;
+	JPanel yubikeyPanel;
+	JPanel textAreaPanel = new JPanel();
 	JPanel buttonPanel;
 	JButton signInButton = new JButton("Sign-in");
 	JButton cancelButton = new JButton("Cancel");
@@ -48,7 +48,7 @@ public class GUI extends JFrame{
 	JTextField secureEmailTextField, secureSenderTextField, secureRecipientTextField, secureSubjectTextField;
 	JPasswordField passwordText, yubikeyText;
 	JScrollPane jsp;
-	JFrame writeFrame, secureWriteFrame, emailFrame, passwordFrame, yubikeyFrame;
+	JFrame writeFrame, secureWriteFrame, loginFrame;
 	JMenu fileMenu, sourceMenu;
 	JTextArea emailContentText;
 	JTextArea secureEmailContentText;
@@ -128,6 +128,11 @@ public class GUI extends JFrame{
 		setJMenuBar(menuBar);
 	}
 
+	public void enableAllMenuItems(){
+		for(JMenuItem x : menuItems)
+			x.setEnabled(true);
+	}
+
 	public void clearInsertPanel(){
 		textAreaPanel.setVisible(false);
 	}
@@ -187,58 +192,55 @@ public class GUI extends JFrame{
 	}
 
 	public void setEmailPanel(){//ask for email on emailPanel
-		if(emailFrame == null){
-			emailFrame = new JFrame("Email");
-			emailPanel.setLayout(new GridBagLayout());
-			GridBagConstraints cs = new GridBagConstraints();//constraints
-			cs.fill = GridBagConstraints.HORIZONTAL;
+		loginFrame = null;
+		loginFrame = new JFrame("Email");
+		emailPanel = new JPanel();
+		emailPanel.setLayout(new GridBagLayout());
+		GridBagConstraints cs = new GridBagConstraints();//constraints
+		cs.fill = GridBagConstraints.HORIZONTAL;
 
-			//Email label and email textfield
-			JLabel emailLabel = new JLabel("Email: ");
-			emailLabel.setFont(new Font("Serif", Font.PLAIN, 40));
-			cs.gridx = 0;//position in tje column
-			cs.gridy = 0;//position in the row
-			cs.gridwidth = 1;
-			cs.weightx = 1.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
-			cs.weighty = 0;
-			emailPanel.add(emailLabel, cs);
+		//Email label and email textfield
+		JLabel emailLabel = new JLabel("Email: ");
+		emailLabel.setFont(new Font("Serif", Font.PLAIN, 40));
+		cs.gridx = 0;//position in tje column
+		cs.gridy = 0;//position in the row
+		cs.gridwidth = 1;
+		cs.weightx = 1.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 0;
+		emailPanel.add(emailLabel, cs);
 
-			emailTextField = new JTextField(13);
-			emailTextField.setFont(new Font("Serif", Font.PLAIN, 40));
-			cs.gridx = 1;
-			cs.gridy = 0;
-			cs.gridwidth = 2;
-			cs.weightx = 1.0;
-			cs.weighty = 0;
-			emailPanel.add(emailTextField, cs);
+		emailTextField = new JTextField(13);
+		emailTextField.setFont(new Font("Serif", Font.PLAIN, 40));
+		cs.gridx = 1;
+		cs.gridy = 0;
+		cs.gridwidth = 2;
+		cs.weightx = 1.0;
+		cs.weighty = 0;
+		emailPanel.add(emailTextField, cs);
 
-			emailPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
+		emailPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
 
-			//create next and cancel button
-			nextButton.setFont(new Font("Serif", Font.PLAIN, 25));
-			cancelButton.setFont(new Font("Serif", Font.PLAIN, 25));
+		//create next and cancel button
+		nextButton.setFont(new Font("Serif", Font.PLAIN, 25));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 25));
 
-			buttonPanel = new JPanel();//create a panel for the buttons
-			buttonPanel.add(nextButton);
-			buttonPanel.add(cancelButton);
+		buttonPanel = new JPanel();//create a panel for the buttons
+		buttonPanel.add(nextButton);
+		buttonPanel.add(cancelButton);
 
-			//the default button that will be clicked when press "enter"
-			emailFrame.getRootPane().setDefaultButton(nextButton);
-			emailFrame.add(emailPanel, BorderLayout.CENTER);
-			emailFrame.add(buttonPanel, BorderLayout.PAGE_END);
-			emailFrame.setDefaultCloseOperation(emailFrame.DISPOSE_ON_CLOSE);
-			emailFrame.pack(); //let layout managers in charge of the frame size
-			emailFrame.setResizable(false);
-			emailFrame.setVisible(true);
-			emailFrame.setLocationRelativeTo(null);
-		} else{
-			emailFrame.getRootPane().setDefaultButton(nextButton);
-			emailFrame.setVisible(true);
-		}
+		//the default button that will be clicked when press "enter"
+		loginFrame.getRootPane().setDefaultButton(nextButton);
+		loginFrame.add(emailPanel, BorderLayout.CENTER);
+		loginFrame.add(buttonPanel, BorderLayout.PAGE_END);
+		loginFrame.pack(); //let layout managers in charge of the frame size
+		loginFrame.setResizable(false);
+		loginFrame.setVisible(true);
+		loginFrame.setLocationRelativeTo(null);
 		//add(emailFrame);
 	}
 
 	public void setPasswordPanel(){//ask for password on passwordPanel
+		passwordPanel = new JPanel();
 		passwordPanel.setLayout(new GridBagLayout());
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 		cs.fill = GridBagConstraints.HORIZONTAL;
@@ -266,16 +268,17 @@ public class GUI extends JFrame{
 		buttonPanel.add(signInButton);
 		buttonPanel.add(cancelButton);
 
-		emailFrame.getRootPane().setDefaultButton(signInButton);
-		emailFrame.add(passwordPanel, BorderLayout.CENTER);
-		emailFrame.add(buttonPanel, BorderLayout.PAGE_END);
+		loginFrame.getRootPane().setDefaultButton(signInButton);
+		loginFrame.add(passwordPanel, BorderLayout.CENTER);
+		loginFrame.add(buttonPanel, BorderLayout.PAGE_END);
 
-		emailFrame.pack(); //let layout managers in charge of the frame size
-		emailFrame.setResizable(false);
-		emailFrame.setVisible(true);
+		loginFrame.pack(); //let layout managers in charge of the frame size
+		loginFrame.setResizable(false);
+		loginFrame.setVisible(true);
 	}
 
 	public void setYubikeyPanel(){//ask for yubikey on yubikeyPanel
+		yubikeyPanel = new JPanel();
 		passwordPanel.setVisible(false);//fisrt hide password panel
 		buttonPanel.setVisible(false);//hide button panel
 		buttonPanel.removeAll();//remove whatever is in button panel
@@ -311,19 +314,18 @@ public class GUI extends JFrame{
 		buttonPanel.add(verifyButton);
 		buttonPanel.add(cancelButton);
 
-		getRootPane().setDefaultButton(verifyButton);
-		add(yubikeyPanel, BorderLayout.CENTER);
-		add(buttonPanel, BorderLayout.PAGE_END);
+		loginFrame.getRootPane().setDefaultButton(verifyButton);
+		loginFrame.add(yubikeyPanel, BorderLayout.CENTER);
+		loginFrame.add(buttonPanel, BorderLayout.PAGE_END);
 
-		pack(); //let layout managers in charge of the frame size
-		setResizable(false);
-		setVisible(true);
+		loginFrame.pack(); //let layout managers in charge of the frame size
+		loginFrame.setResizable(false);
+		loginFrame.setVisible(true);
 	}
 
 	public void setWelcomeScreen(){
-		passwordPanel.setVisible(false);
-		yubikeyPanel.setVisible(false);
-		buttonPanel.setVisible(false);//hide button panel
+		loginFrame.setVisible(false);
+		loginFrame = null;
 		buttonPanel.removeAll();//remove whatever is in button panel
 		repaint();
 		setSize(1250, 800);
@@ -365,7 +367,7 @@ public class GUI extends JFrame{
 		writePanel.add(senderLabel, cs);
 
 		senderTextField = new JTextField(13);
-		senderTextField.setText(this.getEmail());
+		senderTextField.setText(getEmail());
 		senderTextField.setEditable(false);
 		cs.gridx = 1;
 		cs.gridy = 0;
