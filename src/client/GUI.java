@@ -266,13 +266,13 @@ public class GUI extends JFrame{
 		buttonPanel.add(signInButton);
 		buttonPanel.add(cancelButton);
 
-		getRootPane().setDefaultButton(signInButton);
-		add(passwordPanel, BorderLayout.CENTER);
-		add(buttonPanel, BorderLayout.PAGE_END);
+		emailFrame.getRootPane().setDefaultButton(signInButton);
+		emailFrame.add(passwordPanel, BorderLayout.CENTER);
+		emailFrame.add(buttonPanel, BorderLayout.PAGE_END);
 
-		pack(); //let layout managers in charge of the frame size
-		setResizable(false);
-		setVisible(true);
+		emailFrame.pack(); //let layout managers in charge of the frame size
+		emailFrame.setResizable(false);
+		emailFrame.setVisible(true);
 	}
 
 	public void setYubikeyPanel(){//ask for yubikey on yubikeyPanel

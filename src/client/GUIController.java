@@ -83,53 +83,58 @@ public class GUIController implements ActionListener{
 
 		case "Next":
 			email = myGui.getEmail();//get the email
-			host = email.substring(email.indexOf("@") + 1, email.indexOf(".")).toLowerCase();//see what kind of host the user is using
-			smtpServer = smtpServers.get(host.toUpperCase());//check what smtp server it is using for that host
-			portNumber = portNumbers.get(host.toUpperCase());//check what port it is using for that host
-			if(smtpServer != null & portNumber != null){
-				mailServer.setHostName(smtpServer);//set smtp server
-				mailServer.setPort(Integer.parseInt(portNumber));//set port number
-				mailServer.setUser(email);//set user email
-				System.out.println(smtpServer);
-				System.out.println(portNumber);
-				System.out.println(host);
-				System.out.println(email);
-				//used to check if this email has a yubikey attached to it
-				HttpClient yubikeyClient = HttpClients.createDefault();
-				//https://boiling-fjord-84786.herokuapp.com/yubikey
-				HttpPost yubikeyPost = new HttpPost("https://boiling-fjord-84786.herokuapp.com/yubikey");
-				List<NameValuePair> parameters = new ArrayList<NameValuePair>();
-				parameters.add(new BasicNameValuePair("Email", email));
+			if(email != null && !email.equals("")){
+				host = email.substring(email.indexOf("@") + 1, email.indexOf(".")).toLowerCase();//see what kind of host the user is using
+				smtpServer = smtpServers.get(host.toUpperCase());//check what smtp server it is using for that host
+				portNumber = portNumbers.get(host.toUpperCase());//check what port it is using for that host
+				if(smtpServer != null & portNumber != null){
+					mailServer.setHostName(smtpServer);//set smtp server
+					mailServer.setPort(Integer.parseInt(portNumber));//set port number
+					mailServer.setUser(email);//set user email
+					System.out.println(smtpServer);
+					System.out.println(portNumber);
+					System.out.println(host);
+					System.out.println(email);
+					//used to check if this email has a yubikey attached to it
+					HttpClient yubikeyClient = HttpClients.createDefault();
+					//https://boiling-fjord-84786.herokuapp.com/yubikey
+					HttpPost yubikeyPost = new HttpPost("https://boiling-fjord-84786.herokuapp.com/yubikey");
+					List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+					parameters.add(new BasicNameValuePair("Email", email));
 
-				try{
-					yubikeyPost.setEntity(new UrlEncodedFormEntity(parameters));//email and yubikey POST as the body of request
-					HttpResponse response1 = yubikeyClient.execute(yubikeyPost);//wait for a response from the server
-					BufferedReader rd1 = new BufferedReader(new InputStreamReader(response1.getEntity().getContent()));//reader for the response
-					String hasYubikeyString = rd1.readLine();//read the response
-					System.out.println(hasYubikeyString);
-					if(hasYubikeyString != null){
-						if(hasYubikeyString.charAt(0) == '0')//if response is 0, false
-							hasYubikey = false;
-						else if(hasYubikeyString.charAt(0) == '1')//if response is 1, true
-							hasYubikey = true;
+					try{
+						yubikeyPost.setEntity(new UrlEncodedFormEntity(parameters));//email and yubikey POST as the body of request
+						HttpResponse response1 = yubikeyClient.execute(yubikeyPost);//wait for a response from the server
+						BufferedReader rd1 = new BufferedReader(new InputStreamReader(response1.getEntity().getContent()));//reader for the response
+						String hasYubikeyString = rd1.readLine();//read the response
+						System.out.println(hasYubikeyString);
+						if(hasYubikeyString != null){
+							if(hasYubikeyString.charAt(0) == '0')//if response is 0, false
+								hasYubikey = false;
+							else if(hasYubikeyString.charAt(0) == '1')//if response is 1, true
+								hasYubikey = true;
+						}
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+
+					myGui.emailPanel.setVisible(false);//fisrt hide email panel
+					myGui.buttonPanel.setVisible(false);//hide button panel
+					myGui.buttonPanel.removeAll();//remove whatever is in button panel
+					myGui.emailFrame.repaint();//repaint the gui
+
+					myGui.setPasswordPanel();//set up password panel
+					myGui.passwordPanel.setVisible(true);//make the password panel visible
+					myGui.emailFrame.repaint();//repaint the gui
+
+					break;
+				} else {
+					JOptionPane.showMessageDialog(myGui.emailFrame, "Email not supported, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
+					break;
 				}
-
-				myGui.emailPanel.setVisible(false);//fisrt hide email panel
-				myGui.buttonPanel.setVisible(false);//hide button panel
-				myGui.buttonPanel.removeAll();//remove whatever is in button panel
-				myGui.repaint();//repaint the gui
-
-				myGui.setPasswordPanel();//set up password panel
-				myGui.passwordPanel.setVisible(true);//make the password panel visible
-				myGui.repaint();//repaint the gui
-
-				break;
 			} else {
-				JOptionPane.showMessageDialog(myGui, "Email not supported, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(myGui.emailFrame, "Please enter an email.", "oops ...", JOptionPane.WARNING_MESSAGE);
 				break;
 			}
 
@@ -140,7 +145,7 @@ public class GUIController implements ActionListener{
 				emailAuthenticated = mailServer.connect(host);//try to connect
 				System.out.println("Has yubikey: " + hasYubikey);
 				if(!emailAuthenticated)
-					JOptionPane.showMessageDialog(myGui, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(myGui.emailFrame, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
 				else{
 					if(hasYubikey){
 						myGui.setYubikeyPanel();//set up yubikey panel
@@ -152,7 +157,7 @@ public class GUIController implements ActionListener{
 				// TODO Auto-generated catch block
 				e3.printStackTrace();
 			} catch (IllegalArgumentException iae){
-				JOptionPane.showMessageDialog(myGui, "Not a valid OTP(One-Time-Password) format.", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(myGui.emailFrame, "Not a valid OTP(One-Time-Password) format.", "Error", JOptionPane.ERROR_MESSAGE);
 			} 
 			break;
 
@@ -211,10 +216,10 @@ public class GUIController implements ActionListener{
 		case "Send":
 			mailServer.setRecipient(myGui.getRecipient());
 			mailServer.setSubject(myGui.getSubject());
-			
+
 			receiveEmail.setUsername(myGui.getEmail());
 			receiveEmail.setPassword(myGui.getPassword());
-			
+
 			try {
 				mailServer.send(host, myGui.getEmailContentText());
 				myGui.setSendDebugTextArea();
@@ -228,15 +233,15 @@ public class GUIController implements ActionListener{
 		case "Add New Account":
 			myGui.setEmailPanel();
 			break;
-			
+
 		case "Secure Send":
 			BufferedWriter bw;
 			mailServer.setRecipient(myGui.getSecureRecipient());
 			mailServer.setSubject(myGui.getSecureSubject());
-			
+
 			receiveEmail.setUsername(myGui.getEmail());
 			receiveEmail.setPassword(myGui.getPassword());
-			
+
 			try {
 				bw = new BufferedWriter(new FileWriter("plain-text.txt"));
 				myGui.secureEmailContentText.write(bw);
@@ -245,7 +250,7 @@ public class GUIController implements ActionListener{
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
 			}
-			
+
 			try {
 				mailServer.encryptedSend(host);
 				myGui.setSecureSendDebugTextArea();;
@@ -255,15 +260,15 @@ public class GUIController implements ActionListener{
 				e1.printStackTrace();
 			}
 			break;
-			
+
 		case "Discard":
 			myGui.writeFrame.dispose();
 			break;
-			
+
 		case "Secure Discard":
 			myGui.secureWriteFrame.dispose();
 			break;
-			
+
 		case "Get New Messages":
 			try {
 				receiveEmail.receiveEmail();
@@ -311,7 +316,7 @@ public class GUIController implements ActionListener{
 		case "Secure Write":
 			myGui.setSecureWritePanel();
 			break;
-			
+
 		case "Exit":
 			System.exit(0);
 			break;	
