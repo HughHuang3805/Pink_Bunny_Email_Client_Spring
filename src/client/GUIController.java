@@ -4,10 +4,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
@@ -17,7 +19,11 @@ import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
+import java.util.Vector;
+
 import javax.swing.JOptionPane;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -38,7 +44,9 @@ public class GUIController implements ActionListener{
 	private static String email = "";
 	private static String host = "";
 	private static boolean hasYubikey = false;
-	private final String fileName = "user.properties";
+	private static Vector<String> userEmails = new Vector<String>();
+	private final String fileName = "userconfig.properties";
+	private InputStream inputStream;
 	
 	private final static Hashtable<String, String> smtpServers = new Hashtable<String, String>() {/**
 	 * 
@@ -74,6 +82,37 @@ public class GUIController implements ActionListener{
 	public GUIController(GUI g) throws Exception{
 		myGui = g;
 		myGui.setButtonListener(this);
+		
+		/*Properties prop = new Properties();
+		OutputStream output = null;
+		output = new FileOutputStream(fileName);
+		prop.setProperty("email1", "pinkbunnychickenmarsala@gmail.com");
+		prop.setProperty("email2", "pinkbunnychickenmarsala@yahoo.com");
+		prop.setProperty("email3", "pinkbunnychickenmarsala@aol.com");
+		prop.store(output, null);
+		*/
+		
+		BufferedReader br = new BufferedReader(new FileReader(fileName));//just to see how many records there are
+		String line = br.readLine();
+		line = br.readLine();
+		int counter = 0;
+		while(line != null){
+			counter++;
+			line = br.readLine();
+		}
+		System.out.println(counter);
+		
+		Properties prop = new Properties();//get each of the email and store them in the userEmail vector
+		inputStream = new FileInputStream(fileName);
+		prop.load(inputStream);
+		String user;
+		if(inputStream != null){
+			for(int i = 1; i <= counter; i++){
+				user = prop.getProperty("email" + i);
+				System.out.println(user);
+				userEmails.add(user);
+			}
+		}
 	}
 
 	@Override
