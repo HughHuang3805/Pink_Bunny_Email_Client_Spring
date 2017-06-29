@@ -2,9 +2,11 @@ package client;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -24,6 +26,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
@@ -70,6 +73,7 @@ public class GUI extends JFrame{
 		setLocationRelativeTo(null);
 		ImageIcon img = new ImageIcon(imageFileName);
 		setIconImage(img.getImage());
+		setMainPanel();
 		setVisible(true);
 	}
 
@@ -191,7 +195,26 @@ public class GUI extends JFrame{
 		emailsPanel = new JPanel();
 		emailInboxPanel = new JPanel();
 		previewPanel = new JPanel();
+
+		mainPanel.setLayout(new GridLayout());
+		leftPanel.setLayout(new FlowLayout());
+		rightPanel.setLayout(new FlowLayout());
 		
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		JButton b1 = new JButton("hi");
+		JButton b2 = new JButton("hi");
+		leftPanel.add(b1);
+		leftPanel.setBorder(new LineBorder(Color.GRAY));
+		rightPanel.add(b2);
+		rightPanel.setBorder(new LineBorder(Color.GRAY));
+		splitPane.setRightComponent(b1);
+		splitPane.setLeftComponent(b2);
+		splitPane.setDividerSize(2);
+		//splitPane.setDividerLocation(0.75);
+		splitPane.setResizeWeight(0.20);
+		mainPanel.add(splitPane);
+		
+		add(mainPanel);
 		repaint();
 		revalidate();
 
