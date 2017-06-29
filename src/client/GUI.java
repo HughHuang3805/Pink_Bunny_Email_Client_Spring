@@ -377,9 +377,9 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.NONE;
 		writePanel.add(senderLabel, cs);
 
-		senderTextField = new JTextField(13);
+		/*senderTextField = new JTextField(13);
 		senderTextField.setText(getEmail());
-		senderTextField.setEditable(false);
+		senderTextField.setEditable(false);*/
 		cs.gridx = 1;
 		cs.gridy = 0;
 		cs.gridwidth = 2;
@@ -508,9 +508,9 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.NONE;
 		writePanel.add(senderLabel, cs);
 
-		secureSenderTextField = new JTextField(13);
+		/*secureSenderTextField = new JTextField(13);
 		secureSenderTextField.setText(this.getEmail());
-		secureSenderTextField.setEditable(false);
+		secureSenderTextField.setEditable(false);*/
 		cs.gridx = 1;
 		cs.gridy = 0;
 		cs.gridwidth = 2;
@@ -629,7 +629,7 @@ public class GUI extends JFrame{
 	}
 
 	public String getRecipient() {
-		return recipientTextField.getText();
+		return ((String) emailList.getSelectedItem());
 	}
 
 	public String getSecureRecipient() {
