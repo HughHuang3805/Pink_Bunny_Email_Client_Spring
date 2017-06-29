@@ -36,6 +36,7 @@ public class GUI extends JFrame{
 	JPanel yubikeyPanel;
 	JPanel textAreaPanel = new JPanel();
 	JPanel buttonPanel;
+	JPanel mainPanel;
 	JButton signInButton = new JButton("Sign-in");
 	JButton cancelButton = new JButton("Cancel");
 	JButton verifyButton = new JButton("Verify");
@@ -323,10 +324,13 @@ public class GUI extends JFrame{
 		loginFrame.setVisible(true);
 	}
 
-	public void setWelcomeScreen(){
+	public void setMainPanel(){
 		loginFrame.setVisible(false);
 		loginFrame = null;
 		buttonPanel.removeAll();//remove whatever is in button panel
+		
+		
+		
 		repaint();
 		setSize(1250, 800);
 		//setContentPane(new JLabel(new ImageIcon(ImageIO.read(new File("wallpaper.jpg")))));
