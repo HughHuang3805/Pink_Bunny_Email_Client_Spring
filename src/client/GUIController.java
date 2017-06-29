@@ -44,6 +44,7 @@ public class GUIController implements ActionListener{
 	private static String email = "";
 	private static String host = "";
 	private static boolean hasYubikey = false;
+	private static int counter = 0;
 	private static Vector<String> userEmails = new Vector<String>();
 	private final String fileName = "userconfig.properties";
 	private InputStream inputStream;
@@ -95,7 +96,6 @@ public class GUIController implements ActionListener{
 		BufferedReader br = new BufferedReader(new FileReader(fileName));//just to see how many records there are
 		String line = br.readLine();
 		line = br.readLine();
-		int counter = 0;
 		while(line != null){
 			counter++;
 			line = br.readLine();
@@ -352,11 +352,11 @@ public class GUIController implements ActionListener{
 			break;
 
 		case "Write":
-			myGui.setWritePanel();
+			myGui.setWritePanel(userEmails);
 			break;
 
 		case "Secure Write":
-			myGui.setSecureWritePanel();
+			myGui.setSecureWritePanel(userEmails);
 			break;
 
 		case "Exit":

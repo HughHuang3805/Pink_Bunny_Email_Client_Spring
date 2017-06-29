@@ -12,8 +12,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -55,6 +57,7 @@ public class GUI extends JFrame{
 	JTextArea secureEmailContentText;
 	JScrollPane jspForBody;
 	JScrollPane secureJSPForBody;
+	JComboBox<String> emailList;
 
 	public GUI(){
 		setTitle("Pink Bunny E-mail Client");
@@ -345,7 +348,11 @@ public class GUI extends JFrame{
 		setResizable(true);
 	}
 
-	public void setWritePanel(){//write email
+	public void setWritePanel(Vector<String> userEmails){//write email
+		
+		emailList = new JComboBox<>(userEmails);
+		emailList.setEditable(true);
+		
 		writeFrame = new JFrame("Write: New Email");
 		writeFrame.setSize(1000, 800);
 		ImageIcon img = new ImageIcon("favicon.png");
@@ -382,7 +389,7 @@ public class GUI extends JFrame{
 		cs.insets = new Insets(5, 5, 5, 5);
 		cs.anchor = GridBagConstraints.WEST;
 		cs.fill = GridBagConstraints.HORIZONTAL;
-		writePanel.add(senderTextField, cs);
+		writePanel.add(emailList, cs);
 
 		JLabel recipientLabel = new JLabel("Recipient: ");//recipient
 		cs.gridx = 0;//position in the column
@@ -471,7 +478,12 @@ public class GUI extends JFrame{
 		writeFrame.setVisible(true);
 	}
 
-	public void setSecureWritePanel(){
+	public void setSecureWritePanel(Vector<String> userEmails){
+		
+		emailList = new JComboBox<>(userEmails);
+		emailList.setEditable(true);
+		//System.out.println(emailList.getSelectedItem());
+		
 		secureWriteFrame = new JFrame("Secure Write: New Email");
 		secureWriteFrame.setSize(1000, 800);
 		ImageIcon img = new ImageIcon("favicon.png");
@@ -508,7 +520,7 @@ public class GUI extends JFrame{
 		cs.insets = new Insets(5, 5, 5, 5);
 		cs.anchor = GridBagConstraints.WEST;
 		cs.fill = GridBagConstraints.HORIZONTAL;
-		writePanel.add(secureSenderTextField, cs);
+		writePanel.add(emailList, cs);
 
 		JLabel recipientLabel = new JLabel("Recipient: ");//recipient
 		cs.gridx = 0;//position in the column
