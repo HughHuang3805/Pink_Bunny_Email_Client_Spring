@@ -2,7 +2,6 @@ package client;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -15,6 +14,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -29,7 +29,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTree;
 import javax.swing.border.LineBorder;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 
 public class GUI extends JFrame{
 
@@ -197,21 +200,20 @@ public class GUI extends JFrame{
 		previewPanel = new JPanel();
 
 		mainPanel.setLayout(new GridLayout());
-		leftPanel.setLayout(new FlowLayout());
-		rightPanel.setLayout(new FlowLayout());
+		leftPanel.setLayout(new GridLayout());
+		rightPanel.setLayout(new GridLayout());
 		
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		JButton b1 = new JButton("hi");
-		JButton b2 = new JButton("hi");
-		leftPanel.add(b1);
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);//split the middle
+		JTree jTree = setEmailJTree();//for left panel email lists
+		leftPanel.add(jTree);
 		leftPanel.setBorder(new LineBorder(Color.GRAY));
-		rightPanel.add(b2);
 		rightPanel.setBorder(new LineBorder(Color.GRAY));
-		splitPane.setRightComponent(b1);
-		splitPane.setLeftComponent(b2);
+		
+		splitPane.setLeftComponent(leftPanel);//left component in the split pane is the left panel
+		splitPane.setRightComponent(rightPanel);//right component in the split pane is the right panel
 		splitPane.setDividerSize(2);
 		//splitPane.setDividerLocation(0.75);
-		splitPane.setResizeWeight(0.20);
+		splitPane.setResizeWeight(0.18);
 		mainPanel.add(splitPane);
 		
 		add(mainPanel);
@@ -223,6 +225,15 @@ public class GUI extends JFrame{
 		textAreaPanel = new JPanel();
 		setLocationRelativeTo(null);
 		setResizable(true);
+	}
+	
+	public JTree setEmailJTree(){
+		DefaultMutableTreeNode email = new DefaultMutableTreeNode("asdlkjflaksdjf");
+		JTree tree = new JTree(email);
+		DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
+        Icon icon = new ImageIcon("emailicon.png");
+        renderer.setLeafIcon(icon);
+		return tree;
 	}
 	
 	public void setReceivedEmailTextArea(String message){
