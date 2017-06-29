@@ -83,7 +83,8 @@ public class GUIController implements ActionListener{
 	public GUIController(GUI g) throws Exception{
 		myGui = g;
 		myGui.setButtonListener(this);
-		
+		getNumberOfEmails();
+		getConfigEmails();
 		/*Properties prop = new Properties();
 		OutputStream output = null;
 		output = new FileOutputStream(fileName);
@@ -93,26 +94,7 @@ public class GUIController implements ActionListener{
 		prop.store(output, null);
 		*/
 		
-		BufferedReader br = new BufferedReader(new FileReader(fileName));//just to see how many records there are
-		String line = br.readLine();
-		line = br.readLine();
-		while(line != null){
-			counter++;
-			line = br.readLine();
-		}
-		System.out.println(counter);
 		
-		Properties prop = new Properties();//get each of the email and store them in the userEmail vector
-		inputStream = new FileInputStream(fileName);
-		prop.load(inputStream);
-		String user;
-		if(inputStream != null){
-			for(int i = 1; i <= counter; i++){
-				user = prop.getProperty("email" + i);
-				System.out.println(user);
-				userEmails.add(user);
-			}
-		}
 	}
 
 	@Override
@@ -246,6 +228,7 @@ public class GUIController implements ActionListener{
 			System.out.println(yubikeyAuthenticated);
 			System.out.println(otpAuthenticated);
 			if(yubikeyAuthenticated && otpAuthenticated){//if everything is correct, then show messages and allow log in
+				myGui.loginFrame.dispose();
 				myGui.enableAllMenuItems();
 				myGui.setMainPanel();
 			} 
@@ -273,7 +256,7 @@ public class GUIController implements ActionListener{
 			break;
 
 		case "Add New Account":
-			myGui.setEmailPanel();
+			myGui.setEmailFrame();
 			break;
 
 		case "Secure Send":
@@ -365,6 +348,31 @@ public class GUIController implements ActionListener{
 
 		default:
 			break;
+		}
+	}
+	
+	public void getNumberOfEmails() throws IOException{
+		BufferedReader br = new BufferedReader(new FileReader(fileName));//just to see how many records there are
+		String line = br.readLine();
+		line = br.readLine();
+		while(line != null){
+			counter++;
+			line = br.readLine();
+		}
+		System.out.println(counter);
+	}
+	
+	public void getConfigEmails() throws IOException{
+		Properties prop = new Properties();//get each of the email and store them in the userEmail vector
+		inputStream = new FileInputStream(fileName);
+		prop.load(inputStream);
+		String user;
+		if(inputStream != null){
+			for(int i = 1; i <= counter; i++){
+				user = prop.getProperty("email" + i);
+				System.out.println(user);
+				userEmails.add(user);
+			}
 		}
 	}
 }

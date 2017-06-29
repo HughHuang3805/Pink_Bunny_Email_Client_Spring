@@ -58,6 +58,7 @@ public class GUI extends JFrame{
 	JScrollPane jspForBody;
 	JScrollPane secureJSPForBody;
 	JComboBox<String> emailList;
+	String imageFileName = "favicon.png";
 
 	public GUI(){
 		setTitle("Pink Bunny E-mail Client");
@@ -65,10 +66,9 @@ public class GUI extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setMenuItems();
 		setLocationRelativeTo(null);
-		//setEmailPanel();
 		//getContentPane().setBackground(new Color(51, 102, 255));
 		setLocationRelativeTo(null);
-		ImageIcon img = new ImageIcon("favicon.png");
+		ImageIcon img = new ImageIcon(imageFileName);
 		setIconImage(img.getImage());
 		setVisible(true);
 	}
@@ -137,10 +137,6 @@ public class GUI extends JFrame{
 			x.setEnabled(true);
 	}
 
-	public void clearInsertPanel(){
-		textAreaPanel.setVisible(false);
-	}
-
 	public void setSendDebugTextArea(){
 		try {
 			@SuppressWarnings("resource")
@@ -187,6 +183,25 @@ public class GUI extends JFrame{
 		}
 	}
 
+	public void setMainPanel(){
+		JPanel mainPanel, leftPanel, rightPanel, emailsPanel, emailInboxPanel, previewPanel;
+		mainPanel = new JPanel();
+		leftPanel = new JPanel();
+		rightPanel = new JPanel();
+		emailsPanel = new JPanel();
+		emailInboxPanel = new JPanel();
+		previewPanel = new JPanel();
+		
+		repaint();
+		revalidate();
+
+		fileMenu.setEnabled(true);
+		toolMenu.setEnabled(true);
+		textAreaPanel = new JPanel();
+		setLocationRelativeTo(null);
+		setResizable(true);
+	}
+	
 	public void setReceivedEmailTextArea(String message){
 		emailContentText.setText(message);
 		emailContentText.setEditable(false);
@@ -195,7 +210,7 @@ public class GUI extends JFrame{
 		setVisible(true);
 	}
 
-	public void setEmailPanel(){//ask for email on emailPanel
+	public void setEmailFrame(){//ask for email on emailPanel
 		loginFrame = null;
 		loginFrame = new JFrame("Email");
 		emailPanel = new JPanel();
@@ -237,6 +252,8 @@ public class GUI extends JFrame{
 		loginFrame.add(emailPanel, BorderLayout.CENTER);
 		loginFrame.add(buttonPanel, BorderLayout.PAGE_END);
 		loginFrame.pack(); //let layout managers in charge of the frame size
+		ImageIcon img = new ImageIcon(imageFileName);
+		loginFrame.setIconImage(img.getImage());
 		loginFrame.setResizable(false);
 		loginFrame.setVisible(true);
 		loginFrame.setLocationRelativeTo(null);
@@ -327,35 +344,13 @@ public class GUI extends JFrame{
 		loginFrame.setVisible(true);
 	}
 
-	public void setMainPanel(){
-		loginFrame.setVisible(false);
-		loginFrame = null;
-		buttonPanel.removeAll();//remove whatever is in button panel
-		
-		
-		
-		repaint();
-		setSize(1250, 800);
-		//setContentPane(new JLabel(new ImageIcon(ImageIO.read(new File("wallpaper.jpg")))));
-		//pack();
-		repaint();
-		revalidate();
-
-		fileMenu.setEnabled(true);
-		toolMenu.setEnabled(true);
-		textAreaPanel = new JPanel();
-		setLocationRelativeTo(null);
-		setResizable(true);
-	}
-
 	public void setWritePanel(Vector<String> userEmails){//write email
 		
 		emailList = new JComboBox<>(userEmails);
-		emailList.setEditable(true);
 		
 		writeFrame = new JFrame("Write: New Email");
 		writeFrame.setSize(1000, 800);
-		ImageIcon img = new ImageIcon("favicon.png");
+		ImageIcon img = new ImageIcon(imageFileName);
 		writeFrame.setIconImage(img.getImage());
 		writeFrame.setVisible(true);
 
@@ -481,12 +476,11 @@ public class GUI extends JFrame{
 	public void setSecureWritePanel(Vector<String> userEmails){
 		
 		emailList = new JComboBox<>(userEmails);
-		emailList.setEditable(true);
 		//System.out.println(emailList.getSelectedItem());
 		
 		secureWriteFrame = new JFrame("Secure Write: New Email");
 		secureWriteFrame.setSize(1000, 800);
-		ImageIcon img = new ImageIcon("favicon.png");
+		ImageIcon img = new ImageIcon(imageFileName);
 		secureWriteFrame.setIconImage(img.getImage());
 		secureWriteFrame.setVisible(true);
 
@@ -629,7 +623,7 @@ public class GUI extends JFrame{
 	}
 
 	public String getRecipient() {
-		return ((String) emailList.getSelectedItem());
+		return recipientTextField.getText();
 	}
 
 	public String getSecureRecipient() {
