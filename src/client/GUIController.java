@@ -38,7 +38,8 @@ public class GUIController implements ActionListener{
 	private static String email = "";
 	private static String host = "";
 	private static boolean hasYubikey = false;
-
+	private final String fileName = "user.properties";
+	
 	private final static Hashtable<String, String> smtpServers = new Hashtable<String, String>() {/**
 	 * 
 	 */
