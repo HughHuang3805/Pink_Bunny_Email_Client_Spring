@@ -1,0 +1,44 @@
+DEBUG: getProvider() returning javax.mail.Provider[TRANSPORT,smtps,com.sun.mail.smtp.SMTPSSLTransport,Oracle]
+DEBUG SMTP: useEhlo true, useAuth true
+DEBUG SMTP: trying to connect to host "smtp.mail.yahoo.com", port 465, isSSL true
+220 smtp.mail.yahoo.com ESMTP ready
+DEBUG SMTP: connected to host "smtp.mail.yahoo.com", port: 465
+
+EHLO Hugh-PC
+250-smtp.mail.yahoo.com
+250-PIPELINING
+250-SIZE 41697280
+250-8 BITMIME
+250 AUTH PLAIN LOGIN XOAUTH2 XYMCOOKIE OAUTHBEARER
+DEBUG SMTP: Found extension "PIPELINING", arg ""
+DEBUG SMTP: Found extension "SIZE", arg "41697280"
+DEBUG SMTP: Found extension "8", arg "BITMIME"
+DEBUG SMTP: Found extension "AUTH", arg "PLAIN LOGIN XOAUTH2 XYMCOOKIE OAUTHBEARER"
+DEBUG SMTP: protocolConnect login, host=smtp.mail.yahoo.com, user=pinkbunnychickenmarsala@yahoo.com, password=<non-null>
+DEBUG SMTP: Attempt to authenticate using mechanisms: LOGIN PLAIN DIGEST-MD5 NTLM XOAUTH2 
+DEBUG SMTP: Using mechanism LOGIN
+DEBUG SMTP: AUTH LOGIN command trace suppressed
+DEBUG SMTP: AUTH LOGIN succeeded
+DEBUG SMTP: use8bit false
+MAIL FROM:<pinkbunnychickenmarsala@yahoo.com>
+250 OK , completed
+RCPT TO:<pinkbunnychickenmarsala@gmail.com>
+250 OK , completed
+DEBUG SMTP: Verified Addresses
+DEBUG SMTP:   pinkbunnychickenmarsala@gmail.com
+DATA
+354 Start Mail. End with CRLF.CRLF
+From: pinkbunnychickenmarsala@yahoo.com
+To: pinkbunnychickenmarsala@gmail.com
+Message-ID: <913575089.1.1498687908645@Hugh-PC>
+Subject: hello
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+hellow from the other sdieEnter your email body ...
+.
+250 OK , completed
+DEBUG SMTP: message successfully delivered to mail server
+QUIT
+221 Service Closing transmission

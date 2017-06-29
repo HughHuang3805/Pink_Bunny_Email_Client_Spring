@@ -49,7 +49,7 @@ public class GUI extends JFrame{
 	JPasswordField passwordText, yubikeyText;
 	JScrollPane jsp;
 	JFrame writeFrame, secureWriteFrame, loginFrame;
-	JMenu fileMenu, sourceMenu;
+	JMenu fileMenu, toolMenu;
 	JTextArea emailContentText;
 	JTextArea secureEmailContentText;
 	JScrollPane jspForBody;
@@ -87,7 +87,7 @@ public class GUI extends JFrame{
 		JMenuBar menuBar = new JMenuBar();
 		JMenuItem getNewMessagesItem, writeItem, exitItem, generateKeyPairItem, secureWriteItem, addNewAccountItem;
 		fileMenu = new JMenu("File");
-		sourceMenu = new JMenu("Source"); 
+		toolMenu = new JMenu("Tools"); 
 
 		addNewAccountItem = new JMenuItem("Add New Account");
 		getNewMessagesItem = new JMenuItem("Get New Messages");
@@ -118,13 +118,13 @@ public class GUI extends JFrame{
 		fileMenu.add(exitItem);
 		//menu1.setFont(new Font("DejaVu Sans Mono", Font.PLAIN, 14));
 
-		sourceMenu.add(generateKeyPairItem);
+		toolMenu.add(generateKeyPairItem);
 
 		menuBar.add(fileMenu);
-		menuBar.add(sourceMenu);
+		menuBar.add(toolMenu);
 
 		fileMenu.setEnabled(true);
-		sourceMenu.setEnabled(false);
+		toolMenu.setEnabled(false);
 		setJMenuBar(menuBar);
 	}
 
@@ -335,7 +335,7 @@ public class GUI extends JFrame{
 		revalidate();
 
 		fileMenu.setEnabled(true);
-		sourceMenu.setEnabled(true);
+		toolMenu.setEnabled(true);
 		textAreaPanel = new JPanel();
 		setLocationRelativeTo(null);
 		setResizable(true);

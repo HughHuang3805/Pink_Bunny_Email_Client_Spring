@@ -150,6 +150,7 @@ public class GUIController implements ActionListener{
 					if(hasYubikey){
 						myGui.setYubikeyPanel();//set up yubikey panel
 					} else {//if this email doesnt have yubikey 
+						myGui.enableAllMenuItems();
 						myGui.setWelcomeScreen();
 					}
 				}
