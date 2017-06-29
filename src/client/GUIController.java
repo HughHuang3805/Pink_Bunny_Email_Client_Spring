@@ -173,7 +173,8 @@ public class GUIController implements ActionListener{
 						myGui.setYubikeyPanel();//set up yubikey panel
 					} else {//if this email doesnt have yubikey 
 						myGui.enableAllMenuItems();
-						myGui.setMainPanel();
+						myGui.loginFrame.dispose();
+						myGui.setMainPanel(userEmails);
 					}
 				}
 			} catch (GeneralSecurityException e3) {//first check to see if it is a correct email/password combo
@@ -230,7 +231,7 @@ public class GUIController implements ActionListener{
 			if(yubikeyAuthenticated && otpAuthenticated){//if everything is correct, then show messages and allow log in
 				myGui.loginFrame.dispose();
 				myGui.enableAllMenuItems();
-				myGui.setMainPanel();
+				myGui.setMainPanel(userEmails);
 			} 
 			break;
 

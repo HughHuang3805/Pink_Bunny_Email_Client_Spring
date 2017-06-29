@@ -2,6 +2,7 @@ package client;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -76,7 +77,7 @@ public class GUI extends JFrame{
 		setLocationRelativeTo(null);
 		ImageIcon img = new ImageIcon(imageFileName);
 		setIconImage(img.getImage());
-		setMainPanel();
+		//setMainPanel();
 		setVisible(true);
 	}
 
@@ -190,7 +191,7 @@ public class GUI extends JFrame{
 		}
 	}
 
-	public void setMainPanel(){
+	public void setMainPanel(Vector<String> userEmails){
 		JPanel mainPanel, leftPanel, rightPanel, emailsPanel, emailInboxPanel, previewPanel;
 		mainPanel = new JPanel();
 		leftPanel = new JPanel();
@@ -200,22 +201,22 @@ public class GUI extends JFrame{
 		previewPanel = new JPanel();
 
 		mainPanel.setLayout(new GridLayout());
-		leftPanel.setLayout(new GridLayout());
+		leftPanel.setLayout(new GridBagLayout());
 		rightPanel.setLayout(new GridLayout());
-		
+
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);//split the middle
-		JTree jTree = setEmailJTree();//for left panel email lists
-		leftPanel.add(jTree);
+		setEmailJTree(leftPanel, userEmails);//for left panel email lists
+		//leftPanel.add(jTree);
 		leftPanel.setBorder(new LineBorder(Color.GRAY));
 		rightPanel.setBorder(new LineBorder(Color.GRAY));
-		
+
 		splitPane.setLeftComponent(leftPanel);//left component in the split pane is the left panel
 		splitPane.setRightComponent(rightPanel);//right component in the split pane is the right panel
 		splitPane.setDividerSize(2);
 		//splitPane.setDividerLocation(0.75);
-		splitPane.setResizeWeight(0.18);
+		splitPane.setResizeWeight(0.01);
 		mainPanel.add(splitPane);
-		
+
 		add(mainPanel);
 		repaint();
 		revalidate();
@@ -226,16 +227,38 @@ public class GUI extends JFrame{
 		setLocationRelativeTo(null);
 		setResizable(true);
 	}
-	
-	public JTree setEmailJTree(){
-		DefaultMutableTreeNode email = new DefaultMutableTreeNode("asdlkjflaksdjf");
-		JTree tree = new JTree(email);
-		DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
-        Icon icon = new ImageIcon("emailicon.png");
-        renderer.setLeafIcon(icon);
+
+	public JTree setEmailJTree(JPanel leftPanel, Vector<String> userEmails){
+		JTree tree = new JTree();
+		for(int i = 0; i < userEmails.size(); i++){
+			DefaultMutableTreeNode email = new DefaultMutableTreeNode(userEmails.elementAt(i));
+			tree = new JTree(email);
+			DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
+			Icon icon = new ImageIcon("emailicon.png");
+			renderer.setLeafIcon(icon);
+			
+			GridBagConstraints cs = new GridBagConstraints();//constraints
+			cs.fill = GridBagConstraints.BOTH;
+			cs.anchor = GridBagConstraints.NORTH;
+			cs.gridx = 0;//position in the column
+			cs.gridy = i;//position in the row
+			cs.gridwidth = 1;
+			//cs.weightx = 1.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+			//cs.weighty = 0;
+			leftPanel.add(tree, cs);
+		}
+		GridBagConstraints cs = new GridBagConstraints();//constraints
+		cs.fill = GridBagConstraints.BOTH;
+		cs.gridy = userEmails.size() + 1;
+		cs.weightx = 1;
+		cs.weighty = 1;
+		JPanel filler = new JPanel();
+		filler.setOpaque(false);
+		leftPanel.add(filler, cs);
+		leftPanel.setBackground(Color.white);
 		return tree;
 	}
-	
+
 	public void setReceivedEmailTextArea(String message){
 		emailContentText.setText(message);
 		emailContentText.setEditable(false);
@@ -379,9 +402,9 @@ public class GUI extends JFrame{
 	}
 
 	public void setWritePanel(Vector<String> userEmails){//write email
-		
+
 		emailList = new JComboBox<>(userEmails);
-		
+
 		writeFrame = new JFrame("Write: New Email");
 		writeFrame.setSize(1000, 800);
 		ImageIcon img = new ImageIcon(imageFileName);
@@ -508,10 +531,10 @@ public class GUI extends JFrame{
 	}
 
 	public void setSecureWritePanel(Vector<String> userEmails){
-		
+
 		emailList = new JComboBox<>(userEmails);
 		//System.out.println(emailList.getSelectedItem());
-		
+
 		secureWriteFrame = new JFrame("Secure Write: New Email");
 		secureWriteFrame.setSize(1000, 800);
 		ImageIcon img = new ImageIcon(imageFileName);
