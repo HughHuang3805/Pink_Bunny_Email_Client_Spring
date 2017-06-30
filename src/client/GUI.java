@@ -66,8 +66,9 @@ public class GUI extends JFrame{
 	JScrollPane secureJSPForBody;
 	JComboBox<String> emailList;
 	String imageFileName = "favicon.png";
+	JTree tree;
 
-	public GUI(){
+	public GUI(Vector<String> userEmails){
 		setTitle("Pink Bunny E-mail Client");
 		setSize(1250, 800);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -77,7 +78,7 @@ public class GUI extends JFrame{
 		setLocationRelativeTo(null);
 		ImageIcon img = new ImageIcon(imageFileName);
 		setIconImage(img.getImage());
-		//setMainPanel();
+		setMainPanel(userEmails);
 		setVisible(true);
 	}
 
@@ -229,7 +230,7 @@ public class GUI extends JFrame{
 	}
 
 	public JTree setEmailJTree(JPanel leftPanel, Vector<String> userEmails){
-		JTree tree = new JTree();
+		
 		for(int i = 0; i < userEmails.size(); i++){
 			DefaultMutableTreeNode email = new DefaultMutableTreeNode(userEmails.elementAt(i));
 			tree = new JTree(email);

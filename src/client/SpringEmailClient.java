@@ -9,7 +9,7 @@ public class SpringEmailClient {
 		try
 		{
 			@SuppressWarnings("unused")
-			GUIController x = new GUIController(new GUI());
+			GUIController x = new GUIController();
 			//GUI y = new GUI();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

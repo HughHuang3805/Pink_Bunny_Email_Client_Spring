@@ -23,6 +23,10 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
+import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -33,7 +37,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.bouncycastle.openpgp.PGPException;
 
-
+//, TreeSelectionListener
 public class GUIController implements ActionListener{
 
 	GUI myGui;
@@ -48,7 +52,8 @@ public class GUIController implements ActionListener{
 	private static Vector<String> userEmails = new Vector<String>();
 	private final String fileName = "userconfig.properties";
 	private InputStream inputStream;
-	
+	private JTree tree;
+
 	private final static Hashtable<String, String> smtpServers = new Hashtable<String, String>() {/**
 	 * 
 	 */
@@ -80,11 +85,12 @@ public class GUIController implements ActionListener{
 		}
 	};
 
-	public GUIController(GUI g) throws Exception{
-		myGui = g;
-		myGui.setButtonListener(this);
+	public GUIController() throws Exception{
+		//myGui = g;
 		getNumberOfEmails();
-		getConfigEmails();
+		myGui = new GUI(getConfigEmails());
+		myGui.setButtonListener(this);
+		//myGui.tree.addTreeSelectionListener(this);
 		/*Properties prop = new Properties();
 		OutputStream output = null;
 		output = new FileOutputStream(fileName);
@@ -92,9 +98,9 @@ public class GUIController implements ActionListener{
 		prop.setProperty("email2", "pinkbunnychickenmarsala@yahoo.com");
 		prop.setProperty("email3", "pinkbunnychickenmarsala@aol.com");
 		prop.store(output, null);
-		*/
-		
-		
+		 */
+
+
 	}
 
 	@Override
@@ -351,7 +357,7 @@ public class GUIController implements ActionListener{
 			break;
 		}
 	}
-	
+
 	public void getNumberOfEmails() throws IOException{
 		BufferedReader br = new BufferedReader(new FileReader(fileName));//just to see how many records there are
 		String line = br.readLine();
@@ -362,8 +368,8 @@ public class GUIController implements ActionListener{
 		}
 		System.out.println(counter);
 	}
-	
-	public void getConfigEmails() throws IOException{
+
+	public Vector<String> getConfigEmails() throws IOException{
 		Properties prop = new Properties();//get each of the email and store them in the userEmail vector
 		inputStream = new FileInputStream(fileName);
 		prop.load(inputStream);
@@ -375,5 +381,19 @@ public class GUIController implements ActionListener{
 				userEmails.add(user);
 			}
 		}
+		return userEmails;
 	}
+
+	/*@Override
+	public void valueChanged(TreeSelectionEvent arg0) {
+		// TODO Auto-generated method stub
+		tree = myGui.tree;
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+		
+		if (node == null)
+		      return;
+		if(node.isRoot()){
+			tree.clearSelection();
+		}
+	}*/
 }
