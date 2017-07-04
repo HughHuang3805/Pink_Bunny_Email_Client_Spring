@@ -237,6 +237,10 @@ public class GUI extends JFrame implements TreeSelectionListener{
 		for(int i = 0; i < userEmails.size(); i++){
 			DefaultMutableTreeNode email = new DefaultMutableTreeNode(userEmails.elementAt(i));
 			trees.add(new JTree(email));
+			email.add(new DefaultMutableTreeNode("Inbox"));
+			email.add(new DefaultMutableTreeNode("Draft"));
+			email.add(new DefaultMutableTreeNode("Sent"));
+			email.add(new DefaultMutableTreeNode("Spam"));
 			DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) trees.elementAt(i).getCellRenderer();
 			Icon icon = new ImageIcon("emailicon.png");
 			renderer.setLeafIcon(icon);
