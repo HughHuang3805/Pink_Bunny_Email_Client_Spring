@@ -30,7 +30,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
-import javax.swing.SwingUtilities;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.LineBorder;
@@ -84,7 +84,6 @@ public class GUI extends JFrame implements TreeSelectionListener{
 		ImageIcon img = new ImageIcon(imageFileName);
 		setIconImage(img.getImage());
 		setMainPanel(userEmails);
-		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		setVisible(true);
 	}
 
@@ -106,7 +105,9 @@ public class GUI extends JFrame implements TreeSelectionListener{
 		JMenuBar menuBar = new JMenuBar();
 		JMenuItem getNewMessagesItem, writeItem, exitItem, generateKeyPairItem, secureWriteItem, addNewAccountItem;
 		fileMenu = new JMenu("File");
-		toolMenu = new JMenu("Tools"); 
+		fileMenu.setMargin(new Insets(0,3,0,3));
+		toolMenu = new JMenu("Source"); 
+		toolMenu.setMargin(new Insets(0,3,0,3));
 
 		addNewAccountItem = new JMenuItem("Add New Account");
 		getNewMessagesItem = new JMenuItem("Get New Messages");

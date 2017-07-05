@@ -1,5 +1,6 @@
 package client;
 
+import java.awt.Font;
 import java.io.IOException;
 
 import javax.swing.UIManager;
@@ -11,6 +12,8 @@ public class SpringEmailClient {
 	public static void main(String[] args){
 		try
 		{
+			//Font f = new Font("calibri", Font.PLAIN, 14);
+			//UIManager.put("Menu.font", f);
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			@SuppressWarnings("unused")
 			GUIController x = new GUIController();
