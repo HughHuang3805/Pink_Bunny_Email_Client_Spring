@@ -2,7 +2,6 @@ package client;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -31,6 +30,9 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.LineBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -71,7 +73,7 @@ public class GUI extends JFrame implements TreeSelectionListener{
 	String imageFileName = "favicon.png";
 	Vector<JTree> trees = new Vector<JTree>();
 
-	public GUI(Vector<String> userEmails){
+	public GUI(Vector<String> userEmails) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException{
 		setTitle("Pink Bunny E-mail Client");
 		setSize(1250, 800);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -82,6 +84,7 @@ public class GUI extends JFrame implements TreeSelectionListener{
 		ImageIcon img = new ImageIcon(imageFileName);
 		setIconImage(img.getImage());
 		setMainPanel(userEmails);
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		setVisible(true);
 	}
 
@@ -214,7 +217,7 @@ public class GUI extends JFrame implements TreeSelectionListener{
 		leftPanel.setBorder(new LineBorder(Color.GRAY));
 		rightPanel.setBorder(new LineBorder(Color.GRAY));
 
-		splitPane.setLeftComponent(leftPanel);//left component in the split pane is the left panel
+		splitPane.setLeftComponent(new JScrollPane(leftPanel));//left component in the split pane is the left panel
 		splitPane.setRightComponent(rightPanel);//right component in the split pane is the right panel
 		splitPane.setDividerSize(2);
 		//splitPane.setDividerLocation(0.75);
@@ -235,15 +238,23 @@ public class GUI extends JFrame implements TreeSelectionListener{
 	public void setEmailJTree(JPanel leftPanel, Vector<String> userEmails){
 
 		for(int i = 0; i < userEmails.size(); i++){
-			DefaultMutableTreeNode email = new DefaultMutableTreeNode(userEmails.elementAt(i));
-			trees.add(new JTree(email));
-			email.add(new DefaultMutableTreeNode("Inbox"));
-			email.add(new DefaultMutableTreeNode("Draft"));
-			email.add(new DefaultMutableTreeNode("Sent"));
-			email.add(new DefaultMutableTreeNode("Spam"));
+			DefaultMutableTreeNode emailRoot = new DefaultMutableTreeNode(userEmails.elementAt(i));
+			trees.add(new JTree(emailRoot));
 			DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) trees.elementAt(i).getCellRenderer();
 			Icon icon = new ImageIcon("emailicon.png");
-			renderer.setLeafIcon(icon);
+			renderer.setClosedIcon(icon);
+			renderer.setOpenIcon(icon);
+			
+			DefaultMutableTreeNode inboxLeaf = new DefaultMutableTreeNode("Inbox");
+			DefaultMutableTreeNode draftLeaf = new DefaultMutableTreeNode("Draft");
+			DefaultMutableTreeNode sentLeaf = new DefaultMutableTreeNode("Sent");
+			DefaultMutableTreeNode spamLeaf = new DefaultMutableTreeNode("Spam");
+			emailRoot.add(inboxLeaf);
+			emailRoot.add(draftLeaf);
+			emailRoot.add(sentLeaf);
+			emailRoot.add(spamLeaf);
+			Icon icon1 = new ImageIcon("writeicon.png");
+			renderer.setLeafIcon(icon1);
 
 			GridBagConstraints cs = new GridBagConstraints();//constraints
 			cs.fill = GridBagConstraints.BOTH;
