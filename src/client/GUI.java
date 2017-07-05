@@ -30,8 +30,6 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.LineBorder;
 import javax.swing.event.TreeSelectionEvent;
@@ -44,6 +42,7 @@ public class GUI extends JFrame implements TreeSelectionListener{
 
 	private static final long serialVersionUID = 1L;
 	Vector<JMenuItem> menuItems = new Vector<JMenuItem>();
+	Vector<JMenu> menus = new Vector<JMenu>();
 	JTextArea textArea = new JTextArea();
 	JPanel emailPanel;
 	JPanel passwordPanel;
@@ -64,13 +63,14 @@ public class GUI extends JFrame implements TreeSelectionListener{
 	JPasswordField passwordText, yubikeyText;
 	JScrollPane jsp;
 	JFrame writeFrame, secureWriteFrame, loginFrame;
-	JMenu fileMenu, toolMenu;
+	JMenu fileMenu = new JMenu("File");
+	JMenu toolMenu = new JMenu("Source");
 	JTextArea emailContentText;
 	JTextArea secureEmailContentText;
 	JScrollPane jspForBody;
 	JScrollPane secureJSPForBody;
 	JComboBox<String> emailList;
-	String imageFileName = "favicon.png";
+	String imageFileName = "icons/favicon.png";
 	Vector<JTree> trees = new Vector<JTree>();
 
 	public GUI(Vector<String> userEmails) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException{
@@ -78,6 +78,7 @@ public class GUI extends JFrame implements TreeSelectionListener{
 		setSize(1250, 800);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setMenuItems();
+		setMenuInsets();
 		setLocationRelativeTo(null);
 		//getContentPane().setBackground(new Color(51, 102, 255));
 		setLocationRelativeTo(null);
@@ -104,12 +105,11 @@ public class GUI extends JFrame implements TreeSelectionListener{
 	public void setMenuItems(){
 		JMenuBar menuBar = new JMenuBar();
 		JMenuItem getNewMessagesItem, writeItem, exitItem, generateKeyPairItem, secureWriteItem, addNewAccountItem;
-		fileMenu = new JMenu("File");
-		fileMenu.setMargin(new Insets(0,3,0,3));
-		toolMenu = new JMenu("Source"); 
-		toolMenu.setMargin(new Insets(0,3,0,3));
-
+		menus.add(fileMenu);
+		menus.add(toolMenu);
+		
 		addNewAccountItem = new JMenuItem("Add New Account");
+		addNewAccountItem.setIcon(new ImageIcon("icons/addicon.png"));
 		getNewMessagesItem = new JMenuItem("Get New Messages");
 		writeItem = new JMenuItem("Write");
 		writeItem.setToolTipText("Send Emails Un-Encrypted");
@@ -117,6 +117,7 @@ public class GUI extends JFrame implements TreeSelectionListener{
 		secureWriteItem.setToolTipText("Send Emails Encrypted");
 		exitItem = new JMenuItem("Exit");
 		generateKeyPairItem = new JMenuItem("Generate Key Pair");
+		generateKeyPairItem.setIcon(new ImageIcon("icons/keyicon.png"));
 
 		//add items to a list for adding actionlistener
 		menuItems.add(writeItem);
@@ -148,6 +149,11 @@ public class GUI extends JFrame implements TreeSelectionListener{
 		setJMenuBar(menuBar);
 	}
 
+	public void setMenuInsets(){
+		for(JMenu x : menus)
+			x.setMargin(new Insets(0,3,0,3));
+	}
+	
 	public void enableAllMenuItems(){
 		for(JMenuItem x : menuItems)
 			x.setEnabled(true);
@@ -242,7 +248,7 @@ public class GUI extends JFrame implements TreeSelectionListener{
 			DefaultMutableTreeNode emailRoot = new DefaultMutableTreeNode(userEmails.elementAt(i));
 			trees.add(new JTree(emailRoot));
 			DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) trees.elementAt(i).getCellRenderer();
-			Icon icon = new ImageIcon("emailicon.png");
+			Icon icon = new ImageIcon("icons/emailicon.png");
 			renderer.setClosedIcon(icon);
 			renderer.setOpenIcon(icon);
 			
@@ -254,7 +260,7 @@ public class GUI extends JFrame implements TreeSelectionListener{
 			emailRoot.add(draftLeaf);
 			emailRoot.add(sentLeaf);
 			emailRoot.add(spamLeaf);
-			Icon icon1 = new ImageIcon("writeicon.png");
+			Icon icon1 = new ImageIcon("icons/writeicon.png");
 			renderer.setLeafIcon(icon1);
 
 			GridBagConstraints cs = new GridBagConstraints();//constraints
