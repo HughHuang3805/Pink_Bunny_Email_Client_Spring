@@ -38,7 +38,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.bouncycastle.openpgp.PGPException;
 
 //, TreeSelectionListener
-public class GUIController implements ActionListener{
+public class GUIController implements ActionListener, TreeSelectionListener{
 
 	GUI myGui;
 	SecureMailService mailServer = new SecureMailService();
@@ -90,6 +90,7 @@ public class GUIController implements ActionListener{
 		getNumberOfEmails();
 		myGui = new GUI(getConfigEmails());
 		myGui.setButtonListener(this);
+		myGui.setEmailTreeListener(this, getConfigEmails());
 		//myGui.tree.addTreeSelectionListener(this);
 		/*Properties prop = new Properties();
 		OutputStream output = null;
@@ -384,16 +385,23 @@ public class GUIController implements ActionListener{
 		return userEmails;
 	}
 
-	/*@Override
-	public void valueChanged(TreeSelectionEvent arg0) {
-		// TODO Auto-generated method stub
-		tree = myGui.tree;
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-		
-		if (node == null)
-		      return;
-		if(node.isRoot()){
-			tree.clearSelection();
+	public void valueChanged(TreeSelectionEvent e) {
+		//Returns the last path element of the selection.
+		//This method is useful only when the selection model allows a single selection.
+		DefaultMutableTreeNode node;
+		for(int i = 0; i < myGui.trees.size(); i++){
+			node = (DefaultMutableTreeNode)
+					myGui.trees.elementAt(i).getLastSelectedPathComponent();
+			if (node == null)
+				//Nothing is selected.     
+				return;
+
+			if (node.isRoot()) {
+				System.out.println("hi");
+			} else {
+				System.out.println("hi in else"); 
+			}
 		}
-	}*/
+
+	}
 }

@@ -39,7 +39,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
 
-public class GUI extends JFrame implements TreeSelectionListener{
+public class GUI extends JFrame{
 
 	private static final long serialVersionUID = 1L;
 	Vector<JMenuItem> menuItems = new Vector<JMenuItem>();
@@ -248,14 +248,8 @@ public class GUI extends JFrame implements TreeSelectionListener{
 		for(int i = 0; i < userEmails.size(); i++){
 			DefaultMutableTreeNode emailRoot = new DefaultMutableTreeNode(userEmails.elementAt(i));
 			trees.add(new JTree(emailRoot));
-			DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) trees.elementAt(i).getCellRenderer();
 			trees.elementAt(i).setShowsRootHandles(true);
-			Icon icon = new ImageIcon("icons/emailicon.png");
-			Icon icon1 = new ImageIcon("icons/writeicon.png");
-			Icon icon2 = new ImageIcon("icons/favicon.png");
-			renderer.setClosedIcon(icon);
-			renderer.setOpenIcon(icon);
-			
+
 			DefaultMutableTreeNode inboxLeaf = new DefaultMutableTreeNode("Inbox");
 			DefaultMutableTreeNode draftLeaf = new DefaultMutableTreeNode("Draft");
 			DefaultMutableTreeNode sentLeaf = new DefaultMutableTreeNode("Sent");
@@ -266,7 +260,7 @@ public class GUI extends JFrame implements TreeSelectionListener{
 			emailRoot.add(spamLeaf);
 			trees.elementAt(i).setCellRenderer(new TreeRenderer());
 			trees.elementAt(i).setRowHeight(20);
-			
+
 			GridBagConstraints cs = new GridBagConstraints();//constraints
 			cs.fill = GridBagConstraints.BOTH;
 			cs.anchor = GridBagConstraints.NORTH;
@@ -275,8 +269,6 @@ public class GUI extends JFrame implements TreeSelectionListener{
 			cs.gridwidth = 1;
 			//cs.weightx = 1.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
 			//cs.weighty = 0;
-			trees.elementAt(i).getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			trees.elementAt(i).addTreeSelectionListener(this);
 			leftPanel.add(trees.elementAt(i), cs);
 		}
 		GridBagConstraints cs = new GridBagConstraints();//constraints
@@ -290,24 +282,11 @@ public class GUI extends JFrame implements TreeSelectionListener{
 		leftPanel.setBackground(Color.white);
 	}
 
-	public void valueChanged(TreeSelectionEvent e) {
-		//Returns the last path element of the selection.
-		//This method is useful only when the selection model allows a single selection.
-		DefaultMutableTreeNode node;
+	public void setEmailTreeListener(TreeSelectionListener a, Vector<String> userEmails){
 		for(int i = 0; i < trees.size(); i++){
-			node = (DefaultMutableTreeNode)
-					trees.elementAt(i).getLastSelectedPathComponent();
-			if (node == null)
-				//Nothing is selected.     
-				return;
-
-			if (node.isRoot()) {
-				System.out.println("hi");
-			} else {
-				System.out.println("hi in else"); 
-			}
+			trees.elementAt(i).getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+			trees.elementAt(i).addTreeSelectionListener(a);
 		}
-
 	}
 
 	public void setReceivedEmailTextArea(String message){
