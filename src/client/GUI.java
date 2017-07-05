@@ -2,6 +2,7 @@ package client;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -107,7 +108,7 @@ public class GUI extends JFrame implements TreeSelectionListener{
 		JMenuItem getNewMessagesItem, writeItem, exitItem, generateKeyPairItem, secureWriteItem, addNewAccountItem;
 		menus.add(fileMenu);
 		menus.add(toolMenu);
-		
+
 		addNewAccountItem = new JMenuItem("Add New Account");
 		addNewAccountItem.setIcon(new ImageIcon("icons/addicon.png"));
 		getNewMessagesItem = new JMenuItem("Get New Messages");
@@ -153,7 +154,7 @@ public class GUI extends JFrame implements TreeSelectionListener{
 		for(JMenu x : menus)
 			x.setMargin(new Insets(0,3,0,3));
 	}
-	
+
 	public void enableAllMenuItems(){
 		for(JMenuItem x : menuItems)
 			x.setEnabled(true);
@@ -248,7 +249,10 @@ public class GUI extends JFrame implements TreeSelectionListener{
 			DefaultMutableTreeNode emailRoot = new DefaultMutableTreeNode(userEmails.elementAt(i));
 			trees.add(new JTree(emailRoot));
 			DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) trees.elementAt(i).getCellRenderer();
+			trees.elementAt(i).setShowsRootHandles(true);
 			Icon icon = new ImageIcon("icons/emailicon.png");
+			Icon icon1 = new ImageIcon("icons/writeicon.png");
+			Icon icon2 = new ImageIcon("icons/favicon.png");
 			renderer.setClosedIcon(icon);
 			renderer.setOpenIcon(icon);
 			
@@ -260,9 +264,9 @@ public class GUI extends JFrame implements TreeSelectionListener{
 			emailRoot.add(draftLeaf);
 			emailRoot.add(sentLeaf);
 			emailRoot.add(spamLeaf);
-			Icon icon1 = new ImageIcon("icons/writeicon.png");
-			renderer.setLeafIcon(icon1);
-
+			trees.elementAt(i).setCellRenderer(new TreeRenderer());
+			trees.elementAt(i).setRowHeight(20);
+			
 			GridBagConstraints cs = new GridBagConstraints();//constraints
 			cs.fill = GridBagConstraints.BOTH;
 			cs.anchor = GridBagConstraints.NORTH;
@@ -303,7 +307,7 @@ public class GUI extends JFrame implements TreeSelectionListener{
 				System.out.println("hi in else"); 
 			}
 		}
-		
+
 	}
 
 	public void setReceivedEmailTextArea(String message){
