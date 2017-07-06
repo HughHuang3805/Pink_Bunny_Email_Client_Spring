@@ -2,6 +2,8 @@ package client;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
@@ -38,7 +40,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.bouncycastle.openpgp.PGPException;
 
 //, TreeSelectionListener
-public class GUIController implements ActionListener, TreeSelectionListener{
+public class GUIController implements ActionListener, MouseListener{
 
 	GUI myGui;
 	SecureMailService mailServer = new SecureMailService();
@@ -90,7 +92,7 @@ public class GUIController implements ActionListener, TreeSelectionListener{
 		getNumberOfEmails();
 		myGui = new GUI(getConfigEmails());
 		myGui.setButtonListener(this);
-		myGui.setEmailTreeListener(this, getConfigEmails());
+		myGui.setEmailTreeListener(getConfigEmails());
 		//myGui.tree.addTreeSelectionListener(this);
 		/*Properties prop = new Properties();
 		OutputStream output = null;
@@ -385,23 +387,39 @@ public class GUIController implements ActionListener, TreeSelectionListener{
 		return userEmails;
 	}
 
-	public void valueChanged(TreeSelectionEvent e) {
-		//Returns the last path element of the selection.
-		//This method is useful only when the selection model allows a single selection.
-		DefaultMutableTreeNode node;
-		for(int i = 0; i < myGui.trees.size(); i++){
-			node = (DefaultMutableTreeNode)
-					myGui.trees.elementAt(i).getLastSelectedPathComponent();
-			if (node == null)
-				//Nothing is selected.     
-				return;
-
-			if (node.isRoot()) {
-				System.out.println("hi");
-			} else {
-				System.out.println("hi in else"); 
-			}
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		for(int i = 0; i < 10; i++){
+			myGui.trees.elementAt(i).getLastSelectedPathComponent();
+			int row=myGui.trees.elementAt(i).getRowForLocation(e.getX(),e.getY());
+			if(row==-1) //When user clicks on the "empty surface"
+				myGui.trees.elementAt(i).clearSelection();
 		}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

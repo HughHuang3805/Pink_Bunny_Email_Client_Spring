@@ -282,10 +282,36 @@ public class GUI extends JFrame{
 		leftPanel.setBackground(Color.white);
 	}
 
-	public void setEmailTreeListener(TreeSelectionListener a, Vector<String> userEmails){
+	public void setEmailTreeListener(Vector<String> userEmails){
 		for(int i = 0; i < trees.size(); i++){
+			JTree x = trees.elementAt(i);
 			trees.elementAt(i).getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			trees.elementAt(i).addTreeSelectionListener(a);
+			//trees.elementAt(i).addTreeSelectionListener(a);
+			trees.elementAt(i).addTreeSelectionListener(new TreeSelectionListener() {//add listener to individual tree
+				public void valueChanged(TreeSelectionEvent e) {
+					//Returns the last path element of the selection.
+					//This method is useful only when the selection model allows a single selection.
+					DefaultMutableTreeNode node;
+					node = (DefaultMutableTreeNode)
+							x.getLastSelectedPathComponent();
+					System.out.println("hi outside");
+					if (node == null){
+						//Nothing is selected.     
+						System.out.println("nothing is selected");
+						return;
+					}
+					if (node.isRoot()) {
+						System.out.println("hi");
+						x.clearSelection();
+						return;
+					} else {
+						System.out.println("hi in else"); 
+						return;
+					}
+
+				}});
+			/*trees.elementAt(i).getSelectionModel().setSelectionMode
+	        (TreeSelectionModel.SINGLE_TREE_SELECTION);*/
 		}
 	}
 
