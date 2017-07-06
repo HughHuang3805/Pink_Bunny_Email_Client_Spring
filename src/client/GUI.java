@@ -2,7 +2,6 @@ package client;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -14,8 +13,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
-
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -36,7 +33,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
 
 public class GUI extends JFrame{
@@ -259,16 +255,16 @@ public class GUI extends JFrame{
 			emailRoot.add(sentLeaf);
 			emailRoot.add(spamLeaf);
 			trees.elementAt(i).setCellRenderer(new TreeRenderer());
-			trees.elementAt(i).setRowHeight(20);
-
+			trees.elementAt(i).setRowHeight(20);//gap between each email
+			Font currentFont = trees.elementAt(i).getFont();
+			trees.elementAt(i).setFont(new Font(currentFont.getName(), currentFont.getStyle(), currentFont.getSize() + 2));
+			
 			GridBagConstraints cs = new GridBagConstraints();//constraints
 			cs.fill = GridBagConstraints.BOTH;
 			cs.anchor = GridBagConstraints.NORTH;
 			cs.gridx = 0;//position in the column
 			cs.gridy = i;//position in the row
 			cs.gridwidth = 1;
-			//cs.weightx = 1.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
-			//cs.weighty = 0;
 			leftPanel.add(trees.elementAt(i), cs);
 		}
 		GridBagConstraints cs = new GridBagConstraints();//constraints
@@ -284,17 +280,15 @@ public class GUI extends JFrame{
 
 	public void setEmailTreeListener(Vector<String> userEmails){
 		for(int i = 0; i < trees.size(); i++){
-			JTree x = trees.elementAt(i);
-			trees.elementAt(i).getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			//trees.elementAt(i).addTreeSelectionListener(a);
-			trees.elementAt(i).addTreeSelectionListener(new TreeSelectionListener() {//add listener to individual tree
+			JTree treeRoot = trees.elementAt(i);
+			treeRoot.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+			treeRoot.addTreeSelectionListener(new TreeSelectionListener() {//add listener to individual tree
 				public void valueChanged(TreeSelectionEvent e) {
 					//Returns the last path element of the selection.
 					//This method is useful only when the selection model allows a single selection.
 					DefaultMutableTreeNode node;
 					node = (DefaultMutableTreeNode)
-							x.getLastSelectedPathComponent();
-					System.out.println("hi outside");
+							treeRoot.getLastSelectedPathComponent();
 					if (node == null){
 						//Nothing is selected.     
 						System.out.println("nothing is selected");
@@ -302,7 +296,7 @@ public class GUI extends JFrame{
 					}
 					if (node.isRoot()) {
 						System.out.println("hi");
-						x.clearSelection();
+						treeRoot.clearSelection();
 						return;
 					} else {
 						System.out.println("hi in else"); 
@@ -310,8 +304,6 @@ public class GUI extends JFrame{
 					}
 
 				}});
-			/*trees.elementAt(i).getSelectionModel().setSelectionMode
-	        (TreeSelectionModel.SINGLE_TREE_SELECTION);*/
 		}
 	}
 
