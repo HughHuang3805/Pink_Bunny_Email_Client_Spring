@@ -150,7 +150,7 @@ public class GUI extends JFrame{
 		setJMenuBar(menuBar);
 	}
 
-	public void setMenuInsets(){
+	public void setMenuInsets(){//add a little margin in between each email account in the left panel
 		for(JMenu x : menus)
 			x.setMargin(new Insets(0,3,0,3));
 	}
