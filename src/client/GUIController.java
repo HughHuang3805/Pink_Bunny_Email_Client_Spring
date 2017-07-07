@@ -389,8 +389,12 @@ public class GUIController implements ActionListener, MouseListener{
 		JTree tree = (JTree) e.getComponent();
 		tree.getLastSelectedPathComponent();
 		int row = tree.getRowForLocation(e.getX(), e.getY());
-		if(e.getClickCount() == 2){
+		//2 is the number of clicks, row != 0 means if it is not root, get the path of which the item is clicked
+		if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Secure write"){
 			myGui.setSecureWritePanel(userEmails);
+			System.out.println("double clicked");
+		} else if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Write"){
+			myGui.setWritePanel(userEmails);
 			System.out.println("double clicked");
 		}
 		if(row==-1) //When user clicks on the "empty surface"

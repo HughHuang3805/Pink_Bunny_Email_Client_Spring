@@ -259,9 +259,10 @@ public class GUI extends JFrame{
 			emailRoot.add(sentLeaf);
 			emailRoot.add(spamLeaf);
 			trees.elementAt(i).setCellRenderer(new TreeRenderer());
-			trees.elementAt(i).setRowHeight(20);//gap between each email
+			trees.elementAt(i).setRowHeight(23);//gap between each email
 			Font currentFont = trees.elementAt(i).getFont();
-			trees.elementAt(i).setFont(new Font(currentFont.getName(), currentFont.getStyle(), currentFont.getSize() + 2));
+			//font size of the displaying email list
+			trees.elementAt(i).setFont(new Font(currentFont.getName(), currentFont.getStyle(), currentFont.getSize() + 3));
 			
 			GridBagConstraints cs = new GridBagConstraints();//constraints
 			cs.fill = GridBagConstraints.BOTH;
