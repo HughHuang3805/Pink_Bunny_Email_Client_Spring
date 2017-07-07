@@ -8,6 +8,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -46,7 +47,6 @@ public class GUI extends JFrame{
 	JPanel yubikeyPanel;
 	JPanel textAreaPanel = new JPanel();
 	JPanel buttonPanel;
-	JPanel mainPanel;
 	JButton signInButton = new JButton("Sign-in");
 	JButton cancelButton = new JButton("Cancel");
 	JButton verifyButton = new JButton("Verify");
@@ -69,6 +69,7 @@ public class GUI extends JFrame{
 	JComboBox<String> emailList;
 	String imageFileName = "icons/favicon.png";
 	Vector<JTree> trees = new Vector<JTree>();
+	JPanel mainPanel, leftPanel, rightPanel, emailsPanel, emailInboxPanel, previewPanel;
 
 	public GUI(Vector<String> userEmails) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException{
 		setTitle("Pink Bunny E-mail Client");
@@ -203,7 +204,6 @@ public class GUI extends JFrame{
 	}
 
 	public void setMainPanel(Vector<String> userEmails){
-		JPanel mainPanel, leftPanel, rightPanel, emailsPanel, emailInboxPanel, previewPanel;
 		mainPanel = new JPanel();
 		leftPanel = new JPanel();
 		rightPanel = new JPanel();
@@ -247,10 +247,14 @@ public class GUI extends JFrame{
 			trees.elementAt(i).setShowsRootHandles(true);
 
 			DefaultMutableTreeNode inboxLeaf = new DefaultMutableTreeNode("Inbox");
+			DefaultMutableTreeNode writeLeaf = new DefaultMutableTreeNode("Write");
+			DefaultMutableTreeNode secureWriteLeaf = new DefaultMutableTreeNode("Secure write");
 			DefaultMutableTreeNode draftLeaf = new DefaultMutableTreeNode("Draft");
 			DefaultMutableTreeNode sentLeaf = new DefaultMutableTreeNode("Sent");
 			DefaultMutableTreeNode spamLeaf = new DefaultMutableTreeNode("Spam");
 			emailRoot.add(inboxLeaf);
+			emailRoot.add(writeLeaf);
+			emailRoot.add(secureWriteLeaf);
 			emailRoot.add(draftLeaf);
 			emailRoot.add(sentLeaf);
 			emailRoot.add(spamLeaf);
@@ -278,7 +282,7 @@ public class GUI extends JFrame{
 		leftPanel.setBackground(Color.white);
 	}
 
-	public void setEmailTreeListener(Vector<String> userEmails){
+	public void setEmailTreeListener(MouseListener a, Vector<String> userEmails){
 		for(int i = 0; i < trees.size(); i++){
 			JTree treeRoot = trees.elementAt(i);
 			treeRoot.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -298,12 +302,14 @@ public class GUI extends JFrame{
 						System.out.println("hi");
 						treeRoot.clearSelection();
 						return;
-					} else {
+					} else if(node.isLeaf() && node.getUserObject().toString() == "Write"){
 						System.out.println("hi in else"); 
+						//setSecureWritePanel(userEmails);
 						return;
 					}
 
 				}});
+			treeRoot.addMouseListener(a);
 		}
 	}
 

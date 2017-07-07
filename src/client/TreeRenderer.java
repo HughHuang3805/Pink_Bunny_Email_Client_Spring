@@ -28,8 +28,12 @@ public class TreeRenderer extends DefaultTreeCellRenderer {
 		if (leaf && isInbox(value)) {
 			setIcon(new ImageIcon("icons/inboxicon.png"));
 			//setToolTipText("This book is in the Tutorial series.");
-		} else if(leaf && isDraft(value)){
+		} else if(leaf && isWrite(value)){
 			setIcon(new ImageIcon("icons/writeicon.png"));
+		} else if(leaf && isSecureWrite(value)){
+			setIcon(new ImageIcon("icons/securewriteicon.png"));
+		} else if(leaf && isDraft(value)){
+			setIcon(new ImageIcon("icons/drafticon.png"));
 		} else if(leaf && isSent(value)){
 			setIcon(new ImageIcon("icons/senticon.png"));
 		} else if(leaf && isSpam(value)){
@@ -48,6 +52,30 @@ public class TreeRenderer extends DefaultTreeCellRenderer {
 				(String) (node.getUserObject());
 		String title = nodeInfo.toString();
 		if (title.indexOf("Inbox") >= 0) {
+			return true;
+		}
+		return false;
+	}
+	
+	protected boolean isWrite(Object value) {
+		DefaultMutableTreeNode node =
+				(DefaultMutableTreeNode)value;
+		String nodeInfo =
+				(String) (node.getUserObject());
+		String title = nodeInfo.toString();
+		if (title.indexOf("Write") >= 0) {
+			return true;
+		}
+		return false;
+	}
+	
+	protected boolean isSecureWrite(Object value) {
+		DefaultMutableTreeNode node =
+				(DefaultMutableTreeNode)value;
+		String nodeInfo =
+				(String) (node.getUserObject());
+		String title = nodeInfo.toString();
+		if (title.indexOf("Secure write") >= 0) {
 			return true;
 		}
 		return false;

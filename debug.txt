@@ -1,7 +1,7 @@
 DEBUG: getProvider() returning javax.mail.Provider[TRANSPORT,smtps,com.sun.mail.smtp.SMTPSSLTransport,Oracle]
 DEBUG SMTP: useEhlo true, useAuth true
 DEBUG SMTP: trying to connect to host "smtp.gmail.com", port 465, isSSL true
-220 smtp.gmail.com ESMTP q90sm15560122qki.11 - gsmtp
+220 smtp.gmail.com ESMTP g13sm3427604qkh.3 - gsmtp
 DEBUG SMTP: connected to host "smtp.gmail.com", port: 465
 
 EHLO Hugh-PC
@@ -27,24 +27,24 @@ DEBUG SMTP: AUTH LOGIN command trace suppressed
 DEBUG SMTP: AUTH LOGIN succeeded
 DEBUG SMTP: use8bit false
 MAIL FROM:<pinkbunnychickenmarsala@gmail.com>
-250 2.1.0 OK q90sm15560122qki.11 - gsmtp
-RCPT TO:<pinkbunnychickenmarsala2@gmail.com>
-250 2.1.5 OK q90sm15560122qki.11 - gsmtp
+250 2.1.0 OK g13sm3427604qkh.3 - gsmtp
+RCPT TO:<hughxq@gmail.com>
+250 2.1.5 OK g13sm3427604qkh.3 - gsmtp
 DEBUG SMTP: Verified Addresses
-DEBUG SMTP:   pinkbunnychickenmarsala2@gmail.com
+DEBUG SMTP:   hughxq@gmail.com
 DATA
-354  Go ahead q90sm15560122qki.11 - gsmtp
+354  Go ahead g13sm3427604qkh.3 - gsmtp
 From: pinkbunnychickenmarsala@gmail.com
-To: pinkbunnychickenmarsala2@gmail.com
-Message-ID: <1291938168.0.1499216840885@Hugh-PC>
-Subject: new look and feel
+To: hughxq@gmail.com
+Message-ID: <2100910544.0.1499460983718@Hugh-PC>
+Subject: lskjfklasjflskadj
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 
-sladfjalskdfjlasjflkasdfklajsklEnter your email body ...
+lsakfjsaldkfjlaskfdEnter your email body ...
 .
-250 2.0.0 OK 1499216842 q90sm15560122qki.11 - gsmtp
+250 2.0.0 OK 1499460987 g13sm3427604qkh.3 - gsmtp
 DEBUG SMTP: message successfully delivered to mail server
 QUIT
-221 2.0.0 closing connection q90sm15560122qki.11 - gsmtp
+221 2.0.0 closing connection g13sm3427604qkh.3 - gsmtp

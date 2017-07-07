@@ -23,12 +23,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
-
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -54,7 +50,6 @@ public class GUIController implements ActionListener, MouseListener{
 	private static Vector<String> userEmails = new Vector<String>();
 	private final String fileName = "userconfig.properties";
 	private InputStream inputStream;
-	private JTree tree;
 
 	private final static Hashtable<String, String> smtpServers = new Hashtable<String, String>() {/**
 	 * 
@@ -92,7 +87,7 @@ public class GUIController implements ActionListener, MouseListener{
 		getNumberOfEmails();
 		myGui = new GUI(getConfigEmails());
 		myGui.setButtonListener(this);
-		myGui.setEmailTreeListener(getConfigEmails());
+		myGui.setEmailTreeListener(this, userEmails);
 		//myGui.tree.addTreeSelectionListener(this);
 		/*Properties prop = new Properties();
 		OutputStream output = null;
@@ -240,7 +235,7 @@ public class GUIController implements ActionListener, MouseListener{
 			if(yubikeyAuthenticated && otpAuthenticated){//if everything is correct, then show messages and allow log in
 				myGui.loginFrame.dispose();
 				myGui.enableAllMenuItems();
-				myGui.setMainPanel(userEmails);
+				//myGui.setMainPanel(userEmails);
 			} 
 			break;
 
@@ -369,6 +364,7 @@ public class GUIController implements ActionListener, MouseListener{
 			counter++;
 			line = br.readLine();
 		}
+		br.close();
 		System.out.println(counter);
 	}
 
@@ -390,12 +386,25 @@ public class GUIController implements ActionListener, MouseListener{
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		for(int i = 0; i < 10; i++){
+		JTree tree = (JTree) e.getComponent();
+		tree.getLastSelectedPathComponent();
+		int row = tree.getRowForLocation(e.getX(), e.getY());
+		if(e.getClickCount() == 2){
+			myGui.setSecureWritePanel(userEmails);
+			System.out.println("double clicked");
+		}
+		if(row==-1) //When user clicks on the "empty surface"
+			tree.clearSelection();
+		/*for(int i = 0; i < userEmails.size(); i++){
 			myGui.trees.elementAt(i).getLastSelectedPathComponent();
 			int row=myGui.trees.elementAt(i).getRowForLocation(e.getX(),e.getY());
+			if(e.getClickCount() == 2){
+				myGui.setSecureWritePanel(userEmails);
+				System.out.println("double clicked");
+			}
 			if(row==-1) //When user clicks on the "empty surface"
 				myGui.trees.elementAt(i).clearSelection();
-		}
+		}*/
 	}
 
 	@Override
