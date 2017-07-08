@@ -1,6 +1,5 @@
 package client;
 
-import java.awt.Font;
 import java.io.IOException;
 
 import javax.swing.UIManager;

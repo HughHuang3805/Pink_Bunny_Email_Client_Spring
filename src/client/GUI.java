@@ -24,15 +24,15 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.LineBorder;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -70,8 +70,9 @@ public class GUI extends JFrame{
 	String imageFileName = "icons/favicon.png";
 	Vector<JTree> trees = new Vector<JTree>();
 	JPanel mainPanel, leftPanel, rightPanel, emailsPanel, emailInboxPanel, previewPanel;
-
-	public GUI(Vector<String> userEmails) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException{
+	JPopupMenu emailPopupMenu = new JPopupMenu();
+	
+	public GUI(MouseListener a, Vector<String> userEmails) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException{
 		setTitle("Pink Bunny E-mail Client");
 		setSize(1250, 800);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -82,7 +83,9 @@ public class GUI extends JFrame{
 		setLocationRelativeTo(null);
 		ImageIcon img = new ImageIcon(imageFileName);
 		setIconImage(img.getImage());
-		setMainPanel(userEmails);
+		setPopupItems(a);
+		//addMouseListener(a);
+		setMainPanel(userEmails, a);
 		setVisible(true);
 	}
 
@@ -203,7 +206,7 @@ public class GUI extends JFrame{
 		}
 	}
 
-	public void setMainPanel(Vector<String> userEmails){
+	public void setMainPanel(Vector<String> userEmails, MouseListener a){
 		mainPanel = new JPanel();
 		leftPanel = new JPanel();
 		rightPanel = new JPanel();
@@ -216,7 +219,7 @@ public class GUI extends JFrame{
 		rightPanel.setLayout(new GridLayout());
 
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);//split the middle
-		setEmailJTree(leftPanel, userEmails);//for left panel email lists
+		setEmailJTree(leftPanel, userEmails, a);//for left panel email lists
 		//leftPanel.add(jTree);
 		leftPanel.setBorder(new LineBorder(Color.GRAY));
 		rightPanel.setBorder(new LineBorder(Color.GRAY));
@@ -239,8 +242,10 @@ public class GUI extends JFrame{
 		setResizable(true);
 	}
 
-	public void setEmailJTree(JPanel leftPanel, Vector<String> userEmails){
+	public void setEmailJTree(JPanel leftPanel, Vector<String> userEmails, MouseListener a){
 
+		UIManager.put("Tree.expandedIcon",  new ImageIcon("icons/clapsedicon.png"));//changes the expand icon
+		UIManager.put("Tree.collapsedIcon", new ImageIcon("icons/expandicon.png"));//changes the clapsed icon
 		for(int i = 0; i < userEmails.size(); i++){
 			DefaultMutableTreeNode emailRoot = new DefaultMutableTreeNode(userEmails.elementAt(i));
 			trees.add(new JTree(emailRoot));
@@ -260,6 +265,7 @@ public class GUI extends JFrame{
 			emailRoot.add(spamLeaf);
 			trees.elementAt(i).setCellRenderer(new TreeRenderer());
 			trees.elementAt(i).setRowHeight(23);//gap between each email
+			trees.elementAt(i).addMouseListener(a);
 			Font currentFont = trees.elementAt(i).getFont();
 			//font size of the displaying email list
 			trees.elementAt(i).setFont(new Font(currentFont.getName(), currentFont.getStyle(), currentFont.getSize() + 3));
@@ -283,11 +289,11 @@ public class GUI extends JFrame{
 		leftPanel.setBackground(Color.white);
 	}
 
-	public void setEmailTreeListener(MouseListener a, Vector<String> userEmails){
+	public void setEmailTreeListener(MouseListener a, Vector<String> userEmails){//might not needed at all
 		for(int i = 0; i < trees.size(); i++){
 			JTree treeRoot = trees.elementAt(i);
 			treeRoot.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			treeRoot.addTreeSelectionListener(new TreeSelectionListener() {//add listener to individual tree
+			/*treeRoot.addTreeSelectionListener(new TreeSelectionListener() {//add listener to individual tree
 				public void valueChanged(TreeSelectionEvent e) {
 					//Returns the last path element of the selection.
 					//This method is useful only when the selection model allows a single selection.
@@ -299,17 +305,17 @@ public class GUI extends JFrame{
 						System.out.println("nothing is selected");
 						return;
 					}
-					if (node.isRoot()) {
-						System.out.println("hi");
-						treeRoot.clearSelection();
+					if (node.isRoot() ) {
+						System.out.println("root");
+						//treeRoot.clearSelection();
 						return;
 					} else if(node.isLeaf() && node.getUserObject().toString() == "Write"){
-						System.out.println("hi in else"); 
+						System.out.println("leaf"); 
 						//setSecureWritePanel(userEmails);
 						return;
 					}
 
-				}});
+				}});*/
 			treeRoot.addMouseListener(a);
 		}
 	}
@@ -368,7 +374,7 @@ public class GUI extends JFrame{
 		loginFrame.setIconImage(img.getImage());
 		loginFrame.setResizable(false);
 		loginFrame.setVisible(true);
-		loginFrame.setLocationRelativeTo(null);
+		loginFrame.setLocationRelativeTo(this);
 		//add(emailFrame);
 	}
 
@@ -581,7 +587,7 @@ public class GUI extends JFrame{
 		writeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		writeFrame.pack();
 		writeFrame.repaint();
-		writeFrame.setLocationRelativeTo(null);
+		writeFrame.setLocationRelativeTo(this);
 		writeFrame.setVisible(true);
 	}
 
@@ -711,13 +717,20 @@ public class GUI extends JFrame{
 		secureWriteFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		secureWriteFrame.pack();
 		secureWriteFrame.repaint();
-		secureWriteFrame.setLocationRelativeTo(null);
+		secureWriteFrame.setLocationRelativeTo(this);
 		secureWriteFrame.setVisible(true);
 	}
 
+	public void setPopupItems(MouseListener a){
+		JMenuItem getMessageItem = new JMenuItem("Get new messages.");
+		getMessageItem.setActionCommand("Get new Messages.");
+		emailPopupMenu.add(getMessageItem);
+		
+	}
+	
 	public String getEmail(){
 		//get rid of any space in the username
-		return emailTextField.getText().replaceAll("\\s+","");
+		return emailTextField.getText().replaceAll("\\s+", "");
 	}
 
 	public String getPassword(){

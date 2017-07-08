@@ -25,7 +25,8 @@ import java.util.Properties;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
-
+import javax.swing.SwingUtilities;
+import javax.swing.tree.DefaultMutableTreeNode;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -85,9 +86,10 @@ public class GUIController implements ActionListener, MouseListener{
 	public GUIController() throws Exception{
 		//myGui = g;
 		getNumberOfEmails();
-		myGui = new GUI(getConfigEmails());
+		getConfigEmails();
+		myGui = new GUI(this, userEmails);
 		myGui.setButtonListener(this);
-		myGui.setEmailTreeListener(this, userEmails);
+		//myGui.setEmailTreeListener(this, userEmails);
 		//myGui.tree.addTreeSelectionListener(this);
 		/*Properties prop = new Properties();
 		OutputStream output = null;
@@ -178,7 +180,7 @@ public class GUIController implements ActionListener, MouseListener{
 					} else {//if this email doesnt have yubikey 
 						myGui.enableAllMenuItems();
 						myGui.loginFrame.dispose();
-						myGui.setMainPanel(userEmails);
+						myGui.setMainPanel(userEmails, this);
 					}
 				}
 			} catch (GeneralSecurityException e3) {//first check to see if it is a correct email/password combo
@@ -368,7 +370,7 @@ public class GUIController implements ActionListener, MouseListener{
 		System.out.println(counter);
 	}
 
-	public Vector<String> getConfigEmails() throws IOException{
+	public void getConfigEmails() throws IOException{
 		Properties prop = new Properties();//get each of the email and store them in the userEmail vector
 		inputStream = new FileInputStream(fileName);
 		prop.load(inputStream);
@@ -380,7 +382,7 @@ public class GUIController implements ActionListener, MouseListener{
 				userEmails.add(user);
 			}
 		}
-		return userEmails;
+		//return userEmails;
 	}
 
 	@Override
@@ -390,25 +392,26 @@ public class GUIController implements ActionListener, MouseListener{
 		tree.getLastSelectedPathComponent();
 		int row = tree.getRowForLocation(e.getX(), e.getY());
 		//2 is the number of clicks, row != 0 means if it is not root, get the path of which the item is clicked
-		if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Secure write"){
-			myGui.setSecureWritePanel(userEmails);
-			System.out.println("double clicked");
-		} else if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Write"){
-			myGui.setWritePanel(userEmails);
-			System.out.println("double clicked");
-		}
-		if(row==-1) //When user clicks on the "empty surface"
-			tree.clearSelection();
-		/*for(int i = 0; i < userEmails.size(); i++){
-			myGui.trees.elementAt(i).getLastSelectedPathComponent();
-			int row=myGui.trees.elementAt(i).getRowForLocation(e.getX(),e.getY());
-			if(e.getClickCount() == 2){
+		if(tree.getLastSelectedPathComponent() != null){
+			if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Secure write"){
 				myGui.setSecureWritePanel(userEmails);
 				System.out.println("double clicked");
+			} else if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Write"){
+				myGui.setWritePanel(userEmails);
+				System.out.println("double clicked");
+			} else if(SwingUtilities.isRightMouseButton(e)){
+				DefaultMutableTreeNode node;
+				node = (DefaultMutableTreeNode)
+						tree.getLastSelectedPathComponent();
+				//System.out.println(tree.getX() + " " + tree.getY());
+				//System.out.println(e.getX() + " " + e.getY());
+				if(node.isRoot())
+					myGui.emailPopupMenu.show(tree, e.getX(), e.getY());
 			}
 			if(row==-1) //When user clicks on the "empty surface"
-				myGui.trees.elementAt(i).clearSelection();
-		}*/
+				tree.getSelectionModel().clearSelection();
+				//tree.clearSelection();
+		}
 	}
 
 	@Override
