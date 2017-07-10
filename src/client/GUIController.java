@@ -246,17 +246,22 @@ public class GUIController implements ActionListener, MouseListener{
 			break;
 
 		case "Send":
-			mailServer.setRecipient(myGui.getRecipient());
-			mailServer.setSubject(myGui.getSubject());
-
 			receiveEmail.setUsername(myGui.getEmail());
-			if(myGui.getPassword() != null){//if the user has not logged in 
-				receiveEmail.setPassword(myGui.getPassword());
-			} else{
+			if(myGui.getPassword() == null || myGui.getPassword().isEmpty()){//if the user has not logged in 
 				JOptionPane.showMessageDialog(myGui.loginFrame, "Please log in first.", "Failed", JOptionPane.ERROR_MESSAGE);
 				myGui.setLoginFrame();
 				break;
+			} else{
+				receiveEmail.setPassword(myGui.getPassword());
 			}
+			
+			if(myGui.getRecipient() != null && !myGui.getRecipient().isEmpty()){
+				mailServer.setRecipient(myGui.getRecipient());
+			} else{
+				JOptionPane.showMessageDialog(myGui.loginFrame, "Please specify recipient.", "Failed", JOptionPane.ERROR_MESSAGE);
+				break;
+			}
+			mailServer.setSubject(myGui.getSubject());
 			try {
 				mailServer.send(host, myGui.getEmailContentText());
 				myGui.setSendDebugTextArea();
@@ -277,7 +282,13 @@ public class GUIController implements ActionListener, MouseListener{
 			mailServer.setSubject(myGui.getSecureSubject());
 
 			receiveEmail.setUsername(myGui.getEmail());
-			receiveEmail.setPassword(myGui.getPassword());
+			if(myGui.getPassword() != null || myGui.getPassword() != ""){//if the user has not logged in 
+				receiveEmail.setPassword(myGui.getPassword());
+			} else{
+				JOptionPane.showMessageDialog(myGui.loginFrame, "Please log in first.", "Failed", JOptionPane.ERROR_MESSAGE);
+				myGui.setLoginFrame();
+				break;
+			}
 
 			try {
 				bw = new BufferedWriter(new FileWriter("plain-text.txt"));

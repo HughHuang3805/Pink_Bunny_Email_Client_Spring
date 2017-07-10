@@ -755,7 +755,10 @@ public class GUI extends JFrame{
 	}
 
 	public String getRecipient() {
-		return recipientTextField.getText();
+		if(recipientTextField != null){
+			return recipientTextField.getText().replaceAll("\\s+", "");
+		}
+		return null;
 	}
 
 	public String getSecureRecipient() {
