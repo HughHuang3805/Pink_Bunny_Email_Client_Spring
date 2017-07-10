@@ -278,15 +278,19 @@ public class GUIController implements ActionListener, MouseListener{
 
 		case "Secure Send":
 			BufferedWriter bw;
-			mailServer.setRecipient(myGui.getSecureRecipient());
-			mailServer.setSubject(myGui.getSecureSubject());
-
 			receiveEmail.setUsername(myGui.getEmail());
-			if(myGui.getPassword() != null || myGui.getPassword() != ""){//if the user has not logged in 
-				receiveEmail.setPassword(myGui.getPassword());
-			} else{
+			if(myGui.getPassword() == null || myGui.getPassword().isEmpty()){//if the user has not logged in 
 				JOptionPane.showMessageDialog(myGui.loginFrame, "Please log in first.", "Failed", JOptionPane.ERROR_MESSAGE);
 				myGui.setLoginFrame();
+				break;
+			} else{
+				receiveEmail.setPassword(myGui.getPassword());
+			}
+			
+			if(myGui.getSecureRecipient() != null && !myGui.getSecureRecipient().isEmpty()){
+				mailServer.setRecipient(myGui.getSecureRecipient());
+			} else{
+				JOptionPane.showMessageDialog(myGui.loginFrame, "Please specify recipient.", "Failed", JOptionPane.ERROR_MESSAGE);
 				break;
 			}
 
