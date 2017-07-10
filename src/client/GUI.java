@@ -71,8 +71,8 @@ public class GUI extends JFrame{
 	Vector<JTree> trees = new Vector<JTree>();
 	JPanel mainPanel, leftPanel, rightPanel, emailsPanel, emailInboxPanel, previewPanel;
 	JPopupMenu emailPopupMenu = new JPopupMenu();
-	
-	public GUI(MouseListener a, Vector<String> userEmails) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException{
+
+	public GUI(MouseListener a, ActionListener b, Vector<String> userEmails) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException{
 		setTitle("Pink Bunny E-mail Client");
 		setSize(1250, 800);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -83,7 +83,7 @@ public class GUI extends JFrame{
 		setLocationRelativeTo(null);
 		ImageIcon img = new ImageIcon(imageFileName);
 		setIconImage(img.getImage());
-		setPopupItems(a);
+		setPopupItems(b);
 		//addMouseListener(a);
 		setMainPanel(userEmails, a);
 		setVisible(true);
@@ -105,36 +105,37 @@ public class GUI extends JFrame{
 
 	public void setMenuItems(){
 		JMenuBar menuBar = new JMenuBar();
-		JMenuItem getNewMessagesItem, writeItem, exitItem, generateKeyPairItem, secureWriteItem, addNewAccountItem;
+		//writeItem, secureWriteItem,
+		JMenuItem getAllNewMessagesItem, exitItem, generateKeyPairItem, addNewAccountItem;
 		menus.add(fileMenu);
 		menus.add(toolMenu);
 
 		addNewAccountItem = new JMenuItem("Add New Account");
 		addNewAccountItem.setIcon(new ImageIcon("icons/addicon.png"));
-		getNewMessagesItem = new JMenuItem("Get New Messages");
-		writeItem = new JMenuItem("Write");
+		getAllNewMessagesItem = new JMenuItem("Get All New Messages");
+		/*writeItem = new JMenuItem("Write");
 		writeItem.setToolTipText("Send Emails Un-Encrypted");
 		secureWriteItem = new JMenuItem("Secure Write");
-		secureWriteItem.setToolTipText("Send Emails Encrypted");
+		secureWriteItem.setToolTipText("Send Emails Encrypted");*/
 		exitItem = new JMenuItem("Exit");
 		generateKeyPairItem = new JMenuItem("Generate Key Pair");
 		generateKeyPairItem.setIcon(new ImageIcon("icons/keyicon.png"));
 
 		//add items to a list for adding actionlistener
-		menuItems.add(writeItem);
-		menuItems.add(getNewMessagesItem);
+		//menuItems.add(writeItem);
+		menuItems.add(getAllNewMessagesItem);
 		menuItems.add(exitItem);
 		menuItems.add(generateKeyPairItem);
-		menuItems.add(secureWriteItem);
+		//menuItems.add(secureWriteItem);
 		menuItems.add(addNewAccountItem);
 
 		fileMenu.add(addNewAccountItem);
-		fileMenu.add(secureWriteItem);
-		secureWriteItem.setEnabled(false);
-		fileMenu.add(writeItem);
-		writeItem.setEnabled(false);
-		fileMenu.add(getNewMessagesItem);
-		getNewMessagesItem.setEnabled(false);
+		//fileMenu.add(secureWriteItem);
+		//secureWriteItem.setEnabled(false);
+		//fileMenu.add(writeItem);
+		//writeItem.setEnabled(false);
+		fileMenu.add(getAllNewMessagesItem);
+		getAllNewMessagesItem.setEnabled(false);
 		//menu1.addSeparator();
 		fileMenu.addSeparator();
 		fileMenu.add(exitItem);
@@ -269,7 +270,7 @@ public class GUI extends JFrame{
 			Font currentFont = trees.elementAt(i).getFont();
 			//font size of the displaying email list
 			trees.elementAt(i).setFont(new Font(currentFont.getName(), currentFont.getStyle(), currentFont.getSize() + 3));
-			
+
 			GridBagConstraints cs = new GridBagConstraints();//constraints
 			cs.fill = GridBagConstraints.BOTH;
 			cs.anchor = GridBagConstraints.NORTH;
@@ -328,7 +329,7 @@ public class GUI extends JFrame{
 		setVisible(true);
 	}
 
-	public void setEmailFrame(){//ask for email on emailPanel
+	public void setLoginFrame(){//ask for email on emailPanel
 		loginFrame = null;
 		loginFrame = new JFrame("Email");
 		emailPanel = new JPanel();
@@ -721,21 +722,27 @@ public class GUI extends JFrame{
 		secureWriteFrame.setVisible(true);
 	}
 
-	public void setPopupItems(MouseListener a){
-		JMenuItem getMessageItem = new JMenuItem("Get new messages.");
-		getMessageItem.setActionCommand("Get new Messages.");
+	public void setPopupItems(ActionListener a){
+		JMenuItem getMessageItem = new JMenuItem("Get new messages");
+		getMessageItem.addActionListener(a);
+		JMenuItem loginItem = new JMenuItem("Log in");
+		loginItem.addActionListener(a);
+		//getMessageItem.setActionCommand("Get New Messages");
 		emailPopupMenu.add(getMessageItem);
-		
+		emailPopupMenu.add(loginItem);
 	}
-	
+
 	public String getEmail(){
 		//get rid of any space in the username
-		return emailTextField.getText().replaceAll("\\s+", "");
+		return ((String) emailList.getSelectedItem()).replaceAll("\\s+", "");
 	}
 
 	public String getPassword(){
-		String passText = new String(passwordText.getPassword());
-		return passText;
+		if(passwordText != null){
+			String passText = new String(passwordText.getPassword());
+			return passText;
+		}
+		return null;
 	}
 
 	public String getYubikey(){

@@ -87,7 +87,7 @@ public class GUIController implements ActionListener, MouseListener{
 		//myGui = g;
 		getNumberOfEmails();
 		getConfigEmails();
-		myGui = new GUI(this, userEmails);
+		myGui = new GUI(this, this, userEmails);
 		myGui.setButtonListener(this);
 		//myGui.setEmailTreeListener(this, userEmails);
 		//myGui.tree.addTreeSelectionListener(this);
@@ -250,8 +250,13 @@ public class GUIController implements ActionListener, MouseListener{
 			mailServer.setSubject(myGui.getSubject());
 
 			receiveEmail.setUsername(myGui.getEmail());
-			receiveEmail.setPassword(myGui.getPassword());
-
+			if(myGui.getPassword() != null){//if the user has not logged in 
+				receiveEmail.setPassword(myGui.getPassword());
+			} else{
+				JOptionPane.showMessageDialog(myGui.loginFrame, "Please log in first.", "Failed", JOptionPane.ERROR_MESSAGE);
+				myGui.setLoginFrame();
+				break;
+			}
 			try {
 				mailServer.send(host, myGui.getEmailContentText());
 				myGui.setSendDebugTextArea();
@@ -263,7 +268,7 @@ public class GUIController implements ActionListener, MouseListener{
 			break;
 
 		case "Add New Account":
-			myGui.setEmailFrame();
+			myGui.setLoginFrame();;
 			break;
 
 		case "Secure Send":
@@ -301,7 +306,7 @@ public class GUIController implements ActionListener, MouseListener{
 			myGui.secureWriteFrame.dispose();
 			break;
 
-		case "Get New Messages":
+		case "Get new messages":
 			try {
 				receiveEmail.receiveEmail();
 				BufferedReader br = new BufferedReader(new FileReader("dec-plain-text.txt"));
@@ -410,7 +415,7 @@ public class GUIController implements ActionListener, MouseListener{
 			}
 			if(row==-1) //When user clicks on the "empty surface"
 				tree.getSelectionModel().clearSelection();
-				//tree.clearSelection();
+			//tree.clearSelection();
 		}
 	}
 
