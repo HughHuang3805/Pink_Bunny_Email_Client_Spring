@@ -732,9 +732,13 @@ public class GUI extends JFrame{
 		emailPopupMenu.add(loginItem);
 	}
 
-	public String getEmail(){
+	public String getEmailFromList(){
 		//get rid of any space in the username
 		return ((String) emailList.getSelectedItem()).replaceAll("\\s+", "");
+	}
+	
+	public String getEmail(){
+		return emailTextField.getText().replaceAll("\\s+", "");
 	}
 
 	public String getPassword(){

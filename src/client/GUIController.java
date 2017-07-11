@@ -201,8 +201,8 @@ public class GUIController implements ActionListener, MouseListener{
 			while(verificationString == ""){
 				try {
 					List<NameValuePair> params = new ArrayList<NameValuePair>();
-					params.add(new BasicNameValuePair(myGui.getEmail(), myGui.getYubikey()));
-					System.out.println(myGui.getEmail());
+					params.add(new BasicNameValuePair(myGui.getEmailFromList(), myGui.getYubikey()));
+					System.out.println(myGui.getEmailFromList());
 					authenticationPost.setEntity(new UrlEncodedFormEntity(params));//email and yubikey POST as the body of request
 					HttpResponse response2 = authenticationClient.execute(authenticationPost);//wait for a response from the server
 					BufferedReader rd2 = new BufferedReader(new InputStreamReader(response2.getEntity().getContent()));//read the response
@@ -246,7 +246,7 @@ public class GUIController implements ActionListener, MouseListener{
 			break;
 
 		case "Send":
-			receiveEmail.setUsername(myGui.getEmail());
+			receiveEmail.setUsername(myGui.getEmailFromList());
 			if(myGui.getPassword() == null || myGui.getPassword().isEmpty()){//if the user has not logged in 
 				JOptionPane.showMessageDialog(myGui.loginFrame, "Please log in first.", "Failed", JOptionPane.ERROR_MESSAGE);
 				myGui.setLoginFrame();
@@ -278,7 +278,7 @@ public class GUIController implements ActionListener, MouseListener{
 
 		case "Secure Send":
 			BufferedWriter bw;
-			receiveEmail.setUsername(myGui.getEmail());
+			receiveEmail.setUsername(myGui.getEmailFromList());
 			if(myGui.getPassword() == null || myGui.getPassword().isEmpty()){//if the user has not logged in 
 				JOptionPane.showMessageDialog(myGui.loginFrame, "Please log in first.", "Failed", JOptionPane.ERROR_MESSAGE);
 				myGui.setLoginFrame();
