@@ -46,9 +46,10 @@ import org.bouncycastle.openpgp.PGPException;
 public class GUIController implements ActionListener, MouseListener{
 
 	GUI myGui;
-	SecureMailService mailServer = new SecureMailService();
+	SecureMailService emailServer = new SecureMailService();
 	private static String smtpServer = "";
 	private static String portNumber = "";
+	private static String imapServer = "";
 	private static String email = "";
 	private static String host = "";
 	private static boolean hasYubikey = false;
@@ -88,6 +89,21 @@ public class GUIController implements ActionListener, MouseListener{
 		}
 	};
 
+	private final static Hashtable<String, String> imapServers = new Hashtable<String, String>() {/**
+	 * 
+	 */
+		private static final long serialVersionUID = 1L;
+
+		{
+			put("GMAIL", "imap.gmail.com");
+			put("OUTLOOK", "imap-mail.outlook.com");
+			put("OFFICE365", "outlook.office365.com");
+			put("YAHOO", "imap.mail.yahoo.com");
+			put("AOL", "imap.aol.com");
+			put("HOTMAIL", "imap-mail.outlook.com");
+		}
+	};
+
 	public GUIController() throws Exception{
 		//myGui = g;
 		getNumberOfEmails();
@@ -121,10 +137,12 @@ public class GUIController implements ActionListener, MouseListener{
 				host = email.substring(email.indexOf("@") + 1, email.indexOf(".")).toLowerCase();//see what kind of host the user is using
 				smtpServer = smtpServers.get(host.toUpperCase());//check what smtp server it is using for that host
 				portNumber = portNumbers.get(host.toUpperCase());//check what port it is using for that host
+				imapServer = imapServers.get(host.toUpperCase());
 				if(smtpServer != null & portNumber != null){
-					mailServer.setHostName(smtpServer);//set smtp server
-					mailServer.setPort(Integer.parseInt(portNumber));//set port number
-					mailServer.setUsername(email);//set user email
+					emailServer.setHostName(smtpServer);//set smtp server
+					emailServer.setPort(Integer.parseInt(portNumber));//set port number
+					emailServer.setUsername(email);//set user email
+					emailServer.setImapHost(imapServer);
 					System.out.println(smtpServer);
 					System.out.println(portNumber);
 					System.out.println(host);
@@ -174,9 +192,9 @@ public class GUIController implements ActionListener, MouseListener{
 
 		case "Sign-in":
 			boolean emailAuthenticated = false;
-			mailServer.setPassword(myGui.getPassword());
+			emailServer.setPassword(myGui.getPassword());
 			try {
-				emailAuthenticated = mailServer.connect(host);//try to connect
+				emailAuthenticated = emailServer.connect(host);//try to connect
 				System.out.println("Has yubikey: " + hasYubikey);
 				if(!emailAuthenticated)
 					JOptionPane.showMessageDialog(myGui.loginFrame, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
@@ -186,7 +204,7 @@ public class GUIController implements ActionListener, MouseListener{
 					} else {//if this email doesnt have yubikey 
 						myGui.enableAllMenuItems();
 						myGui.loginFrame.dispose();
-						myGui.setMainPanel(userEmails, this);
+						//myGui.setMainPanel(userEmails, this);
 					}
 				}
 			} catch (GeneralSecurityException e3) {//first check to see if it is a correct email/password combo
@@ -255,24 +273,24 @@ public class GUIController implements ActionListener, MouseListener{
 			break;
 
 		case "Send":
-			mailServer.setUsername(myGui.getEmailFromList());
+			emailServer.setUsername(myGui.getEmailFromList());
 			if(myGui.getPassword() == null || myGui.getPassword().isEmpty()){//if the user has not logged in 
 				JOptionPane.showMessageDialog(myGui.loginFrame, "Please log in first.", "Failed", JOptionPane.ERROR_MESSAGE);
 				myGui.setLoginFrame();
 				break;
 			} else{
-				mailServer.setPassword(myGui.getPassword());
+				emailServer.setPassword(myGui.getPassword());
 			}
-			
+
 			if(myGui.getRecipient() != null && !myGui.getRecipient().isEmpty()){
-				mailServer.setRecipient(myGui.getRecipient());
+				emailServer.setRecipient(myGui.getRecipient());
 			} else{
 				JOptionPane.showMessageDialog(myGui.loginFrame, "Please specify recipient.", "Failed", JOptionPane.ERROR_MESSAGE);
 				break;
 			}
-			mailServer.setSubject(myGui.getSubject());
+			emailServer.setSubject(myGui.getSubject());
 			try {
-				mailServer.send(host, myGui.getEmailContentText());
+				emailServer.send(host, myGui.getEmailContentText());
 				myGui.setSendDebugTextArea();
 				JOptionPane.showMessageDialog(myGui.writeFrame, "Message sent!");
 			} catch (Exception e1) {
@@ -284,22 +302,24 @@ public class GUIController implements ActionListener, MouseListener{
 		case "Add New Account":
 			myGui.setAddAccountFrame();
 			break;
-			
+
 		case "Log in":
 			myGui.setLoginFrame();
 			break;
 
 		case "Log-in":
-			mailServer.setPassword(myGui.getPassword());
+			emailServer.setPassword(myGui.getPassword());
 			System.out.println(email + "in log in");
 			if(email != null && !email.equals("")){
 				host = email.substring(email.indexOf("@") + 1, email.indexOf(".")).toLowerCase();//see what kind of host the user is using
 				smtpServer = smtpServers.get(host.toUpperCase());//check what smtp server it is using for that host
 				portNumber = portNumbers.get(host.toUpperCase());//check what port it is using for that host
+				imapServer = imapServers.get(host.toUpperCase());
 				if(smtpServer != null & portNumber != null){
-					mailServer.setHostName(smtpServer);//set smtp server
-					mailServer.setPort(Integer.parseInt(portNumber));//set port number
-					mailServer.setUsername(email);//set user email
+					emailServer.setHostName(smtpServer);//set smtp server
+					emailServer.setPort(Integer.parseInt(portNumber));//set port number
+					emailServer.setUsername(email);//set user email
+					emailServer.setImapHost(imapServer);
 					System.out.println(smtpServer);
 					System.out.println(portNumber);
 					System.out.println(host);
@@ -332,10 +352,10 @@ public class GUIController implements ActionListener, MouseListener{
 					myGui.buttonPanel.setVisible(false);//hide button panel
 					myGui.buttonPanel.removeAll();//remove whatever is in button panel
 					myGui.loginFrame.repaint();//repaint the gui
-					
+
 					boolean emailAuthenticated2 = false;
 					try {
-						emailAuthenticated2 = mailServer.connect(host);//try to connect
+						emailAuthenticated2 = emailServer.connect(host);//try to connect
 						System.out.println("Has yubikey: " + hasYubikey);
 						if(!emailAuthenticated2)
 							JOptionPane.showMessageDialog(myGui.loginFrame, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
@@ -345,7 +365,6 @@ public class GUIController implements ActionListener, MouseListener{
 							} else {//if this email doesnt have yubikey 
 								myGui.enableAllMenuItems();
 								myGui.loginFrame.dispose();
-								myGui.setMainPanel(userEmails, this);
 							}
 						}
 					} catch (GeneralSecurityException e3) {//first check to see if it is a correct email/password combo
@@ -364,20 +383,20 @@ public class GUIController implements ActionListener, MouseListener{
 				}
 			} 
 			break;
-			
+
 		case "Secure Send":
 			BufferedWriter bw;
-			mailServer.setUsername(myGui.getEmailFromList());
+			emailServer.setUsername(myGui.getEmailFromList());
 			if(myGui.getPassword() == null || myGui.getPassword().isEmpty()){//if the user has not logged in 
 				JOptionPane.showMessageDialog(myGui.loginFrame, "Please log in first.", "Failed", JOptionPane.ERROR_MESSAGE);
 				myGui.setLoginFrame();
 				break;
 			} else{
-				mailServer.setPassword(myGui.getPassword());
+				emailServer.setPassword(myGui.getPassword());
 			}
-			
+
 			if(myGui.getSecureRecipient() != null && !myGui.getSecureRecipient().isEmpty()){
-				mailServer.setRecipient(myGui.getSecureRecipient());
+				emailServer.setRecipient(myGui.getSecureRecipient());
 			} else{
 				JOptionPane.showMessageDialog(myGui.loginFrame, "Please specify recipient.", "Failed", JOptionPane.ERROR_MESSAGE);
 				break;
@@ -393,7 +412,7 @@ public class GUIController implements ActionListener, MouseListener{
 			}
 
 			try {
-				mailServer.encryptedSend(host);
+				emailServer.encryptedSend(host);
 				myGui.setSecureSendDebugTextArea();;
 				JOptionPane.showMessageDialog(myGui.secureWriteFrame, "Message sent!");
 			} catch (Exception e1) {
@@ -412,7 +431,7 @@ public class GUIController implements ActionListener, MouseListener{
 
 		case "Get new messages":
 			try {
-				mailServer.receiveEmail();
+				emailServer.receiveEmail();
 				BufferedReader br = new BufferedReader(new FileReader("dec-plain-text.txt"));
 				String message = "";
 
@@ -451,11 +470,15 @@ public class GUIController implements ActionListener, MouseListener{
 			break;
 
 		case "Write":
-			myGui.setWritePanel(userEmails);
+			if(emailServer.isSmtpLoggedIn()){
+				myGui.setWritePanel(userEmails);
+			}
 			break;
 
 		case "Secure Write":
-			myGui.setSecureWritePanel(userEmails);
+			if(emailServer.isSmtpLoggedIn()){
+				myGui.setSecureWritePanel(userEmails);
+			}
 			break;
 
 		case "Exit":
@@ -500,18 +523,19 @@ public class GUIController implements ActionListener, MouseListener{
 		JTree tree = (JTree) e.getComponent();
 		tree.getLastSelectedPathComponent();
 		int row = tree.getRowForLocation(e.getX(), e.getY());
+		System.out.println(row);
 		//2 is the number of clicks, row != 0 means if it is not root, get the path of which the item is clicked
 		if(tree.getLastSelectedPathComponent() != null){
-			if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Secure write"){
+			if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Secure write" && emailServer.isSmtpLoggedIn()){
 				myGui.setSecureWritePanel(userEmails);
 				System.out.println("double clicked");
-			} else if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Write"){
+			} else if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Write" && emailServer.isSmtpLoggedIn()){
 				myGui.setWritePanel(userEmails);
 				System.out.println("double clicked");
-			} else if(e.getClickCount() == 1 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Inbox"){
+			} else if(e.getClickCount() == 1 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Inbox" && emailServer.isSmtpLoggedIn()){
 				try {
-					if(mailServer.isSmtpLoggedIn()){
-						myGui.setDisplayPanel(mailServer);
+					if(myGui.emailTable == null){
+						myGui.setDisplayPanel(emailServer);
 					}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -525,17 +549,18 @@ public class GUIController implements ActionListener, MouseListener{
 					myGui.emailPopupMenu.show(tree, e.getX(), e.getY());
 					email = node.getUserObject().toString();
 					myGui.emailTextField = new JTextField(email);
-					mailServer.setUsername(email);
-					//mailServer.setUsername(node.getUserObject().toString());//for imap
-					//mailServer.setUser(node.getUserObject().toString());//for smtp
+					emailServer.setUsername(email);
 				}
-			}
+			} else {
+			//	JOptionPane.showMessageDialog(myGui, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
+				//tree.getSelectionModel().clearSelection();
+			} 
 			if(row == -1) //When user clicks on the "empty surface"
 				tree.getSelectionModel().clearSelection();
 			//tree.clearSelection();
 		}
 	}
-	
+
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -570,19 +595,12 @@ public class GUIController implements ActionListener, MouseListener{
 					DefaultMutableTreeNode node;
 					node = (DefaultMutableTreeNode)
 							treeRoot.getLastSelectedPathComponent();
-					/*if (node == null){
-						//Nothing is selected.     
-						System.out.println("nothing is selected");
-						return;
-					}*/
-					/*if (node.isRoot() ) {
-						System.out.println("root");
-						//treeRoot.clearSelection();
-						return;
-					}*/if(node.isLeaf() && node.getUserObject().toString() == "Inbox"){
+					if(node.isLeaf() && node.getUserObject().toString() == "Inbox"){
 						System.out.println("leaf"); 
 						try {
-							myGui.setDisplayPanel(mailServer);
+							if(myGui.emailTable == null){
+								myGui.setDisplayPanel(emailServer);
+							}
 						} catch (Exception e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();

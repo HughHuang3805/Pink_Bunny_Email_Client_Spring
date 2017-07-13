@@ -37,7 +37,7 @@ public class SecureMailService {
 	private String subject;
 	private boolean smtpLoggedIn = false;
 	
-	private String host = "imap.gmail.com";
+	private String imapHost = "";
 	@SuppressWarnings("unused")
 	private String mailStoreType = "imap";  
 	private String username = "";  
@@ -201,46 +201,6 @@ public class SecureMailService {
 		}
 	}
 	
-	public boolean isSmtpLoggedIn() {
-		return smtpLoggedIn;
-	}
-
-	public void setSmtpLoggedIn(boolean smtpLoggedIn) {
-		this.smtpLoggedIn = smtpLoggedIn;
-	}
-
-	public String getHostName() {
-		return SMTP_HOST_NAME;
-	}
-
-	public void setHostName(String sMTP_HOST_NAME) {
-		SMTP_HOST_NAME = sMTP_HOST_NAME;
-	}
-
-	public int getPort() {
-		return SMTP_HOST_PORT;
-	}
-
-	public void setPort(int sMTP_HOST_PORT) {
-		SMTP_HOST_PORT = sMTP_HOST_PORT;
-	}
-	
-	public String getRecipient() {
-		return recipient;
-	}
-
-	public void setRecipient(String sMTP_RECIPIENT) {
-		recipient = sMTP_RECIPIENT;
-	}
-	
-	public String getSubject() {
-		return subject;
-	}
-
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
-	
 	public void receiveEmail() throws Exception {  
 		try {  
 			//1) get the session object  
@@ -258,7 +218,7 @@ public class SecureMailService {
 
 			//2) create the POP3 store object and connect with the pop server  
 			Store emailStore=session2.getStore("imaps");
-			emailStore.connect(host, username, password);  
+			emailStore.connect(imapHost, username, password);  
 
 			//3) create the folder object and open it  
 			Folder emailFolder = emailStore.getFolder("INBOX");  
@@ -310,7 +270,7 @@ public class SecureMailService {
 
 			//2) create the POP3 store object and connect with the pop server  
 			Store emailStore=session2.getStore("imaps");
-			emailStore.connect(host, username, password);  
+			emailStore.connect(imapHost, username, password);  
 
 			//3) create the folder object and open it  
 			Folder emailFolder = emailStore.getFolder("INBOX");  
@@ -370,4 +330,51 @@ public class SecureMailService {
 		this.password = password;
 	}
 	
+	public boolean isSmtpLoggedIn() {
+		return smtpLoggedIn;
+	}
+
+	public void setSmtpLoggedIn(boolean smtpLoggedIn) {
+		this.smtpLoggedIn = smtpLoggedIn;
+	}
+
+	public String getHostName() {
+		return SMTP_HOST_NAME;
+	}
+
+	public void setHostName(String sMTP_HOST_NAME) {
+		SMTP_HOST_NAME = sMTP_HOST_NAME;
+	}
+
+	public int getPort() {
+		return SMTP_HOST_PORT;
+	}
+
+	public void setPort(int sMTP_HOST_PORT) {
+		SMTP_HOST_PORT = sMTP_HOST_PORT;
+	}
+	
+	public String getRecipient() {
+		return recipient;
+	}
+
+	public void setRecipient(String sMTP_RECIPIENT) {
+		recipient = sMTP_RECIPIENT;
+	}
+	
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+	
+	public String getImapHost() {
+		return imapHost;
+	}
+
+	public void setImapHost(String imapHost) {
+		this.imapHost = imapHost;
+	}
 }
