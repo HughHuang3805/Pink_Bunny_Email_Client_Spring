@@ -63,8 +63,7 @@ public class ReceiveEmail{
 			e2.printStackTrace();
 		}
 	}*/
-	
-	@SuppressWarnings("resource")
+
 	public void receiveEmail() throws Exception {  
 		try {  
 			//1) get the session object  
@@ -76,12 +75,12 @@ public class ReceiveEmail{
 			Session session2=Session.getDefaultInstance(props2, null);
 
 
-				@SuppressWarnings("unused")
-				Store store=session2.getStore("imaps");
+			@SuppressWarnings("unused")
+			Store store=session2.getStore("imaps");
 
 
 			//2) create the POP3 store object and connect with the pop server  
-				Store emailStore=session2.getStore("imaps");
+			Store emailStore=session2.getStore("imaps");
 			emailStore.connect(host, username, password);  
 
 			//3) create the folder object and open it  
@@ -95,7 +94,8 @@ public class ReceiveEmail{
 				System.out.println("---------------------------------");  
 				System.out.println("Email Number " + (i + 1));  
 				System.out.println("Subject: " + message.getSubject());  
-				System.out.println("From: " + message.getFrom()[0]);  
+				System.out.println("From: " + message.getFrom()[0]); 
+				message.getReceivedDate();
 				Scanner s;
 				s = new Scanner(message.getInputStream()).useDelimiter("\\A");
 				String result = s.hasNext() ? s.next() : " ";
@@ -106,6 +106,7 @@ public class ReceiveEmail{
 				getMultipart(message);
 				TestBCOpenPGP x = new TestBCOpenPGP();
 				x.decrypt();//once the cipher-text.dat is downloaded, start to decrypt
+				s.close();
 			}  
 
 			//5) close the store and folder objects  
@@ -115,6 +116,42 @@ public class ReceiveEmail{
 		} catch (NoSuchProviderException e) {e.printStackTrace();}   
 		catch (MessagingException e) {e.printStackTrace();}  
 		catch (IOException e) {e.printStackTrace();}  
+	} 
+
+	public Message[] getMessages() throws Exception {  
+		try {  
+			//1) get the session object  
+			Properties props2=System.getProperties();
+
+			props2.setProperty("mail.store.protocol", "imaps");
+			//props2.put("mail.imaps.ssl.trust", "*");
+
+			Session session2=Session.getDefaultInstance(props2, null);
+
+			@SuppressWarnings("unused")
+			Store store=session2.getStore("imaps");
+
+			//2) create the POP3 store object and connect with the pop server  
+			Store emailStore=session2.getStore("imaps");
+			emailStore.connect(host, username, password);  
+
+			//3) create the folder object and open it  
+			Folder emailFolder = emailStore.getFolder("INBOX");  
+			emailFolder.open(Folder.READ_ONLY);  
+
+			//4) retrieve the messages from the folder in an array and print it  
+			Message[] messages = emailFolder.getMessages();  
+
+			//5) close the store and folder objects  
+			//emailFolder.close(false);  
+			//emailStore.close();  
+			return messages;
+		} catch (NoSuchProviderException e) {
+			e.printStackTrace();
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}  
+		return null;
 	} 
 
 	public void getMultipart(Message message) throws IOException, MessagingException{//download the cipher-text.dat

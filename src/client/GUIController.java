@@ -26,7 +26,11 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeSelectionModel;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -87,8 +91,9 @@ public class GUIController implements ActionListener, MouseListener{
 		//myGui = g;
 		getNumberOfEmails();
 		getConfigEmails();
-		myGui = new GUI(this, this, userEmails);
+		myGui = new GUI(this, this, receiveEmail, userEmails);
 		myGui.setButtonListener(this);
+		//setEmailTreeListener(this, userEmails);
 		//myGui.setEmailTreeListener(this, userEmails);
 		//myGui.tree.addTreeSelectionListener(this);
 		/*Properties prop = new Properties();
@@ -180,7 +185,7 @@ public class GUIController implements ActionListener, MouseListener{
 					} else {//if this email doesnt have yubikey 
 						myGui.enableAllMenuItems();
 						myGui.loginFrame.dispose();
-						myGui.setMainPanel(userEmails, this);
+						myGui.setMainPanel(userEmails, receiveEmail, this);
 					}
 				}
 			} catch (GeneralSecurityException e3) {//first check to see if it is a correct email/password combo
@@ -188,6 +193,9 @@ public class GUIController implements ActionListener, MouseListener{
 				e3.printStackTrace();
 			} catch (IllegalArgumentException iae){
 				JOptionPane.showMessageDialog(myGui.loginFrame, "Not a valid OTP(One-Time-Password) format.", "Error", JOptionPane.ERROR_MESSAGE);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			} 
 			break;
 
@@ -419,7 +427,17 @@ public class GUIController implements ActionListener, MouseListener{
 			} else if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Write"){
 				myGui.setWritePanel(userEmails);
 				System.out.println("double clicked");
-			} else if(SwingUtilities.isRightMouseButton(e)){
+			} else if(e.getClickCount() == 1 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Inbox"){
+				try {
+					if(myGui.emailTable == null){
+						myGui.setDisplayPanel(receiveEmail);
+					}
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			else if(SwingUtilities.isRightMouseButton(e)){
 				DefaultMutableTreeNode node;
 				node = (DefaultMutableTreeNode)
 						tree.getLastSelectedPathComponent();
@@ -433,7 +451,7 @@ public class GUIController implements ActionListener, MouseListener{
 			//tree.clearSelection();
 		}
 	}
-
+	
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -457,5 +475,40 @@ public class GUIController implements ActionListener, MouseListener{
 		// TODO Auto-generated method stub
 
 	}
+	public void setEmailTreeListener(MouseListener a, Vector<String> userEmails){//might not needed at all
+		for(int i = 0; i < myGui.trees.size(); i++){
+			JTree treeRoot = myGui.trees.elementAt(i);
+			treeRoot.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+			treeRoot.addTreeSelectionListener(new TreeSelectionListener() {//add listener to individual tree
+				public void valueChanged(TreeSelectionEvent e) {
+					//Returns the last path element of the selection.
+					//This method is useful only when the selection model allows a single selection.
+					DefaultMutableTreeNode node;
+					node = (DefaultMutableTreeNode)
+							treeRoot.getLastSelectedPathComponent();
+					/*if (node == null){
+						//Nothing is selected.     
+						System.out.println("nothing is selected");
+						return;
+					}*/
+					/*if (node.isRoot() ) {
+						System.out.println("root");
+						//treeRoot.clearSelection();
+						return;
+					}*/if(node.isLeaf() && node.getUserObject().toString() == "Inbox"){
+						System.out.println("leaf"); 
+						try {
+							myGui.setDisplayPanel(receiveEmail);
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						//setSecureWritePanel(userEmails);
+						return;
+					}
 
+				}});
+			treeRoot.addMouseListener(a);
+		}
+	}
 }

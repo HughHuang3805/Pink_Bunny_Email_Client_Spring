@@ -13,7 +13,11 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Scanner;
 import java.util.Vector;
+
+import javax.mail.Message;
+import javax.mail.internet.InternetAddress;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -27,12 +31,15 @@ import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.LineBorder;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -71,8 +78,9 @@ public class GUI extends JFrame{
 	Vector<JTree> trees = new Vector<JTree>();
 	JPanel mainPanel, leftPanel, rightPanel, emailsPanel, emailInboxPanel, previewPanel;
 	JPopupMenu emailPopupMenu = new JPopupMenu();
+	JTable emailTable;
 
-	public GUI(MouseListener a, ActionListener b, Vector<String> userEmails) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException{
+	public GUI(MouseListener a, ActionListener b, ReceiveEmail email, Vector<String> userEmails) throws Exception{
 		setTitle("Pink Bunny E-mail Client");
 		setSize(1250, 800);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -85,7 +93,7 @@ public class GUI extends JFrame{
 		setIconImage(img.getImage());
 		setPopupItems(b);
 		//addMouseListener(a);
-		setMainPanel(userEmails, a);
+		setMainPanel(userEmails, email, a);
 		setVisible(true);
 	}
 
@@ -207,7 +215,7 @@ public class GUI extends JFrame{
 		}
 	}
 
-	public void setMainPanel(Vector<String> userEmails, MouseListener a){
+	public void setMainPanel(Vector<String> userEmails, ReceiveEmail email, MouseListener a) throws Exception{
 		mainPanel = new JPanel();
 		leftPanel = new JPanel();
 		rightPanel = new JPanel();
@@ -220,8 +228,9 @@ public class GUI extends JFrame{
 		rightPanel.setLayout(new GridLayout());
 
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);//split the middle
-		setEmailJTree(leftPanel, userEmails, a);//for left panel email lists
+		setEmailJTreePanel(userEmails, a);//for left panel email lists
 		//leftPanel.add(jTree);
+
 		leftPanel.setBorder(new LineBorder(Color.GRAY));
 		rightPanel.setBorder(new LineBorder(Color.GRAY));
 
@@ -243,7 +252,7 @@ public class GUI extends JFrame{
 		setResizable(true);
 	}
 
-	public void setEmailJTree(JPanel leftPanel, Vector<String> userEmails, MouseListener a){
+	public void setEmailJTreePanel(Vector<String> userEmails, MouseListener a){
 
 		UIManager.put("Tree.expandedIcon",  new ImageIcon("icons/clapsedicon.png"));//changes the expand icon
 		UIManager.put("Tree.collapsedIcon", new ImageIcon("icons/expandicon.png"));//changes the clapsed icon
@@ -290,35 +299,30 @@ public class GUI extends JFrame{
 		leftPanel.setBackground(Color.white);
 	}
 
-	public void setEmailTreeListener(MouseListener a, Vector<String> userEmails){//might not needed at all
-		for(int i = 0; i < trees.size(); i++){
-			JTree treeRoot = trees.elementAt(i);
-			treeRoot.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			/*treeRoot.addTreeSelectionListener(new TreeSelectionListener() {//add listener to individual tree
-				public void valueChanged(TreeSelectionEvent e) {
-					//Returns the last path element of the selection.
-					//This method is useful only when the selection model allows a single selection.
-					DefaultMutableTreeNode node;
-					node = (DefaultMutableTreeNode)
-							treeRoot.getLastSelectedPathComponent();
-					if (node == null){
-						//Nothing is selected.     
-						System.out.println("nothing is selected");
-						return;
-					}
-					if (node.isRoot() ) {
-						System.out.println("root");
-						//treeRoot.clearSelection();
-						return;
-					} else if(node.isLeaf() && node.getUserObject().toString() == "Write"){
-						System.out.println("leaf"); 
-						//setSecureWritePanel(userEmails);
-						return;
-					}
+	public void setDisplayPanel(ReceiveEmail emails) throws Exception{
+		String[] columnNames = {"Subject", "From", "Date", "Read"};
+		Message[] messages = emails.getMessages();
+		String[][] data = new String[messages.length][4] ;
+		for (int i = messages.length - 1; i >= 0 ; i--) {  
+			Message message = messages[i];  
+			Scanner s;
+			s = new Scanner(message.getInputStream()).useDelimiter("\\A");
+			String result = s.hasNext() ? s.next() : " ";
 
-				}});*/
-			treeRoot.addMouseListener(a);
-		}
+			data[(messages.length - 1) - i][0] = message.getSubject();
+			data[(messages.length - 1) - i][1] = InternetAddress.toString(message.getFrom());
+			data[(messages.length - 1) - i][2] = message.getReceivedDate().toString();
+		}  
+		emailTable = new JTable(data, columnNames){
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			};
+		};
+		emailTable.setFillsViewportHeight(true);
+		rightPanel.add(new JScrollPane(emailTable));
+		repaint();
+		revalidate();
 	}
 
 	public void setReceivedEmailTextArea(String message){
@@ -736,7 +740,7 @@ public class GUI extends JFrame{
 		//get rid of any space in the username
 		return ((String) emailList.getSelectedItem()).replaceAll("\\s+", "");
 	}
-	
+
 	public String getEmail(){
 		return emailTextField.getText().replaceAll("\\s+", "");
 	}
