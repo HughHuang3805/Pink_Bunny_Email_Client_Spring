@@ -552,7 +552,9 @@ public class GUIController implements ActionListener, MouseListener{
 					emailServer.setUsername(email);
 				}
 			} else {
-			//	JOptionPane.showMessageDialog(myGui, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
+				/*if(tree.getLastSelectedPathComponent() != null && !emailServer.isSmtpLoggedIn()){
+					JOptionPane.showMessageDialog(myGui, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
+				}*/
 				//tree.getSelectionModel().clearSelection();
 			} 
 			if(row == -1) //When user clicks on the "empty surface"
