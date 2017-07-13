@@ -107,7 +107,7 @@ public class GUIController implements ActionListener, MouseListener{
 	public GUIController() throws Exception{
 		//myGui = g;
 		getNumberOfEmails();
-		getConfigEmails();
+		loadEmailsFromFile();
 		myGui = new GUI(this, this, userEmails);
 		myGui.setButtonListener(this);
 		//setEmailTreeListener(this, userEmails);
@@ -502,7 +502,7 @@ public class GUIController implements ActionListener, MouseListener{
 		System.out.println(counter);
 	}
 
-	public void getConfigEmails() throws IOException{
+	public void loadEmailsFromFile() throws IOException{
 		Properties prop = new Properties();//get each of the email and store them in the userEmail vector
 		inputStream = new FileInputStream(fileName);
 		prop.load(inputStream);
