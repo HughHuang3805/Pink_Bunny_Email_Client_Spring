@@ -55,6 +55,7 @@ public class GUI extends JFrame{
 	JPanel textAreaPanel = new JPanel();
 	JPanel buttonPanel;
 	JButton signInButton = new JButton("Sign-in");
+	JButton loginButton = new JButton("Log-in");
 	JButton cancelButton = new JButton("Cancel");
 	JButton verifyButton = new JButton("Verify");
 	JButton nextButton = new JButton("Next");
@@ -80,7 +81,7 @@ public class GUI extends JFrame{
 	JPopupMenu emailPopupMenu = new JPopupMenu();
 	JTable emailTable;
 
-	public GUI(MouseListener a, ActionListener b, ReceiveEmail email, Vector<String> userEmails) throws Exception{
+	public GUI(MouseListener a, ActionListener b, Vector<String> userEmails) throws Exception{
 		setTitle("Pink Bunny E-mail Client");
 		setSize(1250, 800);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -93,13 +94,14 @@ public class GUI extends JFrame{
 		setIconImage(img.getImage());
 		setPopupItems(b);
 		//addMouseListener(a);
-		setMainPanel(userEmails, email, a);
+		setMainPanel(userEmails, a);
 		setVisible(true);
 	}
 
 	//adds listeners to each of the buttons
 	public void setButtonListener(ActionListener a){
 		signInButton.addActionListener(a);
+		loginButton.addActionListener(a);
 		cancelButton.addActionListener(a);
 		nextButton.addActionListener(a);
 		verifyButton.addActionListener(a);
@@ -215,7 +217,7 @@ public class GUI extends JFrame{
 		}
 	}
 
-	public void setMainPanel(Vector<String> userEmails, ReceiveEmail email, MouseListener a) throws Exception{
+	public void setMainPanel(Vector<String> userEmails, MouseListener a) throws Exception{
 		mainPanel = new JPanel();
 		leftPanel = new JPanel();
 		rightPanel = new JPanel();
@@ -299,9 +301,9 @@ public class GUI extends JFrame{
 		leftPanel.setBackground(Color.white);
 	}
 
-	public void setDisplayPanel(ReceiveEmail emails) throws Exception{
+	public void setDisplayPanel(SecureMailService mailServer) throws Exception{
 		String[] columnNames = {"Subject", "From", "Date", "Read"};
-		Message[] messages = emails.getMessages();
+		Message[] messages = mailServer.getMessages();
 		String[][] data = new String[messages.length][4] ;
 		for (int i = messages.length - 1; i >= 0 ; i--) {  
 			Message message = messages[i];  
@@ -333,7 +335,7 @@ public class GUI extends JFrame{
 		setVisible(true);
 	}
 
-	public void setLoginFrame(){//ask for email on emailPanel
+	public void setAddAccountFrame(){//ask for email on emailPanel
 		loginFrame = null;
 		loginFrame = new JFrame("Email");
 		emailPanel = new JPanel();
@@ -373,6 +375,56 @@ public class GUI extends JFrame{
 		//the default button that will be clicked when press "enter"
 		loginFrame.getRootPane().setDefaultButton(nextButton);
 		loginFrame.add(emailPanel, BorderLayout.CENTER);
+		loginFrame.add(buttonPanel, BorderLayout.PAGE_END);
+		loginFrame.pack(); //let layout managers in charge of the frame size
+		ImageIcon img = new ImageIcon(imageFileName);
+		loginFrame.setIconImage(img.getImage());
+		loginFrame.setResizable(false);
+		loginFrame.setVisible(true);
+		loginFrame.setLocationRelativeTo(this);
+		//add(emailFrame);
+	}
+	
+	public void setLoginFrame(){//ask for email on emailPanel
+		loginFrame = null;
+		loginFrame = new JFrame("Log In");
+		passwordPanel = new JPanel();
+		passwordPanel.setLayout(new GridBagLayout());
+		GridBagConstraints cs = new GridBagConstraints();//constraints
+		cs.fill = GridBagConstraints.HORIZONTAL;
+
+		//Email label and email textfield
+		JLabel emailLabel = new JLabel("Password: ");
+		emailLabel.setFont(new Font("Serif", Font.PLAIN, 40));
+		cs.gridx = 0;//position in tje column
+		cs.gridy = 0;//position in the row
+		cs.gridwidth = 1;
+		cs.weightx = 1.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
+		cs.weighty = 0;
+		passwordPanel.add(emailLabel, cs);
+
+		passwordText = new JPasswordField(13);
+		passwordText.setFont(new Font("Serif", Font.PLAIN, 40));
+		cs.gridx = 1;
+		cs.gridy = 0;
+		cs.gridwidth = 2;
+		cs.weightx = 1.0;
+		cs.weighty = 0;
+		passwordPanel.add(passwordText, cs);
+
+		passwordPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
+
+		//create next and cancel button
+		loginButton.setFont(new Font("Serif", Font.PLAIN, 25));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 25));
+
+		buttonPanel = new JPanel();//create a panel for the buttons
+		buttonPanel.add(loginButton);
+		buttonPanel.add(cancelButton);
+
+		//the default button that will be clicked when press "enter"
+		loginFrame.getRootPane().setDefaultButton(loginButton);
+		loginFrame.add(passwordPanel, BorderLayout.CENTER);
 		loginFrame.add(buttonPanel, BorderLayout.PAGE_END);
 		loginFrame.pack(); //let layout managers in charge of the frame size
 		ImageIcon img = new ImageIcon(imageFileName);
