@@ -11,8 +11,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
@@ -642,14 +644,14 @@ public class GUI extends JFrame{
 
 		passwordPanel.setBorder(new LineBorder(Color.GRAY));
 
-		signInButton.setFont(new Font("Serif", Font.PLAIN, 23));
+		loginButton.setFont(new Font("Serif", Font.PLAIN, 23));
 		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
 
 		buttonPanel = new JPanel();//create a panel for the buttons
-		buttonPanel.add(signInButton);
+		buttonPanel.add(loginButton);
 		buttonPanel.add(cancelButton);
 
-		addAccountFrame.getRootPane().setDefaultButton(signInButton);
+		addAccountFrame.getRootPane().setDefaultButton(loginButton);
 		addAccountFrame.add(passwordPanel, BorderLayout.CENTER);
 		addAccountFrame.add(buttonPanel, BorderLayout.PAGE_END);
 
@@ -685,9 +687,9 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.NONE;
 		writePanel.add(senderLabel, cs);
 
-		/*senderTextField = new JTextField(13);
-		senderTextField.setText(getEmail());
-		senderTextField.setEditable(false);*/
+		JTextField senderTextField = new JTextField(13);
+		senderTextField.setText(emailServer.getUsername());
+		senderTextField.setEditable(false);
 		cs.gridx = 1;
 		cs.gridy = 0;
 		cs.gridwidth = 2;
@@ -697,7 +699,7 @@ public class GUI extends JFrame{
 		cs.insets = new Insets(5, 5, 5, 5);
 		cs.anchor = GridBagConstraints.WEST;
 		cs.fill = GridBagConstraints.HORIZONTAL;
-		writePanel.add(emailList, cs);
+		writePanel.add(senderTextField, cs);
 
 		JLabel recipientLabel = new JLabel("Recipient: ");//recipient
 		cs.gridx = 0;//position in the column
@@ -768,7 +770,7 @@ public class GUI extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				emailServer.setUsername(((String) emailList.getSelectedItem()).replaceAll("\\s+", ""));
+				emailServer.setUsername(senderTextField.getText().replaceAll("\\s+", ""));
 				System.out.println("Email server is null " + emailServer == null);
 				if(recipientTextField != null && !recipientTextField.getText().isEmpty()){
 					emailServer.setRecipient(recipientTextField.getText());
@@ -850,9 +852,9 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.NONE;
 		writePanel.add(senderLabel, cs);
 
-		/*secureSenderTextField = new JTextField(13);
-		secureSenderTextField.setText(this.getEmail());
-		secureSenderTextField.setEditable(false);*/
+		JTextField secureSenderTextField = new JTextField(13);
+		secureSenderTextField.setText(emailServer.getUsername());
+		secureSenderTextField.setEditable(false);
 		cs.gridx = 1;
 		cs.gridy = 0;
 		cs.gridwidth = 2;
@@ -862,7 +864,7 @@ public class GUI extends JFrame{
 		cs.insets = new Insets(5, 5, 5, 5);
 		cs.anchor = GridBagConstraints.WEST;
 		cs.fill = GridBagConstraints.HORIZONTAL;
-		writePanel.add(emailList, cs);
+		writePanel.add(secureSenderTextField, cs);
 
 		JLabel recipientLabel = new JLabel("Recipient: ");//recipient
 		cs.gridx = 0;//position in the column
@@ -928,12 +930,12 @@ public class GUI extends JFrame{
 		writePanel.add(secureJSPForBody, cs);
 
 		JButton secureSendButton = new JButton("Secure Send");
-		JButton secureDiscardButton = new JButton("Secure Discard");
+		JButton discardButton = new JButton("Discard");
 		secureSendButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				emailServer.setUsername(((String) emailList.getSelectedItem()).replaceAll("\\s+", ""));
+				emailServer.setUsername(secureSenderTextField.getText().replaceAll("\\s+", ""));
 				System.out.println("Email server is null " + emailServer == null);
 				if(secureRecipientTextField != null && !secureRecipientTextField.getText().isEmpty()){
 					emailServer.setRecipient(secureRecipientTextField.getText());
@@ -942,9 +944,17 @@ public class GUI extends JFrame{
 				}
 				emailServer.setSubject(secureSubjectTextField.getText());
 				try {
-					emailServer.encryptedSend(emailServer.getSMTPServer());
+					BufferedWriter bw;
+					bw = new BufferedWriter(new FileWriter("plain-text.txt"));
+					secureEmailContentText.write(bw);
+					//myGui.setEmailBodyTextArea();
+					
+					emailServer.encryptedSend();
 					//myGui.setSendDebugTextArea();
 					JOptionPane.showMessageDialog(secureWriteFrame, "Message sent!");
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -952,7 +962,7 @@ public class GUI extends JFrame{
 			}
 
 		});
-		secureDiscardButton.addActionListener(new ActionListener(){
+		discardButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
@@ -960,10 +970,10 @@ public class GUI extends JFrame{
 			}
 		});
 		secureSendButton.setFont(new Font("Serif", Font.PLAIN, 23));
-		secureDiscardButton.setFont(new Font("Serif", Font.PLAIN, 23));
+		discardButton.setFont(new Font("Serif", Font.PLAIN, 23));
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(secureSendButton);
-		buttonPanel.add(secureDiscardButton);
+		buttonPanel.add(discardButton);
 		cs.gridx = 0;
 		cs.gridy = 4;
 		cs.gridwidth = 3;

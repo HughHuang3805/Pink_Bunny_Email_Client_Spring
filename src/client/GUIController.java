@@ -190,7 +190,7 @@ public class GUIController implements ActionListener, MouseListener{
 				break;
 			}
 
-		case "Sign-in":
+		/*case "Sign-in":
 			boolean emailAuthenticated = false;
 			emailServer.setPassword(myGui.getPassword());
 			try {
@@ -216,9 +216,9 @@ public class GUIController implements ActionListener, MouseListener{
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} 
-			break;
+			break;*/
 
-		case "Verify":
+		/*case "Verify":
 			boolean yubikeyAuthenticated = false, otpAuthenticated = false;
 			String verificationString = "";
 			HttpClient authenticationClient = HttpClients.createDefault();
@@ -266,11 +266,11 @@ public class GUIController implements ActionListener, MouseListener{
 				myGui.enableAllMenuItems();
 				//myGui.setMainPanel(userEmails);
 			} 
-			break;
+			break;*/
 
-		case "Cancel":
+		/*case "Cancel":
 			emailServer.getLoginFrame().dispose();
-			break;
+			break;*/
 
 			/*case "Send":
 			emailServer = emailObjectMap.get(myGui.getEmailFromCombobox());
@@ -308,7 +308,11 @@ public class GUIController implements ActionListener, MouseListener{
 
 		case "Log in":
 			//System.out.println(emailServer.getUsername());
-			myGui.setLoginFrame(emailServer);
+			if(emailServer.isSmtpLoggedIn()){
+				JOptionPane.showMessageDialog(myGui, "Already logged in", "oops ...", JOptionPane.INFORMATION_MESSAGE);
+			} else{
+				myGui.setLoginFrame(emailServer);
+			}
 			break;
 
 			/*case "Log-in":
@@ -389,7 +393,7 @@ public class GUIController implements ActionListener, MouseListener{
 			} 
 			break;
 			 */
-		case "Secure Send":
+		/*case "Secure Send":
 			BufferedWriter bw;
 			emailServer = emailObjectMap.get(myGui.getEmailFromCombobox());
 			emailServer.setUsername(myGui.getEmailFromCombobox());
@@ -418,21 +422,13 @@ public class GUIController implements ActionListener, MouseListener{
 			}
 
 			try {
-				emailServer.encryptedSend(host);
+				emailServer.encryptedSend();
 				myGui.setSecureSendDebugTextArea();;
 				JOptionPane.showMessageDialog(emailServer.getSecureWriteFrame(), "Message sent!");
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			break;
-
-			/*case "Discard":
-			emailServer.getWriteFrame().dispose();
-			break;
-
-		case "Secure Discard":
-			emailServer.getSecureWriteFrame().dispose();
 			break;*/
 
 		case "Get new messages":
@@ -474,18 +470,6 @@ public class GUIController implements ActionListener, MouseListener{
 				e1.printStackTrace();
 			}
 			break;
-
-			/*case "Write":
-			if(emailServer.isSmtpLoggedIn()){
-				myGui.setWriteFrame(userEmails, emailServer, this);
-			}
-			break;
-
-		case "Secure Write":
-			if(emailServer.isSmtpLoggedIn()){
-				myGui.setSecureWritePanel(userEmails, emailServer, this);
-			}
-			break;*/
 
 		case "Exit":
 			System.exit(0);
@@ -640,13 +624,13 @@ public class GUIController implements ActionListener, MouseListener{
 			SecureMailService emailServer = new SecureMailService();
 			emailServer.setUsername(userEmails.elementAt(i));
 			userEmailObjects.add(emailServer);
-			
+
 			String emailType = (userEmails.elementAt(i).substring(emailServer.getUsername().indexOf("@") + 1, emailServer.getUsername().indexOf("."))).toUpperCase();
 			emailServer.setSMTPServer(smtpServers.get(emailType));
 			emailServer.setEmailType(emailType);
 			emailServer.setPort(Integer.parseInt(portNumbers.get(emailType)));
 			emailServer.setImapHost(imapServers.get(emailType));
-			
+
 			System.out.println(userEmails.elementAt(i));
 			emailObjectMap.put(userEmails.elementAt(i), emailServer);
 		};

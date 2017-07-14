@@ -50,7 +50,7 @@ public class SecureMailService {
 	JFrame writeFrame, secureWriteFrame, loginFrame, yubikeyFrame;
 	JTable emailTable;
 	
-	public void encryptedSend(String host) throws Exception{
+	public void encryptedSend() throws Exception{
 		TestBCOpenPGP x = new TestBCOpenPGP();
 		x.encrypt();
 
@@ -183,10 +183,10 @@ public class SecureMailService {
 			smtpLoggedIn = true;
 		} catch (javax.mail.NoSuchProviderException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			//e1.printStackTrace();
 			return false;
 		} catch(Exception e){
-			e.printStackTrace();
+			//e.printStackTrace();
 			return false;
 		}
 		return true;
