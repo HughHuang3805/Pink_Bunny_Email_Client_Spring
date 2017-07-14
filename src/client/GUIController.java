@@ -231,7 +231,7 @@ public class GUIController implements ActionListener, MouseListener{
 			while(verificationString == ""){
 				try {
 					List<NameValuePair> params = new ArrayList<NameValuePair>();
-					params.add(new BasicNameValuePair(myGui.getEmail(), myGui.getYubikey()));
+					params.add(new BasicNameValuePair(email, myGui.getYubikey()));
 					//System.out.println(myGui.getEmail());
 					authenticationPost.setEntity(new UrlEncodedFormEntity(params));//email and yubikey POST as the body of request
 					HttpResponse response2 = authenticationClient.execute(authenticationPost);//wait for a response from the server
@@ -310,7 +310,7 @@ public class GUIController implements ActionListener, MouseListener{
 			break;
 
 		case "Log in":
-			System.out.println(emailServer.getUsername());
+			//System.out.println(emailServer.getUsername());
 			myGui.setLoginFrame(emailServer);
 			break;
 
@@ -430,13 +430,13 @@ public class GUIController implements ActionListener, MouseListener{
 			}
 			break;
 
-		case "Discard":
+		/*case "Discard":
 			emailServer.getWriteFrame().dispose();
 			break;
 
 		case "Secure Discard":
 			emailServer.getSecureWriteFrame().dispose();
-			break;
+			break;*/
 
 		case "Get new messages":
 			try {
@@ -565,10 +565,11 @@ public class GUIController implements ActionListener, MouseListener{
 			} else if(SwingUtilities.isRightMouseButton(e)){
 
 				if(node.isRoot()) {
+					emailServer = emailObjectMap.get(node.getRoot().toString());
 					myGui.emailPopupMenu.show(tree, e.getX(), e.getY());
 					email = node.getUserObject().toString();
-					myGui.emailTextField = new JTextField(email);
-					emailServer = emailObjectMap.get(email);
+					//myGui.emailTextField = new JTextField(email);
+					//emailServer = emailObjectMap.get(email);
 					emailServer.setUsername(email);
 				}
 			} else {
@@ -641,6 +642,8 @@ public class GUIController implements ActionListener, MouseListener{
 			SecureMailService emailServer = new SecureMailService();
 			emailServer.setUsername(userEmails.elementAt(i));
 			userEmailObjects.add(emailServer);
+			String host = userEmails.elementAt(i).substring(emailServer.getUsername().indexOf("@") + 1, emailServer.getUsername().indexOf(".")).toLowerCase();
+			emailServer.setHostName(host);
 			emailObjectMap.put(userEmails.elementAt(i), emailServer);
 		};
 	}

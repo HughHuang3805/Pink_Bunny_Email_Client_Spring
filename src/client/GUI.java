@@ -27,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
@@ -627,14 +628,37 @@ public class GUI extends JFrame{
 
 		JButton sendButton = new JButton("Send");
 		JButton discardButton = new JButton("Discard");
-		sendButton.addActionListener(a);
+		sendButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				emailServer.setUsername(((String) emailList.getSelectedItem()).replaceAll("\\s+", ""));
+				System.out.println("Email server is null " + emailServer == null);
+				if(recipientTextField != null && !recipientTextField.getText().isEmpty()){
+					emailServer.setRecipient(recipientTextField.getText());
+				} else{
+					JOptionPane.showMessageDialog(writeFrame, "Please specify recipient.", "Failed", JOptionPane.ERROR_MESSAGE);
+					System.out.println("Write Frame null: " + writeFrame == null);
+				}
+				emailServer.setSubject(subjectTextField.getText());
+				try {
+					emailServer.send(emailServer.getHostName(), emailContentText.getText());
+					//myGui.setSendDebugTextArea();
+					JOptionPane.showMessageDialog(writeFrame, "Message sent!");
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+
+		});
 		discardButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				writeFrame.dispose();
 			}
-			
+
 		});
 		sendButton.setFont(new Font("Serif", Font.PLAIN, 23));
 		discardButton.setFont(new Font("Serif", Font.PLAIN, 23));
@@ -840,6 +864,14 @@ public class GUI extends JFrame{
 		return null;
 	}
 
+	public String getRecipient(JFrame writeFrame) {
+		if(recipientTextField != null){
+			return recipientTextField.getText().replaceAll("\\s+", "");
+		}
+		return null;
+	}
+
+	
 	public String getSecureRecipient() {
 		if(secureRecipientTextField != null){
 			return secureRecipientTextField.getText().replaceAll("\\s+", "");
