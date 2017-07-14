@@ -8,11 +8,13 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -64,7 +66,7 @@ public class GUIController implements ActionListener, MouseListener{
 
 		{
 			put("GMAIL", "smtp.gmail.com");
-			put("OUTLOOK", "smtp.live.com");
+			put("OUTLOOK", "smtp-mail.outlook.com");
 			put("OFFICE365", "smtp.office365.com");
 			put("YAHOO", "smtp.mail.yahoo.com");
 			put("AOL", "smtp.aol.com");
@@ -113,14 +115,14 @@ public class GUIController implements ActionListener, MouseListener{
 		//setEmailTreeListener(this, userEmails);
 		//myGui.setEmailTreeListener(this, userEmails);
 		//myGui.tree.addTreeSelectionListener(this);
-		/*Properties prop = new Properties();
+		Properties prop = new Properties();
 		OutputStream output = null;
 		output = new FileOutputStream(fileName);
 		prop.setProperty("email1", "pinkbunnychickenmarsala@gmail.com");
 		prop.setProperty("email2", "pinkbunnychickenmarsala@yahoo.com");
-		prop.setProperty("email3", "pinkbunnychickenmarsala@aol.com");
+		prop.setProperty("email3", "pinkbunnychickenmarsala@outlook.com");
 		prop.store(output, null);
-		 */
+		 
 
 
 	}
@@ -533,9 +535,9 @@ public class GUIController implements ActionListener, MouseListener{
 				//System.out.println("double clicked");
 			} else if(e.getClickCount() == 1 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Inbox"){
 				try {
-					System.out.println("Root:" + node.getRoot().toString());
+					//System.out.println("Root:" + node.getRoot().toString());
 					emailServer = emailObjectMap.get(node.getRoot().toString());
-					System.out.println("email server is null" + emailServer == null);
+					//System.out.println("email server is null" + emailServer == null);
 					if(emailServer.isSmtpLoggedIn()){
 						myGui.setDisplayPanel(emailServer);
 						//System.out.println(emailServer.getEmailTable() == null);
@@ -552,6 +554,7 @@ public class GUIController implements ActionListener, MouseListener{
 					email = node.getUserObject().toString();
 					//myGui.emailTextField = new JTextField(email);
 					//emailServer = emailObjectMap.get(email);
+					System.out.println(email);
 					emailServer.setUsername(email);
 				}
 			} else {

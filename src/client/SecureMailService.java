@@ -10,7 +10,6 @@ import java.security.GeneralSecurityException;
 import java.security.NoSuchProviderException;
 import java.util.Properties;
 import java.util.Scanner;
-
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -27,7 +26,6 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JTable;
 
 import org.bouncycastle.openpgp.PGPException;
@@ -144,6 +142,7 @@ public class SecureMailService {
 			props.put("mail.transport.protocol", "smtp");
 			props.put("mail.host", SMTP_HOST_NAME);
 			props.put("mail.smtps.auth", "true");
+			//props.put("mail.smtp.port", "587");
 			break;
 			
 		case "OFFICE365":
@@ -183,10 +182,10 @@ public class SecureMailService {
 			smtpLoggedIn = true;
 		} catch (javax.mail.NoSuchProviderException e1) {
 			// TODO Auto-generated catch block
-			//e1.printStackTrace();
+			e1.printStackTrace();
 			return false;
 		} catch(Exception e){
-			//e.printStackTrace();
+			e.printStackTrace();
 			return false;
 		}
 		return true;
