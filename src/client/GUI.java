@@ -7,6 +7,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
@@ -48,12 +49,7 @@ public class GUI extends JFrame{
 	private static final long serialVersionUID = 1L;
 	Vector<JMenuItem> menuItems = new Vector<JMenuItem>();
 	Vector<JMenu> menus = new Vector<JMenu>();
-	JTextArea textArea = new JTextArea();
-	JPanel emailPanel;
-	JPanel passwordPanel;
-	JPanel yubikeyPanel;
-	JPanel textAreaPanel = new JPanel();
-	JPanel buttonPanel;
+	JPanel emailPanel, passwordPanel, yubikeyPanel, buttonPanel;
 	JButton signInButton = new JButton("Sign-in");
 	JButton loginButton = new JButton("Log-in");
 	JButton cancelButton = new JButton("Cancel");
@@ -87,7 +83,7 @@ public class GUI extends JFrame{
 		setMenuItems();
 		setMenuInsets();
 		setLocationRelativeTo(null);
-		//getContentPane().setBackground(new Color(51, 102, 255));
+		//getContentPane().setBackground(new Color(51, 102, 235));
 		setLocationRelativeTo(null);
 		ImageIcon img = new ImageIcon(imageFileName);
 		setIconImage(img.getImage());
@@ -105,7 +101,7 @@ public class GUI extends JFrame{
 		nextButton.addActionListener(a);
 		verifyButton.addActionListener(a);
 		sendButton.addActionListener(a);
-		secureSendButton.addActionListener(a);
+		//secureSendButton.addActionListener(a);
 		discardButton.addActionListener(a);
 		secureDiscardButton.addActionListener(a);
 		for(JMenuItem x : menuItems)
@@ -248,7 +244,6 @@ public class GUI extends JFrame{
 
 		fileMenu.setEnabled(true);
 		toolMenu.setEnabled(true);
-		textAreaPanel = new JPanel();
 		setLocationRelativeTo(null);
 		setResizable(true);
 	}
@@ -367,8 +362,8 @@ public class GUI extends JFrame{
 		emailPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
 
 		//create next and cancel button
-		nextButton.setFont(new Font("Serif", Font.PLAIN, 25));
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 25));
+		nextButton.setFont(new Font("Serif", Font.PLAIN, 23));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
 
 		buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(nextButton);
@@ -418,8 +413,8 @@ public class GUI extends JFrame{
 		passwordPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
 
 		//create next and cancel button
-		loginButton.setFont(new Font("Serif", Font.PLAIN, 25));
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 25));
+		loginButton.setFont(new Font("Serif", Font.PLAIN, 23));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
 
 		buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(loginButton);
@@ -460,8 +455,8 @@ public class GUI extends JFrame{
 
 		passwordPanel.setBorder(new LineBorder(Color.GRAY));
 
-		signInButton.setFont(new Font("Serif", Font.PLAIN, 25));
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 25));
+		signInButton.setFont(new Font("Serif", Font.PLAIN, 23));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
 
 		buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(signInButton);
@@ -508,8 +503,8 @@ public class GUI extends JFrame{
 
 		yubikeyPanel.setBorder(new LineBorder(Color.GRAY));
 
-		verifyButton.setFont(new Font("Serif", Font.PLAIN, 25));
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 25));
+		verifyButton.setFont(new Font("Serif", Font.PLAIN, 23));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
 
 		buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(verifyButton);
@@ -524,9 +519,9 @@ public class GUI extends JFrame{
 		loginFrame.setVisible(true);
 	}
 
-	public void setWriteFrame(Vector<String> userEmails, SecureMailService emailServer){//write email
+	public void setWriteFrame(Vector<String> userEmails, SecureMailService emailServer, ActionListener a){//write email
 
-		emailList = new JComboBox<>(userEmails);
+		JComboBox<String> emailList = new JComboBox<>(userEmails);
 
 		emailServer.setWriteFrame(new JFrame("Write: New Email"));
 		JFrame writeFrame = emailServer.getWriteFrame();
@@ -579,7 +574,7 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		writePanel.add(recipientLabel, cs);
 
-		recipientTextField = new JTextField(13);
+		JTextField recipientTextField = new JTextField(13);
 		cs.gridx = 1;
 		cs.gridy = 1;
 		cs.gridwidth = 3;
@@ -603,7 +598,7 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		writePanel.add(subjectLabel, cs);
 
-		subjectTextField = new JTextField(13);
+		JTextField subjectTextField = new JTextField(13);
 		cs.gridx = 1;
 		cs.gridy = 2;
 		cs.gridwidth = 3;
@@ -615,7 +610,7 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		writePanel.add(subjectTextField, cs);
 
-		emailContentText = new JTextArea("Enter your email body ...", 15, 25);//email content
+		JTextArea emailContentText = new JTextArea("Enter your email body ...", 15, 23);//email content
 		emailContentText.setEditable(true);
 		emailContentText.setFont(new Font("Serif", Font.PLAIN, 30));
 		emailContentText.setLineWrap(true);
@@ -630,8 +625,19 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.NONE;
 		writePanel.add(jspForBody, cs);
 
-		sendButton.setFont(new Font("Serif", Font.PLAIN, 25));
-		discardButton.setFont(new Font("Serif", Font.PLAIN, 25));
+		JButton sendButton = new JButton("Send");
+		JButton discardButton = new JButton("Discard");
+		sendButton.addActionListener(a);
+		discardButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				writeFrame.dispose();
+			}
+			
+		});
+		sendButton.setFont(new Font("Serif", Font.PLAIN, 23));
+		discardButton.setFont(new Font("Serif", Font.PLAIN, 23));
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(sendButton);
 		buttonPanel.add(discardButton);
@@ -746,7 +752,7 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		writePanel.add(secureSubjectTextField, cs);
 
-		JTextArea secureEmailContentText = new JTextArea("Enter your email body ...", 15, 25);//email content
+		JTextArea secureEmailContentText = new JTextArea("Enter your email body ...", 15, 23);//email content
 		secureEmailContentText.setEditable(true);
 		secureEmailContentText.setFont(new Font("Serif", Font.PLAIN, 30));
 		secureEmailContentText.setLineWrap(true);
@@ -764,9 +770,15 @@ public class GUI extends JFrame{
 		JButton secureSendButton = new JButton("Secure Send");
 		JButton secureDiscardButton = new JButton("Secure Discard");
 		secureSendButton.addActionListener(a);
-		secureDiscardButton.addActionListener(a);
-		secureSendButton.setFont(new Font("Serif", Font.PLAIN, 25));
-		secureDiscardButton.setFont(new Font("Serif", Font.PLAIN, 25));
+		secureDiscardButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				secureWriteFrame.dispose();
+			}
+		});
+		secureSendButton.setFont(new Font("Serif", Font.PLAIN, 23));
+		secureDiscardButton.setFont(new Font("Serif", Font.PLAIN, 23));
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(secureSendButton);
 		buttonPanel.add(secureDiscardButton);
@@ -819,10 +831,6 @@ public class GUI extends JFrame{
 	public String getYubikey(){
 		String passText = new String(yubikeyText.getPassword());
 		return passText;
-	}
-
-	public void clearGUI(){
-		textArea.setText(null);
 	}
 
 	public String getRecipient() {

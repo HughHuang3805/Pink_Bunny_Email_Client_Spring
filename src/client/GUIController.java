@@ -449,7 +449,7 @@ public class GUIController implements ActionListener, MouseListener{
 					message = message + line + "\n";
 				}
 				br.close();
-				myGui.textAreaPanel.setVisible(false);
+				//myGui.textAreaPanel.setVisible(false);
 				myGui.repaint();
 				//myGui.setReceivedEmailTextArea(message);
 				myGui.repaint();
@@ -478,17 +478,17 @@ public class GUIController implements ActionListener, MouseListener{
 			}
 			break;
 
-		case "Write":
+		/*case "Write":
 			if(emailServer.isSmtpLoggedIn()){
-				myGui.setWriteFrame(userEmails, emailServer);
+				myGui.setWriteFrame(userEmails, emailServer, this);
 			}
 			break;
 
 		case "Secure Write":
 			if(emailServer.isSmtpLoggedIn()){
-				myGui.setSecureWritePanel(userEmails, emailServer);
+				myGui.setSecureWritePanel(userEmails, emailServer, this);
 			}
-			break;
+			break;*/
 
 		case "Exit":
 			System.exit(0);
@@ -541,13 +541,13 @@ public class GUIController implements ActionListener, MouseListener{
 			if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Secure write"){
 				emailServer = emailObjectMap.get(node.getRoot().toString());
 				if(emailServer.isSmtpLoggedIn()){
-					myGui.setSecureWritePanel(userEmails, emailServer);
+					myGui.setSecureWritePanel(userEmails, emailServer, this);
 				}
 				//System.out.println("double clicked");
 			} else if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Write"){
 				emailServer = emailObjectMap.get(node.getRoot().toString());
 				if(emailServer.isSmtpLoggedIn()){
-					myGui.setWriteFrame(userEmails, emailServer);
+					myGui.setWriteFrame(userEmails, emailServer, this);
 				}
 				//System.out.println("double clicked");
 			} else if(e.getClickCount() == 1 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Inbox"){
