@@ -26,6 +26,10 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+
 import org.bouncycastle.openpgp.PGPException;
 
 
@@ -42,6 +46,8 @@ public class SecureMailService {
 	private String mailStoreType = "imap";  
 	private String username = "";  
 	private String password = "";
+	JFrame writeFrame, secureWriteFrame, loginFrame;
+	JTable emailTable;
 	
 	public void encryptedSend(String host) throws Exception{
 		TestBCOpenPGP x = new TestBCOpenPGP();
@@ -377,4 +383,37 @@ public class SecureMailService {
 	public void setImapHost(String imapHost) {
 		this.imapHost = imapHost;
 	}
+	
+	public JTable getEmailTable() {
+		return emailTable;
+	}
+
+	public void setEmailTable(JTable emailTable) {
+		this.emailTable = emailTable;
+	}
+
+	public JFrame getWriteFrame() {
+		return writeFrame;
+	}
+
+	public void setWriteFrame(JFrame writeFrame) {
+		this.writeFrame = writeFrame;
+	}
+
+	public JFrame getSecureWriteFrame() {
+		return secureWriteFrame;
+	}
+
+	public void setSecureWriteFrame(JFrame secureWriteFrame) {
+		this.secureWriteFrame = secureWriteFrame;
+	}
+	
+	public JFrame getLoginFrame() {
+		return loginFrame;
+	}
+
+	public void setLoginFrame(JFrame loginFrame) {
+		this.loginFrame = loginFrame;
+	}
+
 }
