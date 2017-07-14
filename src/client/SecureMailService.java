@@ -39,6 +39,7 @@ public class SecureMailService {
 	private int SMTP_HOST_PORT;
 	private String recipient;
 	private String subject;
+	private String emailType;
 	private boolean smtpLoggedIn = false;
 	
 	private String imapHost = "";
@@ -46,7 +47,7 @@ public class SecureMailService {
 	private String mailStoreType = "imap";  
 	private String username = "";  
 	private String password = "";
-	JFrame writeFrame, secureWriteFrame, loginFrame;
+	JFrame writeFrame, secureWriteFrame, loginFrame, yubikeyFrame;
 	JTable emailTable;
 	
 	public void encryptedSend(String host) throws Exception{
@@ -117,12 +118,12 @@ public class SecureMailService {
 		transport.close();
 	}
 
-	public boolean connect(String host) throws GeneralSecurityException{
+	public boolean connect() throws GeneralSecurityException{
 		Properties props = new Properties();
 		
-		switch(host){
+		switch(emailType){
 
-		case "gmail":
+		case "GMAIL":
 			props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
 			props.put("mail.transport.protocol", "smtps");
 			props.put("mail.smtps.host", SMTP_HOST_NAME);
@@ -131,36 +132,36 @@ public class SecureMailService {
 			//props.put("mail.smtps.quitwait", "false");
 			break;
 
-		case "hotmail":
+		case "HOTMAIL":
 			props.put("mail.smtp.starttls.enable", "true");
 			props.put("mail.transport.protocol", "smtp");
 			props.put("mail.host", SMTP_HOST_NAME);
 			props.put("mail.smtps.auth", "true");
 			break;
 			
-		case "outlook":
+		case "OUTLOOK":
 			props.put("mail.smtp.starttls.enable", "true");
 			props.put("mail.transport.protocol", "smtp");
 			props.put("mail.host", SMTP_HOST_NAME);
 			props.put("mail.smtps.auth", "true");
 			break;
 			
-		case "office365":
+		case "OFFICE365":
 			props.put("mail.smtp.starttls.enable", "true");
 			props.put("mail.transport.protocol", "smtp");
 			props.put("mail.host", SMTP_HOST_NAME);
 			props.put("mail.smtps.auth", "true");
 			break;
 			
-		case "aol":
+		case "AOL":
 			props.put("mail.smtp.starttls.enable", "true");
 			props.put("mail.transport.protocol", "smtp");
 			props.put("mail.host", SMTP_HOST_NAME);
 			props.put("mail.smtps.auth", "true");
 			break;
 			
-		case "yahoo":
-			props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+		case "YAHOO":
+			props.put("mail.smtp.ssl.trust", "smtp.mail.yahoo.com");
 			props.put("mail.transport.protocol", "smtps");
 			props.put("mail.smtps.host", SMTP_HOST_NAME);
 			props.put("mail.smtps.auth", "true");
@@ -171,11 +172,12 @@ public class SecureMailService {
 		default:
 			return false;
 		}
-		System.out.println(host);
+		//System.out.println(host);
 		Session mailSession = Session.getDefaultInstance(props);
 		Transport transport;
 		try {
 			transport = mailSession.getTransport();
+			System.out.print(SMTP_HOST_NAME + " " + SMTP_HOST_PORT + " " + username + " " + password);
 			transport.connect
 			(SMTP_HOST_NAME, SMTP_HOST_PORT, username, password);
 			smtpLoggedIn = true;
@@ -344,11 +346,11 @@ public class SecureMailService {
 		this.smtpLoggedIn = smtpLoggedIn;
 	}
 
-	public String getHostName() {
+	public String getSMTPServer() {
 		return SMTP_HOST_NAME;
 	}
 
-	public void setHostName(String sMTP_HOST_NAME) {
+	public void setSMTPServer(String sMTP_HOST_NAME) {
 		SMTP_HOST_NAME = sMTP_HOST_NAME;
 	}
 
@@ -416,4 +418,19 @@ public class SecureMailService {
 		this.loginFrame = loginFrame;
 	}
 
+	public String getEmailType() {
+		return emailType;
+	}
+
+	public void setEmailType(String emailType) {
+		this.emailType = emailType;
+	}
+	
+	public JFrame getYubikeyFrame() {
+		return yubikeyFrame;
+	}
+
+	public void setYubikeyFrame(JFrame yubikeyFrame) {
+		this.yubikeyFrame = yubikeyFrame;
+	}
 }

@@ -23,16 +23,13 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
-
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -142,7 +139,7 @@ public class GUIController implements ActionListener, MouseListener{
 				portNumber = portNumbers.get(host.toUpperCase());//check what port it is using for that host
 				imapServer = imapServers.get(host.toUpperCase());
 				if(smtpServer != null & portNumber != null){
-					emailServer.setHostName(smtpServer);//set smtp server
+					emailServer.setSMTPServer(smtpServer);//set smtp server
 					emailServer.setPort(Integer.parseInt(portNumber));//set port number
 					emailServer.setUsername(email);//set user email
 					emailServer.setImapHost(imapServer);
@@ -197,13 +194,13 @@ public class GUIController implements ActionListener, MouseListener{
 			boolean emailAuthenticated = false;
 			emailServer.setPassword(myGui.getPassword());
 			try {
-				emailAuthenticated = emailServer.connect(host);//try to connect
+				emailAuthenticated = emailServer.connect();//try to connect
 				System.out.println("Has yubikey: " + hasYubikey);
 				if(!emailAuthenticated)
 					JOptionPane.showMessageDialog(myGui.addAccountFrame, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
 				else{
 					if(hasYubikey){
-						myGui.setYubikeyPanel(emailServer);//set up yubikey panel
+						myGui.setYubikeyFrame(emailServer);//set up yubikey panel
 					} else {//if this email doesnt have yubikey 
 						myGui.enableAllMenuItems();
 						emailServer.getLoginFrame().dispose();
@@ -275,7 +272,7 @@ public class GUIController implements ActionListener, MouseListener{
 			emailServer.getLoginFrame().dispose();
 			break;
 
-		case "Send":
+			/*case "Send":
 			emailServer = emailObjectMap.get(myGui.getEmailFromCombobox());
 			emailServer.setUsername(myGui.getEmailFromCombobox());
 			System.out.println("Email server is null " + emailServer == null);
@@ -303,7 +300,7 @@ public class GUIController implements ActionListener, MouseListener{
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			break;
+			break;*/
 
 		case "Add New Account":
 			myGui.setAddAccountFrame();
@@ -314,7 +311,7 @@ public class GUIController implements ActionListener, MouseListener{
 			myGui.setLoginFrame(emailServer);
 			break;
 
-		case "Log-in":
+			/*case "Log-in":
 			//emailServer = emailObjectMap.get(myGui.getEmailFromCombobox());
 			emailServer.setPassword(myGui.getPassword());
 			System.out.println("Email server name: " + emailServer.getUsername());
@@ -328,10 +325,10 @@ public class GUIController implements ActionListener, MouseListener{
 					emailServer.setPort(Integer.parseInt(portNumber));//set port number
 					emailServer.setUsername(email);//set user email
 					emailServer.setImapHost(imapServer);
-					/*System.out.println(smtpServer);
+					System.out.println(smtpServer);
 					System.out.println(portNumber);
 					System.out.println(host);
-					System.out.println(email);*/
+					System.out.println(email);
 					//used to check if this email has a yubikey attached to it
 					HttpClient yubikeyClient = HttpClients.createDefault();
 					//https://boiling-fjord-84786.herokuapp.com/yubikey
@@ -391,7 +388,7 @@ public class GUIController implements ActionListener, MouseListener{
 				}
 			} 
 			break;
-
+			 */
 		case "Secure Send":
 			BufferedWriter bw;
 			emailServer = emailObjectMap.get(myGui.getEmailFromCombobox());
@@ -430,7 +427,7 @@ public class GUIController implements ActionListener, MouseListener{
 			}
 			break;
 
-		/*case "Discard":
+			/*case "Discard":
 			emailServer.getWriteFrame().dispose();
 			break;
 
@@ -478,7 +475,7 @@ public class GUIController implements ActionListener, MouseListener{
 			}
 			break;
 
-		/*case "Write":
+			/*case "Write":
 			if(emailServer.isSmtpLoggedIn()){
 				myGui.setWriteFrame(userEmails, emailServer, this);
 			}
@@ -541,19 +538,20 @@ public class GUIController implements ActionListener, MouseListener{
 			if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Secure write"){
 				emailServer = emailObjectMap.get(node.getRoot().toString());
 				if(emailServer.isSmtpLoggedIn()){
-					myGui.setSecureWritePanel(userEmails, emailServer, this);
+					myGui.setSecureWritePanel(userEmails, emailServer);
 				}
 				//System.out.println("double clicked");
 			} else if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Write"){
 				emailServer = emailObjectMap.get(node.getRoot().toString());
 				if(emailServer.isSmtpLoggedIn()){
-					myGui.setWriteFrame(userEmails, emailServer, this);
+					myGui.setWriteFrame(userEmails, emailServer);
 				}
 				//System.out.println("double clicked");
 			} else if(e.getClickCount() == 1 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Inbox"){
 				try {
-					System.out.println(node.getRoot());
+					System.out.println("Root:" + node.getRoot().toString());
 					emailServer = emailObjectMap.get(node.getRoot().toString());
+					System.out.println("email server is null" + emailServer == null);
 					if(emailServer.isSmtpLoggedIn()){
 						myGui.setDisplayPanel(emailServer);
 						//System.out.println(emailServer.getEmailTable() == null);
@@ -642,8 +640,14 @@ public class GUIController implements ActionListener, MouseListener{
 			SecureMailService emailServer = new SecureMailService();
 			emailServer.setUsername(userEmails.elementAt(i));
 			userEmailObjects.add(emailServer);
-			String host = userEmails.elementAt(i).substring(emailServer.getUsername().indexOf("@") + 1, emailServer.getUsername().indexOf(".")).toLowerCase();
-			emailServer.setHostName(host);
+			
+			String emailType = (userEmails.elementAt(i).substring(emailServer.getUsername().indexOf("@") + 1, emailServer.getUsername().indexOf("."))).toUpperCase();
+			emailServer.setSMTPServer(smtpServers.get(emailType));
+			emailServer.setEmailType(emailType);
+			emailServer.setPort(Integer.parseInt(portNumbers.get(emailType)));
+			emailServer.setImapHost(imapServers.get(emailType));
+			
+			System.out.println(userEmails.elementAt(i));
 			emailObjectMap.put(userEmails.elementAt(i), emailServer);
 		};
 	}

@@ -14,9 +14,12 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Vector;
-
 import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
 import javax.swing.ImageIcon;
@@ -39,11 +42,15 @@ import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeSelectionModel;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 
 public class GUI extends JFrame{
 
@@ -387,7 +394,7 @@ public class GUI extends JFrame{
 
 		emailServer.setLoginFrame(new JFrame("Log In"));
 		JFrame loginFrame = emailServer.getLoginFrame();
-		passwordPanel = new JPanel();
+		JPanel passwordPanel = new JPanel();
 		passwordPanel.setLayout(new GridBagLayout());
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 		cs.fill = GridBagConstraints.HORIZONTAL;
@@ -402,7 +409,7 @@ public class GUI extends JFrame{
 		cs.weighty = 0;
 		passwordPanel.add(emailLabel, cs);
 
-		passwordText = new JPasswordField(13);
+		JPasswordField passwordText = new JPasswordField(13);
 		passwordText.setFont(new Font("Serif", Font.PLAIN, 40));
 		cs.gridx = 1;
 		cs.gridy = 0;
@@ -414,10 +421,77 @@ public class GUI extends JFrame{
 		passwordPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
 
 		//create next and cancel button
+		JButton loginButton = new JButton("Log-in");
+		JButton cancelButton = new JButton("Cancel");
+		loginButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				emailServer.setPassword(new String(passwordText.getPassword()));
+				System.out.println(emailServer.getUsername());
+				System.out.println(new String(passwordText.getPassword()));
+				System.out.println("Email server name: " + emailServer.getUsername());
+				HttpClient yubikeyClient = HttpClients.createDefault();
+				//https://boiling-fjord-84786.herokuapp.com/yubikey
+				HttpPost yubikeyPost = new HttpPost("https://boiling-fjord-84786.herokuapp.com/yubikey");
+				List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+				parameters.add(new BasicNameValuePair("Email", emailServer.getUsername()));
+				boolean hasYubikey = false;
+				
+
+				try{
+					yubikeyPost.setEntity(new UrlEncodedFormEntity(parameters));//email and yubikey POST as the body of request
+					HttpResponse response1 = yubikeyClient.execute(yubikeyPost);//wait for a response from the server
+					BufferedReader rd1 = new BufferedReader(new InputStreamReader(response1.getEntity().getContent()));//reader for the response
+					String hasYubikeyString = rd1.readLine();//read the response
+					if(hasYubikeyString != null && hasYubikeyString.charAt(0) == '1'){
+						hasYubikey = true;
+					}
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				boolean emailAuthenticated2 = false;
+				try {
+					emailAuthenticated2 = emailServer.connect();//try to connect
+					System.out.println("Has yubikey: " + hasYubikey);
+					if(!emailAuthenticated2)
+						JOptionPane.showMessageDialog(loginFrame, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
+					else{
+						if(hasYubikey){
+							loginFrame.dispose();
+							setYubikeyFrame(emailServer);//set up yubikey panel
+						} else {//if this email doesnt have yubikey 
+							enableAllMenuItems();
+							loginFrame.dispose();
+						}
+					}
+				} catch (GeneralSecurityException e3) {//first check to see if it is a correct email/password combo
+					// TODO Auto-generated catch block
+					e3.printStackTrace();
+				} catch (IllegalArgumentException iae){
+					JOptionPane.showMessageDialog(emailServer.getLoginFrame(), "Not a valid OTP(One-Time-Password) format.", "Error", JOptionPane.ERROR_MESSAGE);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} 
+			} 
+
+		});
+		cancelButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				loginFrame.dispose();
+			}
+			
+		});
 		loginButton.setFont(new Font("Serif", Font.PLAIN, 23));
 		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
 
-		buttonPanel = new JPanel();//create a panel for the buttons
+		JPanel buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(loginButton);
 		buttonPanel.add(cancelButton);
 
@@ -434,6 +508,118 @@ public class GUI extends JFrame{
 		//add(emailFrame);
 	}
 
+	public void setYubikeyFrame(SecureMailService emailServer){//ask for yubikey on yubikeyPanel
+
+		emailServer.setYubikeyFrame(new JFrame("Yubikey"));
+		JFrame yubikeyFrame = emailServer.getYubikeyFrame();
+		JPanel yubikeyPanel = new JPanel();
+		yubikeyPanel.setLayout(new GridBagLayout());
+		GridBagConstraints cs = new GridBagConstraints();//constraints
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		//Yubikey label and yubikey password
+		JLabel yubikeyLabel = new JLabel("YubiKey: ");
+		yubikeyLabel.setFont(new Font("Serif", Font.PLAIN, 40));
+		cs.gridx = 0;
+		cs.gridy = 2;
+		cs.gridwidth = 1;
+		cs.weightx = 1.0;
+		cs.weighty = 0;
+		yubikeyPanel.add(yubikeyLabel, cs);
+
+		JPasswordField yubikeyText = new JPasswordField(13);
+		yubikeyText.setFont(new Font("Serif", Font.PLAIN, 40));
+		cs.gridx = 1;
+		cs.gridy = 2;
+		cs.gridwidth = 2;
+		cs.weightx = 1.0;
+		cs.weighty = 0;
+		yubikeyPanel.add(yubikeyText, cs);
+
+		yubikeyPanel.setBorder(new LineBorder(Color.GRAY));
+
+		JButton verifyButton = new JButton("Verify");
+		JButton cancelButton = new JButton("Cancel");
+		verifyButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				boolean yubikeyAuthenticated = false, otpAuthenticated = false;
+				String verificationString = "";
+				HttpClient authenticationClient = HttpClients.createDefault();
+				//https://boiling-fjord-84786.herokuapp.com/authenticate
+				HttpPost authenticationPost = new HttpPost("https://boiling-fjord-84786.herokuapp.com/authenticate");
+				int counter = 0;
+				while(verificationString == ""){
+					try {
+						List<NameValuePair> params = new ArrayList<NameValuePair>();
+						params.add(new BasicNameValuePair(emailServer.getUsername(), new String(yubikeyText.getPassword())));
+						//System.out.println(myGui.getEmail());
+						authenticationPost.setEntity(new UrlEncodedFormEntity(params));//email and yubikey POST as the body of request
+						HttpResponse response2 = authenticationClient.execute(authenticationPost);//wait for a response from the server
+						BufferedReader rd2 = new BufferedReader(new InputStreamReader(response2.getEntity().getContent()));//read the response
+						verificationString = rd2.readLine();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					counter++;
+					if(counter == 5){//if verification is not successful, quit the program
+						JOptionPane.showMessageDialog(emailServer.getLoginFrame(), "Error encountered when verifying, please restart program.", "Error", JOptionPane.ERROR_MESSAGE);
+						yubikeyFrame.dispose();
+						System.exit(0);
+						break;
+					}
+				}
+				if(verificationString.charAt(0) == '1'){//check if email and yubikey binding is correct
+					yubikeyAuthenticated = true;
+				} else{
+					JOptionPane.showMessageDialog(emailServer.getLoginFrame(), "Not a valid YubiKey.", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+
+				if(yubikeyAuthenticated && verificationString.charAt(1) == '1'){//check if binding is correct and correct OTP
+					otpAuthenticated = true;
+					JOptionPane.showMessageDialog(emailServer.getLoginFrame(), "Successfully verified OTP(One-Time-Password)", "Succeed", JOptionPane.INFORMATION_MESSAGE);
+				} else{
+					JOptionPane.showMessageDialog(emailServer.getLoginFrame(), "Failed to verify OTP(One-Time-Password)", "Failed", JOptionPane.ERROR_MESSAGE);
+				}
+				System.out.println(verificationString);
+				System.out.println(yubikeyAuthenticated);
+				System.out.println(otpAuthenticated);
+				if(yubikeyAuthenticated && otpAuthenticated){//if everything is correct, then show messages and allow log in
+					emailServer.getYubikeyFrame().dispose();
+					//myGui.setMainPanel(userEmails);
+				} 
+			}
+			
+		});
+		cancelButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				yubikeyFrame.dispose();
+			}
+			
+		});
+		verifyButton.setFont(new Font("Serif", Font.PLAIN, 23));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
+
+		JPanel buttonPanel = new JPanel();//create a panel for the buttons
+		buttonPanel.add(verifyButton);
+		buttonPanel.add(cancelButton);
+
+		yubikeyFrame.getRootPane().setDefaultButton(verifyButton);
+		yubikeyFrame.add(yubikeyPanel, BorderLayout.CENTER);
+		yubikeyFrame.add(buttonPanel, BorderLayout.PAGE_END);
+		yubikeyFrame.pack(); //let layout managers in charge of the frame size
+		ImageIcon img = new ImageIcon(imageFileName);
+		yubikeyFrame.setIconImage(img.getImage());
+		yubikeyFrame.setResizable(false);
+		yubikeyFrame.setVisible(true);
+		yubikeyFrame.setLocationRelativeTo(this);
+	}
+	
 	public void setPasswordPanel(){//ask for password on passwordPanel
 		passwordPanel = new JPanel();
 		passwordPanel.setLayout(new GridBagLayout());
@@ -472,58 +658,9 @@ public class GUI extends JFrame{
 		addAccountFrame.setVisible(true);
 	}
 
-	public void setYubikeyPanel(SecureMailService emailServer){//ask for yubikey on yubikeyPanel
-
-
-		JFrame loginFrame = emailServer.getLoginFrame();yubikeyPanel = new JPanel();
-		passwordPanel.setVisible(false);//fisrt hide password panel
-		buttonPanel.setVisible(false);//hide button panel
-		buttonPanel.removeAll();//remove whatever is in button panel
-		repaint();//repaint the gui
-		yubikeyPanel.setLayout(new GridBagLayout());
-		GridBagConstraints cs = new GridBagConstraints();//constraints
-		cs.fill = GridBagConstraints.HORIZONTAL;
-		//Yubikey label and yubikey password
-		JLabel yubikeyLabel = new JLabel("YubiKey: ");
-		yubikeyLabel.setFont(new Font("Serif", Font.PLAIN, 40));
-		cs.gridx = 0;
-		cs.gridy = 2;
-		cs.gridwidth = 1;
-		cs.weightx = 1.0;
-		cs.weighty = 0;
-		yubikeyPanel.add(yubikeyLabel, cs);
-
-		yubikeyText = new JPasswordField(13);
-		yubikeyText.setFont(new Font("Serif", Font.PLAIN, 40));
-		cs.gridx = 1;
-		cs.gridy = 2;
-		cs.gridwidth = 2;
-		cs.weightx = 1.0;
-		cs.weighty = 0;
-		yubikeyPanel.add(yubikeyText, cs);
-
-		yubikeyPanel.setBorder(new LineBorder(Color.GRAY));
-
-		verifyButton.setFont(new Font("Serif", Font.PLAIN, 23));
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
-
-		buttonPanel = new JPanel();//create a panel for the buttons
-		buttonPanel.add(verifyButton);
-		buttonPanel.add(cancelButton);
-
-		loginFrame.getRootPane().setDefaultButton(verifyButton);
-		loginFrame.add(yubikeyPanel, BorderLayout.CENTER);
-		loginFrame.add(buttonPanel, BorderLayout.PAGE_END);
-
-		loginFrame.pack(); //let layout managers in charge of the frame size
-		loginFrame.setResizable(false);
-		loginFrame.setVisible(true);
-	}
-
-	public void setWriteFrame(Vector<String> userEmails, SecureMailService emailServer, ActionListener a){//write email
+	public void setWriteFrame(Vector<String> userEmails, SecureMailService emailServer){//write email
 
 		JComboBox<String> emailList = new JComboBox<>(userEmails);
-
 		emailServer.setWriteFrame(new JFrame("Write: New Email"));
 		JFrame writeFrame = emailServer.getWriteFrame();
 		writeFrame.setSize(1000, 800);
@@ -534,7 +671,6 @@ public class GUI extends JFrame{
 		JPanel mainPanel = new JPanel();
 		JPanel writePanel = new JPanel();
 		writePanel.setLayout(new GridBagLayout());
-
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 
 		JLabel senderLabel = new JLabel("Sender: ");//sender
@@ -642,7 +778,7 @@ public class GUI extends JFrame{
 				}
 				emailServer.setSubject(subjectTextField.getText());
 				try {
-					emailServer.send(emailServer.getHostName(), emailContentText.getText());
+					emailServer.send(emailServer.getSMTPServer(), emailContentText.getText());
 					//myGui.setSendDebugTextArea();
 					JOptionPane.showMessageDialog(writeFrame, "Message sent!");
 				} catch (Exception e1) {
@@ -684,7 +820,7 @@ public class GUI extends JFrame{
 		writeFrame.setVisible(true);
 	}
 
-	public void setSecureWritePanel(Vector<String> userEmails, SecureMailService emailServer, ActionListener a){
+	public void setSecureWritePanel(Vector<String> userEmails, SecureMailService emailServer){
 
 		JComboBox<String> emailList = new JComboBox<>(userEmails);
 		//System.out.println(emailList.getSelectedItem());
@@ -793,7 +929,29 @@ public class GUI extends JFrame{
 
 		JButton secureSendButton = new JButton("Secure Send");
 		JButton secureDiscardButton = new JButton("Secure Discard");
-		secureSendButton.addActionListener(a);
+		secureSendButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				emailServer.setUsername(((String) emailList.getSelectedItem()).replaceAll("\\s+", ""));
+				System.out.println("Email server is null " + emailServer == null);
+				if(secureRecipientTextField != null && !secureRecipientTextField.getText().isEmpty()){
+					emailServer.setRecipient(secureRecipientTextField.getText());
+				} else{
+					JOptionPane.showMessageDialog(secureWriteFrame, "Please specify recipient.", "Failed", JOptionPane.ERROR_MESSAGE);
+				}
+				emailServer.setSubject(secureSubjectTextField.getText());
+				try {
+					emailServer.encryptedSend(emailServer.getSMTPServer());
+					//myGui.setSendDebugTextArea();
+					JOptionPane.showMessageDialog(secureWriteFrame, "Message sent!");
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+
+		});
 		secureDiscardButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -871,7 +1029,7 @@ public class GUI extends JFrame{
 		return null;
 	}
 
-	
+
 	public String getSecureRecipient() {
 		if(secureRecipientTextField != null){
 			return secureRecipientTextField.getText().replaceAll("\\s+", "");
