@@ -52,14 +52,14 @@ public class GUIController implements ActionListener, MouseListener{
 	private static String email = "";
 	private static String host = "";
 	private static boolean hasYubikey = false;
-	private static int counter = 0;
-	private static Vector<String> userEmails = new Vector<String>();
+	public static int counter = 0;
+	public static Vector<String> userEmails = new Vector<String>();
 	private static Vector<SecureMailService> userEmailObjects = new Vector<SecureMailService>();
 	private final String fileName = "userconfig.properties";
 	private InputStream inputStream;
-	private static Hashtable<String, SecureMailService> emailObjectMap = new Hashtable<String, SecureMailService>();
+	public static Hashtable<String, SecureMailService> emailObjectMap = new Hashtable<String, SecureMailService>();
 
-	private final static Hashtable<String, String> smtpServers = new Hashtable<String, String>() {/**
+	public final static Hashtable<String, String> smtpServers = new Hashtable<String, String>() {/**
 	 * 
 	 */
 		private static final long serialVersionUID = 1L;
@@ -75,7 +75,7 @@ public class GUIController implements ActionListener, MouseListener{
 
 	};
 
-	private final static Hashtable<String, String> portNumbers = new Hashtable<String, String>() {/**
+	public final static Hashtable<String, String> portNumbers = new Hashtable<String, String>() {/**
 	 * 
 	 */
 		private static final long serialVersionUID = 1L;
@@ -90,7 +90,7 @@ public class GUIController implements ActionListener, MouseListener{
 		}
 	};
 
-	private final static Hashtable<String, String> imapServers = new Hashtable<String, String>() {/**
+	public final static Hashtable<String, String> imapServers = new Hashtable<String, String>() {/**
 	 * 
 	 */
 		private static final long serialVersionUID = 1L;
@@ -115,13 +115,13 @@ public class GUIController implements ActionListener, MouseListener{
 		//setEmailTreeListener(this, userEmails);
 		//myGui.setEmailTreeListener(this, userEmails);
 		//myGui.tree.addTreeSelectionListener(this);
-		Properties prop = new Properties();
+		/*Properties prop = new Properties();
 		OutputStream output = null;
 		output = new FileOutputStream(fileName);
 		prop.setProperty("email1", "pinkbunnychickenmarsala@gmail.com");
 		prop.setProperty("email2", "pinkbunnychickenmarsala@yahoo.com");
 		prop.setProperty("email3", "pinkbunnychickenmarsala@outlook.com");
-		prop.store(output, null);
+		prop.store(output, null);*/
 		 
 
 
@@ -134,7 +134,7 @@ public class GUIController implements ActionListener, MouseListener{
 		switch(buttonName){
 
 		case "Next":
-			email = myGui.getEmail();//get the email
+			/*email = myGui.getEmail();//get the email
 			if(email != null && !email.equals("")){
 				host = email.substring(email.indexOf("@") + 1, email.indexOf(".")).toLowerCase();//see what kind of host the user is using
 				smtpServer = smtpServers.get(host.toUpperCase());//check what smtp server it is using for that host
@@ -145,10 +145,10 @@ public class GUIController implements ActionListener, MouseListener{
 					emailServer.setPort(Integer.parseInt(portNumber));//set port number
 					emailServer.setUsername(email);//set user email
 					emailServer.setImapHost(imapServer);
-					/*System.out.println(smtpServer);
+					System.out.println(smtpServer);
 					System.out.println(portNumber);
 					System.out.println(host);
-					System.out.println(email);*/
+					System.out.println(email);
 					//used to check if this email has a yubikey attached to it
 					HttpClient yubikeyClient = HttpClients.createDefault();
 					//https://boiling-fjord-84786.herokuapp.com/yubikey
@@ -190,7 +190,7 @@ public class GUIController implements ActionListener, MouseListener{
 			} else {
 				JOptionPane.showMessageDialog(myGui.addAccountFrame, "Please enter an email.", "oops ...", JOptionPane.WARNING_MESSAGE);
 				break;
-			}
+			}*/
 
 		/*case "Sign-in":
 			boolean emailAuthenticated = false;
@@ -305,7 +305,7 @@ public class GUIController implements ActionListener, MouseListener{
 			break;*/
 
 		case "Add New Account":
-			myGui.setAddAccountFrame();
+			myGui.setAddAccountEmailFrame();
 			break;
 
 		case "Log in":
@@ -521,27 +521,40 @@ public class GUIController implements ActionListener, MouseListener{
 			DefaultMutableTreeNode node;
 			node = (DefaultMutableTreeNode)
 					tree.getLastSelectedPathComponent();
-			if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Secure write"){
+			//e.getClickCount() == 1 
+			if(row != 0 && tree.getLastSelectedPathComponent().toString() == "Secure write"){
 				emailServer = emailObjectMap.get(node.getRoot().toString());
 				if(emailServer.isSmtpLoggedIn()){
 					myGui.setSecureWritePanel(userEmails, emailServer);
+				} else{
+					JOptionPane.showMessageDialog(myGui, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
+					myGui.setLoginFrame(emailServer);
 				}
+				tree.clearSelection();
 				//System.out.println("double clicked");
-			} else if(e.getClickCount() == 2 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Write"){
+			} else if(row != 0 && tree.getLastSelectedPathComponent().toString() == "Write"){
 				emailServer = emailObjectMap.get(node.getRoot().toString());
 				if(emailServer.isSmtpLoggedIn()){
 					myGui.setWriteFrame(userEmails, emailServer);
+				} else{
+					JOptionPane.showMessageDialog(myGui, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
+					myGui.setLoginFrame(emailServer);
 				}
+				tree.clearSelection();
 				//System.out.println("double clicked");
-			} else if(e.getClickCount() == 1 && row != 0 && tree.getLastSelectedPathComponent().toString() == "Inbox"){
+			} else if(row != 0 && tree.getLastSelectedPathComponent().toString() == "Inbox"){
 				try {
 					//System.out.println("Root:" + node.getRoot().toString());
 					emailServer = emailObjectMap.get(node.getRoot().toString());
 					//System.out.println("email server is null" + emailServer == null);
 					if(emailServer.isSmtpLoggedIn()){
-						myGui.setDisplayPanel(emailServer);
+						myGui.setDisplayRightPanel(emailServer);
 						//System.out.println(emailServer.getEmailTable() == null);
+					} else {
+						JOptionPane.showMessageDialog(myGui, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
+						myGui.setLoginFrame(emailServer);
 					}
+					tree.clearSelection();
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -557,6 +570,7 @@ public class GUIController implements ActionListener, MouseListener{
 					System.out.println(email);
 					emailServer.setUsername(email);
 				}
+				tree.clearSelection();
 			} else {
 				/*if(tree.getLastSelectedPathComponent() != null && !emailServer.isSmtpLoggedIn()){
 					JOptionPane.showMessageDialog(myGui, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);

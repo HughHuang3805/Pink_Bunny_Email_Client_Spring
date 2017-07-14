@@ -169,7 +169,7 @@ public class SecureMailService {
 			break;
 			
 		default:
-			return false;
+			break;
 		}
 		//System.out.println(host);
 		Session mailSession = Session.getDefaultInstance(props);

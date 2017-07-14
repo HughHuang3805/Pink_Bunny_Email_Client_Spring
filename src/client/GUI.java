@@ -12,16 +12,21 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.Vector;
+
 import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
 import javax.swing.ImageIcon;
@@ -85,15 +90,19 @@ public class GUI extends JFrame{
 	JPanel mainPanel, leftPanel, rightPanel, emailsPanel, emailInboxPanel, previewPanel;
 	JPopupMenu emailPopupMenu = new JPopupMenu();
 	JTable emailTable;
+	MouseListener a;
+	ActionListener b;
+	JSplitPane splitPane;
 
 	public GUI(MouseListener a, ActionListener b, Vector<String> userEmails) throws Exception{
 		setTitle("Pink Bunny E-mail Client");
 		setSize(1250, 800);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setActionListener(b);
+		setMouseListener(a);
 		setMenuItems();
 		setMenuInsets();
 		setLocationRelativeTo(null);
-		//getContentPane().setBackground(new Color(51, 102, 235));
 		setLocationRelativeTo(null);
 		ImageIcon img = new ImageIcon(imageFileName);
 		setIconImage(img.getImage());
@@ -234,8 +243,8 @@ public class GUI extends JFrame{
 		leftPanel.setLayout(new GridBagLayout());
 		rightPanel.setLayout(new GridLayout());
 
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);//split the middle
-		setEmailJTreePanel(userEmails, a);//for left panel email lists
+		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);//split the middle
+		setEmailJTreeLeftPanel(userEmails, a);//for left panel email lists
 		//leftPanel.add(jTree);
 
 		leftPanel.setBorder(new LineBorder(Color.GRAY));
@@ -258,10 +267,12 @@ public class GUI extends JFrame{
 		setResizable(true);
 	}
 
-	public void setEmailJTreePanel(Vector<String> userEmails, MouseListener a){
+	public void setEmailJTreeLeftPanel(Vector<String> userEmails, MouseListener a){
 
 		UIManager.put("Tree.expandedIcon",  new ImageIcon("icons/clapsedicon.png"));//changes the expand icon
 		UIManager.put("Tree.collapsedIcon", new ImageIcon("icons/expandicon.png"));//changes the clapsed icon
+		leftPanel.removeAll();
+		trees.removeAllElements();
 		for(int i = 0; i < userEmails.size(); i++){
 			DefaultMutableTreeNode emailRoot = new DefaultMutableTreeNode(userEmails.elementAt(i));
 			trees.add(new JTree(emailRoot));
@@ -302,14 +313,27 @@ public class GUI extends JFrame{
 		JPanel filler = new JPanel();
 		filler.setOpaque(false);
 		leftPanel.add(filler, cs);
+		leftPanel.repaint();
+		leftPanel.revalidate();
 		leftPanel.setBackground(Color.white);
+
+		//splitPane.remove(leftPanel);
+		splitPane.setLeftComponent(new JScrollPane(leftPanel));//left component in the split pane is the left panel
+		splitPane.setRightComponent(rightPanel);//right component in the split pane is the right panel
+		splitPane.setDividerSize(2);
+		//splitPane.setDividerLocation(0.75);
+		splitPane.setResizeWeight(0.01);
+
+		repaint();
+		revalidate();
 	}
 
-	public void setDisplayPanel(SecureMailService mailServer) throws Exception{
+	public void setDisplayRightPanel(SecureMailService mailServer) throws Exception{
 		if(mailServer.getEmailTable() == null){
 			String[] columnNames = {"Subject", "From", "Date", "Read"};
 			Message[] messages = mailServer.getMessages();
 			String[][] data = new String[messages.length][4] ;
+			//messages.length - 1
 			for (int i = messages.length - 1; i >= 0 ; i--) {  
 				Message message = messages[i];  
 				Scanner s;
@@ -342,10 +366,10 @@ public class GUI extends JFrame{
 		setVisible(true);
 	}
 
-	public void setAddAccountFrame(){//ask for email on emailPanel
-		addAccountFrame = null;
-		addAccountFrame = new JFrame("Email");
-		emailPanel = new JPanel();
+	public void setAddAccountEmailFrame(){//ask for email on emailPanel
+
+		JFrame emailFrame = new JFrame("Email");
+		JPanel emailPanel = new JPanel();
 		emailPanel.setLayout(new GridBagLayout());
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 		cs.fill = GridBagConstraints.HORIZONTAL;
@@ -360,7 +384,7 @@ public class GUI extends JFrame{
 		cs.weighty = 0;
 		emailPanel.add(emailLabel, cs);
 
-		emailTextField = new JTextField(13);
+		JTextField emailTextField = new JTextField(13);
 		emailTextField.setFont(new Font("Serif", Font.PLAIN, 40));
 		cs.gridx = 1;
 		cs.gridy = 0;
@@ -372,24 +396,155 @@ public class GUI extends JFrame{
 		emailPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
 
 		//create next and cancel button
+		JButton nextButton = new JButton("Next");
+		JButton cancelButton = new JButton("Cancel");
+		nextButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				String email = emailTextField.getText();//get the email
+				SecureMailService emailServer = new SecureMailService();
+				if(email != null && !email.equals("")){
+					String emailType = email.substring(email.indexOf("@") + 1, email.indexOf(".")).toUpperCase();//see what kind of host the user is using
+					String smtpServer = GUIController.smtpServers.get(emailType.toUpperCase());//check what smtp server it is using for that host
+					String portNumber = GUIController.portNumbers.get(emailType.toUpperCase());//check what port it is using for that host
+					String imapServer = GUIController.imapServers.get(emailType.toUpperCase());
+					if(smtpServer != null & portNumber != null){
+						emailServer.setSMTPServer(smtpServer);//set smtp server
+						emailServer.setPort(Integer.parseInt(portNumber));//set port number
+						emailServer.setUsername(email);//set user email
+						emailServer.setImapHost(imapServer);
+						emailServer.setEmailType(emailType);
+						GUIController.emailObjectMap.put(email, emailServer);
+
+						Properties prop = new Properties();
+						OutputStream output = null;
+						try {
+							prop.load(new FileInputStream("userconfig.properties"));
+							output = new FileOutputStream("userconfig.properties");
+							GUIController.counter++;
+							prop.setProperty("email" + GUIController.counter, emailServer.getUsername());
+							prop.store(output, null);
+						} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+						setAddAccountPasswordFrame(emailServer);
+						emailFrame.dispose();
+					}
+				}
+			}
+		});
+		cancelButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				emailFrame.dispose();
+			}
+
+		});
 		nextButton.setFont(new Font("Serif", Font.PLAIN, 23));
 		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
 
-		buttonPanel = new JPanel();//create a panel for the buttons
+		JPanel buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(nextButton);
 		buttonPanel.add(cancelButton);
 
 		//the default button that will be clicked when press "enter"
-		addAccountFrame.getRootPane().setDefaultButton(nextButton);
-		addAccountFrame.add(emailPanel, BorderLayout.CENTER);
-		addAccountFrame.add(buttonPanel, BorderLayout.PAGE_END);
-		addAccountFrame.pack(); //let layout managers in charge of the frame size
+		emailFrame.getRootPane().setDefaultButton(nextButton);
+		emailFrame.add(emailPanel, BorderLayout.CENTER);
+		emailFrame.add(buttonPanel, BorderLayout.PAGE_END);
+		emailFrame.pack(); //let layout managers in charge of the frame size
 		ImageIcon img = new ImageIcon(imageFileName);
-		addAccountFrame.setIconImage(img.getImage());
-		addAccountFrame.setResizable(false);
-		addAccountFrame.setVisible(true);
-		addAccountFrame.setLocationRelativeTo(this);
+		emailFrame.setIconImage(img.getImage());
+		emailFrame.setResizable(false);
+		emailFrame.setVisible(true);
+		emailFrame.setLocationRelativeTo(this);
 		//add(emailFrame);
+	}
+
+	public void setAddAccountPasswordFrame(SecureMailService emailServer){//ask for password on passwordPanel
+		JFrame passwordFrame = new JFrame("Password");
+		JPanel passwordPanel = new JPanel();
+		passwordPanel.setLayout(new GridBagLayout());
+		GridBagConstraints cs = new GridBagConstraints();//constraints
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		//Password label and password textfield
+		JLabel passwordLabel = new JLabel("Password: ");
+		passwordLabel.setFont(new Font("Serif", Font.PLAIN, 40));
+		cs.gridx = 0;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		passwordPanel.add(passwordLabel, cs);
+
+		JPasswordField passwordText = new JPasswordField(13);
+		passwordText.setFont(new Font("Serif", Font.PLAIN, 40));
+		cs.gridx = 1;
+		cs.gridy = 1;
+		cs.gridwidth = 2;
+		passwordPanel.add(passwordText, cs);
+		passwordPanel.setBorder(new LineBorder(Color.GRAY));
+
+		JButton addButton = new JButton("Add");
+		JButton cancelButton = new JButton("Cancel");
+		addButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				try {
+					if(passwordText.getPassword().length == 0){
+						JOptionPane.showMessageDialog(passwordFrame, "Please enter a password.", "oops ...", JOptionPane.WARNING_MESSAGE);
+					} else{
+						emailServer.setPassword(new String(passwordText.getPassword()));
+						boolean connectSuccessful =  emailServer.connect();
+						if(connectSuccessful){
+							GUIController.userEmails.add(emailServer.getUsername());
+							setEmailJTreeLeftPanel(GUIController.userEmails, getMouseListener());
+							passwordFrame.dispose();
+						} else{
+							JOptionPane.showMessageDialog(passwordFrame, "Error adding account, please try again.", "oops ...", JOptionPane.ERROR_MESSAGE);
+							passwordFrame.dispose();
+						}
+					}
+				} catch (GeneralSecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		});
+					cancelButton.addActionListener(new ActionListener(){
+
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							// TODO Auto-generated method stub
+							passwordFrame.dispose();
+						}
+
+					});
+					addButton.setFont(new Font("Serif", Font.PLAIN, 23));
+					cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
+
+					JPanel buttonPanel = new JPanel();//create a panel for the buttons
+					buttonPanel.add(addButton);
+					buttonPanel.add(cancelButton);
+
+					passwordFrame.getRootPane().setDefaultButton(addButton);
+					passwordFrame.add(passwordPanel, BorderLayout.CENTER);
+					passwordFrame.add(buttonPanel, BorderLayout.PAGE_END);
+					passwordFrame.pack(); //let layout managers in charge of the frame size
+					ImageIcon img = new ImageIcon(imageFileName);
+					passwordFrame.setIconImage(img.getImage());
+					passwordFrame.setLocationRelativeTo(this);
+					passwordFrame.setResizable(false);
+					passwordFrame.setVisible(true);
 	}
 
 	public void setLoginFrame(SecureMailService emailServer){//ask for email on emailPanel
@@ -439,7 +594,7 @@ public class GUI extends JFrame{
 				List<NameValuePair> parameters = new ArrayList<NameValuePair>();
 				parameters.add(new BasicNameValuePair("Email", emailServer.getUsername()));
 				boolean hasYubikey = false;
-				
+
 
 				try{
 					yubikeyPost.setEntity(new UrlEncodedFormEntity(parameters));//email and yubikey POST as the body of request
@@ -459,7 +614,7 @@ public class GUI extends JFrame{
 					emailAuthenticated2 = emailServer.connect();//try to connect
 					System.out.println("Has yubikey: " + hasYubikey);
 					if(!emailAuthenticated2)
-						JOptionPane.showMessageDialog(loginFrame, "Wrong email or password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
+						JOptionPane.showMessageDialog(loginFrame, "Wrong password, try again.", "oops ...", JOptionPane.WARNING_MESSAGE);
 					else{
 						if(hasYubikey){
 							loginFrame.dispose();
@@ -488,7 +643,7 @@ public class GUI extends JFrame{
 				// TODO Auto-generated method stub
 				loginFrame.dispose();
 			}
-			
+
 		});
 		loginButton.setFont(new Font("Serif", Font.PLAIN, 23));
 		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
@@ -593,7 +748,7 @@ public class GUI extends JFrame{
 					//myGui.setMainPanel(userEmails);
 				} 
 			}
-			
+
 		});
 		cancelButton.addActionListener(new ActionListener(){
 
@@ -602,7 +757,7 @@ public class GUI extends JFrame{
 				// TODO Auto-generated method stub
 				yubikeyFrame.dispose();
 			}
-			
+
 		});
 		verifyButton.setFont(new Font("Serif", Font.PLAIN, 23));
 		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
@@ -620,44 +775,6 @@ public class GUI extends JFrame{
 		yubikeyFrame.setResizable(false);
 		yubikeyFrame.setVisible(true);
 		yubikeyFrame.setLocationRelativeTo(this);
-	}
-	
-	public void setPasswordPanel(){//ask for password on passwordPanel
-		passwordPanel = new JPanel();
-		passwordPanel.setLayout(new GridBagLayout());
-		GridBagConstraints cs = new GridBagConstraints();//constraints
-		cs.fill = GridBagConstraints.HORIZONTAL;
-		//Password label and password textfield
-		JLabel passwordLabel = new JLabel("Password: ");
-		passwordLabel.setFont(new Font("Serif", Font.PLAIN, 40));
-		cs.gridx = 0;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		passwordPanel.add(passwordLabel, cs);
-
-		passwordText = new JPasswordField(13);
-		passwordText.setFont(new Font("Serif", Font.PLAIN, 40));
-		cs.gridx = 1;
-		cs.gridy = 1;
-		cs.gridwidth = 2;
-		passwordPanel.add(passwordText, cs);
-
-		passwordPanel.setBorder(new LineBorder(Color.GRAY));
-
-		loginButton.setFont(new Font("Serif", Font.PLAIN, 23));
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
-
-		buttonPanel = new JPanel();//create a panel for the buttons
-		buttonPanel.add(loginButton);
-		buttonPanel.add(cancelButton);
-
-		addAccountFrame.getRootPane().setDefaultButton(loginButton);
-		addAccountFrame.add(passwordPanel, BorderLayout.CENTER);
-		addAccountFrame.add(buttonPanel, BorderLayout.PAGE_END);
-
-		addAccountFrame.pack(); //let layout managers in charge of the frame size
-		addAccountFrame.setResizable(false);
-		addAccountFrame.setVisible(true);
 	}
 
 	public void setWriteFrame(Vector<String> userEmails, SecureMailService emailServer){//write email
@@ -948,7 +1065,7 @@ public class GUI extends JFrame{
 					bw = new BufferedWriter(new FileWriter("plain-text.txt"));
 					secureEmailContentText.write(bw);
 					//myGui.setEmailBodyTextArea();
-					
+
 					emailServer.encryptedSend();
 					//myGui.setSendDebugTextArea();
 					JOptionPane.showMessageDialog(secureWriteFrame, "Message sent!");
@@ -1093,5 +1210,21 @@ public class GUI extends JFrame{
 
 	public void setSecureEmailContentText(JTextArea secureEmailContentText) {
 		this.secureEmailContentText = secureEmailContentText;
+	}
+
+	public void setActionListener(ActionListener b){
+		this.b = b;
+	}
+
+	public ActionListener getActionListener(){
+		return b;
+	}
+
+	public void setMouseListener(MouseListener a){
+		this.a = a;
+	}
+
+	public MouseListener getMouseListener(){
+		return a;
 	}
 }
