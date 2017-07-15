@@ -122,7 +122,7 @@ public class GUIController implements ActionListener, MouseListener{
 		prop.setProperty("email2", "pinkbunnychickenmarsala@yahoo.com");
 		prop.setProperty("email3", "pinkbunnychickenmarsala@outlook.com");
 		prop.store(output, null);*/
-		 
+
 
 
 	}
@@ -241,7 +241,7 @@ public class GUIController implements ActionListener, MouseListener{
 					myGui.setSecureWritePanel(userEmails, emailServer);
 				} else{
 					JOptionPane.showMessageDialog(myGui, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
-					myGui.setLoginFrame(emailServer);
+					//myGui.setLoginFrame(emailServer);
 				}
 				tree.clearSelection();
 				//System.out.println("double clicked");
@@ -251,7 +251,7 @@ public class GUIController implements ActionListener, MouseListener{
 					myGui.setWriteFrame(userEmails, emailServer);
 				} else{
 					JOptionPane.showMessageDialog(myGui, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
-					myGui.setLoginFrame(emailServer);
+					//myGui.setLoginFrame(emailServer);
 				}
 				tree.clearSelection();
 				//System.out.println("double clicked");
@@ -265,7 +265,7 @@ public class GUIController implements ActionListener, MouseListener{
 						//System.out.println(emailServer.getEmailTable() == null);
 					} else {
 						JOptionPane.showMessageDialog(myGui, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
-						myGui.setLoginFrame(emailServer);
+						//myGui.setLoginFrame(emailServer);
 					}
 					tree.clearSelection();
 				} catch (Exception e1) {
@@ -284,7 +284,11 @@ public class GUIController implements ActionListener, MouseListener{
 					emailServer.setUsername(email);
 				}
 				tree.clearSelection();
-			} if(row == -1) //When user clicks on the "empty surface"
+			} /*else if(node.isRoot() ){
+				tree.getSelectionModel()..resetRowSelection();
+			}*/
+
+			if(row == -1) //When user clicks on the "empty surface"
 				tree.getSelectionModel().clearSelection();
 			//tree.clearSelection();
 		}

@@ -50,6 +50,7 @@ import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -250,7 +251,9 @@ public class GUI extends JFrame{
 		leftPanel.setBorder(new LineBorder(Color.GRAY));
 		rightPanel.setBorder(new LineBorder(Color.GRAY));
 
-		splitPane.setLeftComponent(new JScrollPane(leftPanel));//left component in the split pane is the left panel
+		JScrollPane leftPanelScrollPane = new JScrollPane(leftPanel);
+		leftPanelScrollPane.getVerticalScrollBar().setUnitIncrement(16);//scrolling speed
+		splitPane.setLeftComponent(leftPanelScrollPane);//left component in the split pane is the left panel
 		splitPane.setRightComponent(rightPanel);//right component in the split pane is the right panel
 		splitPane.setDividerSize(2);
 		//splitPane.setDividerLocation(0.75);
@@ -290,6 +293,7 @@ public class GUI extends JFrame{
 			emailRoot.add(draftLeaf);
 			emailRoot.add(sentLeaf);
 			emailRoot.add(spamLeaf);
+			trees.elementAt(i).getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 			trees.elementAt(i).setCellRenderer(new TreeRenderer());
 			trees.elementAt(i).setRowHeight(23);//gap between each email
 			trees.elementAt(i).addMouseListener(a);
@@ -318,7 +322,9 @@ public class GUI extends JFrame{
 		leftPanel.setBackground(Color.white);
 
 		//splitPane.remove(leftPanel);
-		splitPane.setLeftComponent(new JScrollPane(leftPanel));//left component in the split pane is the left panel
+		JScrollPane leftPanelScrollPane = new JScrollPane(leftPanel);
+		leftPanelScrollPane.getVerticalScrollBar().setUnitIncrement(16);//scrolling speed
+		splitPane.setLeftComponent(leftPanelScrollPane);//left component in the split pane is the left panel
 		splitPane.setRightComponent(rightPanel);//right component in the split pane is the right panel
 		splitPane.setDividerSize(2);
 		//splitPane.setDividerLocation(0.75);
