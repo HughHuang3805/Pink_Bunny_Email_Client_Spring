@@ -49,7 +49,10 @@ import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.http.HttpResponse;
@@ -279,7 +282,8 @@ public class GUI extends JFrame{
 		for(int i = 0; i < userEmails.size(); i++){
 			DefaultMutableTreeNode emailRoot = new DefaultMutableTreeNode(userEmails.elementAt(i));
 			trees.add(new JTree(emailRoot));
-			trees.elementAt(i).setShowsRootHandles(true);
+			JTree tree = trees.elementAt(i);
+			tree.setShowsRootHandles(true);
 
 			DefaultMutableTreeNode inboxLeaf = new DefaultMutableTreeNode("Inbox");
 			DefaultMutableTreeNode writeLeaf = new DefaultMutableTreeNode("Write");
@@ -293,14 +297,65 @@ public class GUI extends JFrame{
 			emailRoot.add(draftLeaf);
 			emailRoot.add(sentLeaf);
 			emailRoot.add(spamLeaf);
-			trees.elementAt(i).getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			trees.elementAt(i).setCellRenderer(new TreeRenderer());
-			trees.elementAt(i).setRowHeight(23);//gap between each email
-			trees.elementAt(i).addMouseListener(a);
-			Font currentFont = trees.elementAt(i).getFont();
+			
+			
+			tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+			tree.setCellRenderer(new TreeRenderer());
+			tree.setRowHeight(23);//gap between each email
+			tree.addMouseListener(a);
+			tree.addTreeSelectionListener(new TreeSelectionListener(){
+			
+				@Override
+				public void valueChanged(TreeSelectionEvent arg0) {
+					// TODO Auto-generated method stub
+					DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+							tree.getLastSelectedPathComponent();
+					if(node == null) return;
+					if(node.toString() == "Inbox"){
+						SecureMailService emailServer = GUIController.emailObjectMap.get(node.getRoot().toString());
+						//System.out.println("email server is null" + emailServer == null);
+						if(emailServer.isSmtpLoggedIn()){
+							try {
+								setDisplayRightPanel(emailServer);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							//System.out.println(emailServer.getEmailTable() == null);
+						} else {
+							JOptionPane.showMessageDialog(null, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
+							//myGui.setLoginFrame(emailServer);
+						}
+						//tree.clearSelection();
+					}
+					if(node.toString() == "Secure write"){
+						SecureMailService emailServer = GUIController.emailObjectMap.get(node.getRoot().toString());
+						if(emailServer.isSmtpLoggedIn()){
+							setSecureWritePanel(userEmails, emailServer);
+						} else{
+							JOptionPane.showMessageDialog(null, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
+							//myGui.setLoginFrame(emailServer);
+						}
+						//System.out.println("double clicked");
+					} else if(node.toString() == "Write"){
+						SecureMailService emailServer = GUIController.emailObjectMap.get(node.getRoot().toString());
+						if(emailServer.isSmtpLoggedIn()){
+							setWriteFrame(userEmails, emailServer);
+							tree.clearSelection();
+						} else{
+							JOptionPane.showMessageDialog(null, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
+							//myGui.setLoginFrame(emailServer);
+						}
+						//System.out.println("double clicked");
+					}
+				}
+				
+			});
+			
+			Font currentFont = tree.getFont();
 			//font size of the displaying email list
-			trees.elementAt(i).setFont(new Font(currentFont.getName(), currentFont.getStyle(), currentFont.getSize() + 3));
-
+			tree.setFont(new Font(currentFont.getName(), currentFont.getStyle(), currentFont.getSize() + 3));
+			
 			GridBagConstraints cs = new GridBagConstraints();//constraints
 			cs.fill = GridBagConstraints.BOTH;
 			cs.anchor = GridBagConstraints.NORTH;
@@ -364,6 +419,10 @@ public class GUI extends JFrame{
 		revalidate();
 	}
 
+	public void setEmailContentDisplayRightPanel(SecureMailService emailServer, int messageNumber){
+		
+	}
+	
 	public void setReceivedEmailTextArea(String message){
 		emailContentText.setText(message);
 		emailContentText.setEditable(false);

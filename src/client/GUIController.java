@@ -239,7 +239,7 @@ public class GUIController implements ActionListener, MouseListener{
 			node = (DefaultMutableTreeNode)
 					tree.getLastSelectedPathComponent();
 			//e.getClickCount() == 1 
-			if(row != 0 && tree.getLastSelectedPathComponent().toString() == "Secure write"){
+			/*if(row != 0 && tree.getLastSelectedPathComponent().toString() == "Secure write"){
 				emailServer = emailObjectMap.get(node.getRoot().toString());
 				if(emailServer.isSmtpLoggedIn()){
 					myGui.setSecureWritePanel(userEmails, emailServer);
@@ -276,7 +276,7 @@ public class GUIController implements ActionListener, MouseListener{
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-			} else if(SwingUtilities.isRightMouseButton(e)){
+			} else */if(SwingUtilities.isRightMouseButton(e)){
 
 				if(node.isRoot()) {
 					emailServer = emailObjectMap.get(node.getRoot().toString());
@@ -288,9 +288,7 @@ public class GUIController implements ActionListener, MouseListener{
 					emailServer.setUsername(email);
 				}
 				tree.clearSelection();
-			} /*else if(node.isRoot() ){
-				tree.getSelectionModel()..resetRowSelection();
-			}*/
+			} 
 
 			if(row == -1) //When user clicks on the "empty surface"
 				tree.getSelectionModel().clearSelection();
