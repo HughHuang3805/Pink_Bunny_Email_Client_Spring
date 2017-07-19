@@ -553,6 +553,31 @@ public class GUI extends JFrame{
 					passwordFrame.setVisible(true);
 	}
 
+	public void setRemoveAccountDialog(SecureMailService emailServer){
+		int dialogResult = JOptionPane.showConfirmDialog(this, "Are you sure you want to remove this account?", "Caution", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+		if(dialogResult == JOptionPane.YES_OPTION){
+			GUIController.userEmails.remove(emailServer.getUsername());
+			GUIController.userEmailObjects.remove(emailServer);
+			setEmailJTreeLeftPanel(GUIController.userEmails, getMouseListener());
+			
+			Properties prop = new Properties();
+			OutputStream output = null;
+			try {
+				prop.load(new FileInputStream("userconfig.properties"));
+				output = new FileOutputStream("userconfig.properties");
+				prop.remove("email" + (emailServer.getEmailID() + 1));
+				GUIController.counter--;
+				prop.store(output, null);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} 
+	}
+	
 	public void setLoginFrame(SecureMailService emailServer){//ask for email on emailPanel
 
 		emailServer.setLoginFrame(new JFrame("Log In"));
@@ -1117,13 +1142,16 @@ public class GUI extends JFrame{
 	}
 
 	public void setPopupItems(ActionListener a){
-		JMenuItem getMessageItem = new JMenuItem("Get new messages");
-		getMessageItem.addActionListener(a);
 		JMenuItem loginItem = new JMenuItem("Log in");
 		loginItem.addActionListener(a);
+		JMenuItem getMessageItem = new JMenuItem("Get new messages");
+		getMessageItem.addActionListener(a);
+		JMenuItem deleteAccountItem = new JMenuItem("Remove account");
+		deleteAccountItem.addActionListener(a);
 		//getMessageItem.setActionCommand("Get New Messages");
-		emailPopupMenu.add(getMessageItem);
 		emailPopupMenu.add(loginItem);
+		emailPopupMenu.add(getMessageItem);
+		emailPopupMenu.add(deleteAccountItem);
 	}
 
 	public String getEmailFromCombobox(){

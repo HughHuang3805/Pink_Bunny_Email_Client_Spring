@@ -54,7 +54,7 @@ public class GUIController implements ActionListener, MouseListener{
 	private static boolean hasYubikey = false;
 	public static int counter = 0;
 	public static Vector<String> userEmails = new Vector<String>();
-	private static Vector<SecureMailService> userEmailObjects = new Vector<SecureMailService>();
+	public static Vector<SecureMailService> userEmailObjects = new Vector<SecureMailService>();
 	private final String fileName = "userconfig.properties";
 	private InputStream inputStream;
 	public static Hashtable<String, SecureMailService> emailObjectMap = new Hashtable<String, SecureMailService>();
@@ -175,6 +175,10 @@ public class GUIController implements ActionListener, MouseListener{
 
 			break;
 
+		case "Remove account":
+			myGui.setRemoveAccountDialog(emailServer);
+			break;
+			
 		case "Generate Key Pair":
 			TestBCOpenPGP x = new TestBCOpenPGP();
 			try {
@@ -358,7 +362,8 @@ public class GUIController implements ActionListener, MouseListener{
 			emailServer.setEmailType(emailType);
 			emailServer.setPort(Integer.parseInt(portNumbers.get(emailType)));
 			emailServer.setImapHost(imapServers.get(emailType));
-
+			emailServer.setEmailID(i);
+			
 			System.out.println(userEmails.elementAt(i));
 			emailObjectMap.put(userEmails.elementAt(i), emailServer);
 		};

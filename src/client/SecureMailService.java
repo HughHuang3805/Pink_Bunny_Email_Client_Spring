@@ -47,6 +47,7 @@ public class SecureMailService {
 	private String password = "";
 	JFrame writeFrame, secureWriteFrame, loginFrame, yubikeyFrame;
 	JTable emailTable;
+	private int emailID;
 	
 	public void encryptedSend() throws Exception{
 		TestBCOpenPGP x = new TestBCOpenPGP();
@@ -431,5 +432,13 @@ public class SecureMailService {
 
 	public void setYubikeyFrame(JFrame yubikeyFrame) {
 		this.yubikeyFrame = yubikeyFrame;
+	}
+	
+	public int getEmailID() {
+		return emailID;
+	}
+
+	public void setEmailID(int emailID) {
+		this.emailID = emailID;
 	}
 }
