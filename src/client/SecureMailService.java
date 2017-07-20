@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.net.URLDecoder;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchProviderException;
 import java.util.Properties;
@@ -15,6 +16,7 @@ import java.util.Scanner;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
+import javax.mail.BodyPart;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -27,12 +29,12 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextPane;
 
 import org.bouncycastle.openpgp.PGPException;
 
@@ -244,20 +246,45 @@ public class SecureMailService {
 			//Message message = messages[messages.length - 1 - emailNumber];  
 			Message message = messages[messages.length - 1 - emailNumber]; 
 			rightEmailContentPanel = new JPanel();
-			
-			
+
+
 			Scanner s;
 			s = new Scanner(message.getInputStream()).useDelimiter("\\A");
 			String result = s.hasNext() ? s.next() : " ";
 			System.out.println(message.getContentType());
-			JEditorPane editorPane = new JEditorPane();
-			editorPane.setContentType("text/html");
-			editorPane.getDocument().putProperty("IgnoreCharsetDirective", Boolean.TRUE);
-			editorPane.setText(result);
-			JScrollPane emailScroll = new JScrollPane(editorPane);
-			//emailScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			
+			JScrollPane emailScroll;
 			rightEmailContentPanel.setLayout(new BorderLayout());
-			rightEmailContentPanel.add(emailScroll, BorderLayout.CENTER);
+			if(message.getContentType().contains("text/html")){
+				JEditorPane editorPane = new JEditorPane();
+				editorPane.setContentType("text/html");
+				editorPane.getDocument().putProperty("IgnoreCharsetDirective", Boolean.TRUE);
+				editorPane.setText(result);
+				emailScroll = new JScrollPane(editorPane);
+				rightEmailContentPanel.add(emailScroll, BorderLayout.CENTER);
+				System.out.println(message.getContentType());
+			} else if(message.getContentType().contains("TEXT/PLAIN") || message.getContentType().contains("text/plain")){
+				JEditorPane editorPane = new JEditorPane();
+				editorPane.setContentType("text/plain");
+				//editorPane.getDocument().putProperty("IgnoreCharsetDirective", Boolean.TRUE);
+				//String x = URLDecoder.decode(result, "US-ASCII");
+				editorPane.setText(result);
+				emailScroll = new JScrollPane(editorPane);
+				rightEmailContentPanel.add(emailScroll, BorderLayout.CENTER);
+				System.out.println(message.getContentType());
+			} else if(message.getContentType().contains("multipart")){
+				MimeMultipart mp = (MimeMultipart) message.getContent();
+				result = getTextFromMimeMultipart(mp);
+				JEditorPane editorPane = new JEditorPane();
+				editorPane.setContentType("multipart/ALTERNATIVE");
+				editorPane.setText(result);
+				emailScroll = new JScrollPane(editorPane);
+				rightEmailContentPanel.add(emailScroll, BorderLayout.CENTER);
+				System.out.println(message.getContentType());
+			}
+			//emailScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			
+			
 			/*System.out.println("---------------------------------");  
 			System.out.println("Email Number " + (emailNumber + 1));  
 			System.out.println("Subject: " + message.getSubject());  
@@ -274,7 +301,7 @@ public class SecureMailService {
 			TestBCOpenPGP x = new TestBCOpenPGP();
 			x.decrypt();//once the cipher-text.dat is downloaded, start to decrypt
 			s.close();*/
-			
+
 			//5) close the store and folder objects  
 			emailFolder.close(false);  
 			emailStore.close(); 
@@ -283,6 +310,25 @@ public class SecureMailService {
 		catch (MessagingException e) {e.printStackTrace();}  
 		//catch (IOException e) {e.printStackTrace();}  
 	} 
+	
+	private String getTextFromMimeMultipart(
+	        MimeMultipart mimeMultipart)  throws MessagingException, IOException{
+	    String result = "";
+	    int count = mimeMultipart.getCount();
+	    for (int i = 0; i < count; i++) {
+	        BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+	        if (bodyPart.isMimeType("text/plain")) {
+	            result = result + "\n" + bodyPart.getContent();
+	            break; // without break same text appears twice in my tests
+	        } else if (bodyPart.isMimeType("text/html")) {
+	            String html = (String) bodyPart.getContent();
+	            result = result + "\n" + org.jsoup.Jsoup.parse(html).text();
+	        } else if (bodyPart.getContent() instanceof MimeMultipart){
+	            result = result + getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
+	        }
+	    }
+	    return result;
+	}
 
 	/*public void getEmailByNumber(int emailNumber) throws Exception {  
 		try {  
@@ -516,7 +562,7 @@ public class SecureMailService {
 	public void setEmailID(int emailID) {
 		this.emailID = emailID;
 	}
-	
+
 	public JPanel getRightEmailContentPanel() {
 		return rightEmailContentPanel;
 	}

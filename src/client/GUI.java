@@ -20,6 +20,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
@@ -330,7 +332,7 @@ public class GUI extends JFrame{
 							JOptionPane.showMessageDialog(null, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
 							//myGui.setLoginFrame(emailServer);
 						}
-						//tree.clearSelection();
+						tree.clearSelection();
 					}
 					if(node.toString() == "Secure write"){
 						SecureMailService emailServer = GUIController.emailObjectMap.get(node.getRoot().toString());
@@ -341,6 +343,7 @@ public class GUI extends JFrame{
 							//myGui.setLoginFrame(emailServer);
 						}
 						//System.out.println("double clicked");
+						tree.clearSelection();
 					} else if(node.toString() == "Write"){
 						SecureMailService emailServer = GUIController.emailObjectMap.get(node.getRoot().toString());
 						if(emailServer.isSmtpLoggedIn()){
@@ -350,6 +353,7 @@ public class GUI extends JFrame{
 							//myGui.setLoginFrame(emailServer);
 						}
 						//System.out.println("double clicked");
+						tree.clearSelection();
 					}
 				}
 
@@ -407,7 +411,10 @@ public class GUI extends JFrame{
 				String result = s.hasNext() ? s.next() : " ";
 
 				data[(messages.length - 1) - i][0] = message.getSubject();
-				data[(messages.length - 1) - i][1] = InternetAddress.toString(message.getFrom());
+				ByteBuffer bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
+				//Charset.forName("UTF-8").decode(bb).toString();
+				String address = new String(message.getFrom().toString().getBytes());
+				data[(messages.length - 1) - i][1] = Charset.forName("UTF-8").decode(bb).toString();
 				data[(messages.length - 1) - i][2] = message.getReceivedDate().toString();
 			}  
 			emailTable = new JTable(data, columnNames){
