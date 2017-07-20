@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.net.URLDecoder;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchProviderException;
 import java.util.Properties;
@@ -29,7 +28,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.MimeUtility;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -248,8 +246,8 @@ public class SecureMailService {
 			rightEmailContentPanel = new JPanel();
 
 
-			Scanner s;
-			s = new Scanner(message.getInputStream()).useDelimiter("\\A");
+			@SuppressWarnings("resource")
+			Scanner s = new Scanner(message.getInputStream()).useDelimiter("\\A");
 			String result = s.hasNext() ? s.next() : " ";
 			System.out.println(message.getContentType());
 			
@@ -303,6 +301,7 @@ public class SecureMailService {
 			s.close();*/
 
 			//5) close the store and folder objects  
+			s.close();
 			emailFolder.close(false);  
 			emailStore.close(); 
 

@@ -5,24 +5,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 import javax.swing.JOptionPane;
@@ -32,13 +24,6 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
 import org.bouncycastle.openpgp.PGPException;
 
 //, TreeSelectionListener
@@ -46,12 +31,12 @@ public class GUIController implements ActionListener, MouseListener{
 
 	GUI myGui;
 	SecureMailService emailServer = new SecureMailService();
-	private static String smtpServer = "";
+	/*private static String smtpServer = "";
 	private static String portNumber = "";
-	private static String imapServer = "";
+	private static String imapServer = "";*/
 	private static String email = "";
-	private static String host = "";
-	private static boolean hasYubikey = false;
+	/*private static String host = "";
+	private static boolean hasYubikey = false;*/
 	public static int counter = 0;
 	public static Vector<String> userEmails = new Vector<String>();
 	public static Vector<SecureMailService> userEmailObjects = new Vector<SecureMailService>();

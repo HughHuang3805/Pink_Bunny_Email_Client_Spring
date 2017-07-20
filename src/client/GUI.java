@@ -26,7 +26,6 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.Vector;
 
 import javax.mail.Message;
@@ -53,12 +52,9 @@ import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.http.HttpResponse;
@@ -124,7 +120,7 @@ public class GUI extends JFrame{
 
 	//adds listeners to each of the buttons
 	public void setButtonListener(ActionListener a){
-		signInButton.addActionListener(a);
+		/*signInButton.addActionListener(a);
 		loginButton.addActionListener(a);
 		cancelButton.addActionListener(a);
 		nextButton.addActionListener(a);
@@ -132,7 +128,7 @@ public class GUI extends JFrame{
 		sendButton.addActionListener(a);
 		//secureSendButton.addActionListener(a);
 		discardButton.addActionListener(a);
-		secureDiscardButton.addActionListener(a);
+		secureDiscardButton.addActionListener(a);*/
 		for(JMenuItem x : menuItems)
 			x.addActionListener(a);
 	}
@@ -396,6 +392,7 @@ public class GUI extends JFrame{
 		revalidate();
 	}
 
+	@SuppressWarnings({ "serial" })
 	public void setDisplayRightPanel(SecureMailService emailServer) throws Exception{
 
 		if(emailServer.getEmailTable() == null){
@@ -406,14 +403,11 @@ public class GUI extends JFrame{
 			//messages.length - 1
 			for (int i = messages.length - 1; i >= 0 ; i--) {  
 				Message message = messages[i];  
-				Scanner s;
-				s = new Scanner(message.getInputStream()).useDelimiter("\\A");
-				String result = s.hasNext() ? s.next() : " ";
 
 				data[(messages.length - 1) - i][0] = message.getSubject();
 				ByteBuffer bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
 				//Charset.forName("UTF-8").decode(bb).toString();
-				String address = new String(message.getFrom().toString().getBytes());
+				//String address = new String(message.getFrom().toString().getBytes());
 				data[(messages.length - 1) - i][1] = Charset.forName("UTF-8").decode(bb).toString();
 				data[(messages.length - 1) - i][2] = message.getReceivedDate().toString();
 			}  
@@ -455,17 +449,6 @@ public class GUI extends JFrame{
 		rightPanel.add(new JScrollPane(emailServer.getEmailTable()));
 		repaint();
 		revalidate();
-	}
-
-	public void setEmailContentDisplayRightPanel(SecureMailService emailServer, int messageNumber){
-		JTable emailTable = emailServer.getEmailTable();
-		/*emailTable.getModel().addTableModelListener(new TableModelListener() {
-
-			@Override
-			public void tableChanged(TableModelEvent e) {
-				System.out.println("hi");
-			}
-		});*/
 	}
 
 	public void setReceivedEmailTextArea(String message){
@@ -914,7 +897,7 @@ public class GUI extends JFrame{
 
 	public void setWriteFrame(Vector<String> userEmails, SecureMailService emailServer){//write email
 
-		JComboBox<String> emailList = new JComboBox<>(userEmails);
+		//JComboBox<String> emailList = new JComboBox<>(userEmails);
 		emailServer.setWriteFrame(new JFrame("Write: New Email"));
 		JFrame writeFrame = emailServer.getWriteFrame();
 		writeFrame.setSize(1000, 800);
@@ -1076,7 +1059,7 @@ public class GUI extends JFrame{
 
 	public void setSecureWritePanel(Vector<String> userEmails, SecureMailService emailServer){
 
-		JComboBox<String> emailList = new JComboBox<>(userEmails);
+		//JComboBox<String> emailList = new JComboBox<>(userEmails);
 		//System.out.println(emailList.getSelectedItem());
 
 		emailServer.setSecureWriteFrame(new JFrame("Secure Write: New Email"));
