@@ -249,9 +249,10 @@ public class SecureMailService {
 			Scanner s;
 			s = new Scanner(message.getInputStream()).useDelimiter("\\A");
 			String result = s.hasNext() ? s.next() : " ";
-			System.out.println(result);
+			System.out.println(message.getContentType());
 			JEditorPane editorPane = new JEditorPane();
-			//editorPane.setContentType("text/html");
+			editorPane.setContentType("text/html");
+			editorPane.getDocument().putProperty("IgnoreCharsetDirective", Boolean.TRUE);
 			editorPane.setText(result);
 			JScrollPane emailScroll = new JScrollPane(editorPane);
 			//emailScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
