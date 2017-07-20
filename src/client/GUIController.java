@@ -148,7 +148,7 @@ public class GUIController implements ActionListener, MouseListener{
 
 		case "Get new messages":
 			try {
-				emailServer.receiveEmail();
+				//emailServer.getEmailByNumber();
 				BufferedReader br = new BufferedReader(new FileReader("dec-plain-text.txt"));
 				String message = "";
 

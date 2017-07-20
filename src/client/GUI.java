@@ -49,6 +49,10 @@ import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -297,14 +301,14 @@ public class GUI extends JFrame{
 			emailRoot.add(draftLeaf);
 			emailRoot.add(sentLeaf);
 			emailRoot.add(spamLeaf);
-			
-			
+
+
 			tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 			tree.setCellRenderer(new TreeRenderer());
 			tree.setRowHeight(23);//gap between each email
 			tree.addMouseListener(a);
 			tree.addTreeSelectionListener(new TreeSelectionListener(){
-			
+
 				@Override
 				public void valueChanged(TreeSelectionEvent arg0) {
 					// TODO Auto-generated method stub
@@ -341,7 +345,6 @@ public class GUI extends JFrame{
 						SecureMailService emailServer = GUIController.emailObjectMap.get(node.getRoot().toString());
 						if(emailServer.isSmtpLoggedIn()){
 							setWriteFrame(userEmails, emailServer);
-							tree.clearSelection();
 						} else{
 							JOptionPane.showMessageDialog(null, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
 							//myGui.setLoginFrame(emailServer);
@@ -349,13 +352,13 @@ public class GUI extends JFrame{
 						//System.out.println("double clicked");
 					}
 				}
-				
+
 			});
-			
+
 			Font currentFont = tree.getFont();
 			//font size of the displaying email list
 			tree.setFont(new Font(currentFont.getName(), currentFont.getStyle(), currentFont.getSize() + 3));
-			
+
 			GridBagConstraints cs = new GridBagConstraints();//constraints
 			cs.fill = GridBagConstraints.BOTH;
 			cs.anchor = GridBagConstraints.NORTH;
@@ -389,10 +392,12 @@ public class GUI extends JFrame{
 		revalidate();
 	}
 
-	public void setDisplayRightPanel(SecureMailService mailServer) throws Exception{
-		if(mailServer.getEmailTable() == null){
+	public void setDisplayRightPanel(SecureMailService emailServer) throws Exception{
+
+		if(emailServer.getEmailTable() == null){
+			JTable emailTable; 
 			String[] columnNames = {"Subject", "From", "Date", "Read"};
-			Message[] messages = mailServer.getMessages();
+			Message[] messages = emailServer.getMessages();
 			String[][] data = new String[messages.length][4] ;
 			//messages.length - 1
 			for (int i = messages.length - 1; i >= 0 ; i--) {  
@@ -405,24 +410,57 @@ public class GUI extends JFrame{
 				data[(messages.length - 1) - i][1] = InternetAddress.toString(message.getFrom());
 				data[(messages.length - 1) - i][2] = message.getReceivedDate().toString();
 			}  
-			mailServer.setEmailTable(new JTable(data, columnNames){
+			emailTable = new JTable(data, columnNames){
 				@Override
 				public boolean isCellEditable(int row, int column) {
 					return false;
 				};
+			};
+			emailServer.setEmailTable(emailTable);
+			emailTable.setFillsViewportHeight(true);
+			/*emailTable.getModel().addTableModelListener(new TableModelListener() {
+				@Override
+				public void tableChanged(TableModelEvent e) {
+					System.out.println("hi");
+				}
+			});*/
+			emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				public void valueChanged(ListSelectionEvent e) {
+					if(e.getValueIsAdjusting() == false){//this makes the event go once
+						int row = emailTable.getSelectedRow();
+						System.out.println(row);
+						try {
+							emailServer.getEmailByNumber(row);
+							rightPanel.removeAll();
+							rightPanel.add(emailServer.getRightEmailContentPanel());
+							repaint();
+							revalidate();
+							return;
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+				}
 			});
-			mailServer.getEmailTable().setFillsViewportHeight(true);
 		}
 		rightPanel.removeAll();
-		rightPanel.add(new JScrollPane(mailServer.getEmailTable()));
+		rightPanel.add(new JScrollPane(emailServer.getEmailTable()));
 		repaint();
 		revalidate();
 	}
 
 	public void setEmailContentDisplayRightPanel(SecureMailService emailServer, int messageNumber){
-		
+		JTable emailTable = emailServer.getEmailTable();
+		/*emailTable.getModel().addTableModelListener(new TableModelListener() {
+
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				System.out.println("hi");
+			}
+		});*/
 	}
-	
+
 	public void setReceivedEmailTextArea(String message){
 		emailContentText.setText(message);
 		emailContentText.setEditable(false);
@@ -585,31 +623,31 @@ public class GUI extends JFrame{
 			}
 
 		});
-					cancelButton.addActionListener(new ActionListener(){
+		cancelButton.addActionListener(new ActionListener(){
 
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							// TODO Auto-generated method stub
-							passwordFrame.dispose();
-						}
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				passwordFrame.dispose();
+			}
 
-					});
-					addButton.setFont(new Font("Serif", Font.PLAIN, 23));
-					cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
+		});
+		addButton.setFont(new Font("Serif", Font.PLAIN, 23));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
 
-					JPanel buttonPanel = new JPanel();//create a panel for the buttons
-					buttonPanel.add(addButton);
-					buttonPanel.add(cancelButton);
+		JPanel buttonPanel = new JPanel();//create a panel for the buttons
+		buttonPanel.add(addButton);
+		buttonPanel.add(cancelButton);
 
-					passwordFrame.getRootPane().setDefaultButton(addButton);
-					passwordFrame.add(passwordPanel, BorderLayout.CENTER);
-					passwordFrame.add(buttonPanel, BorderLayout.PAGE_END);
-					passwordFrame.pack(); //let layout managers in charge of the frame size
-					ImageIcon img = new ImageIcon(imageFileName);
-					passwordFrame.setIconImage(img.getImage());
-					passwordFrame.setLocationRelativeTo(this);
-					passwordFrame.setResizable(false);
-					passwordFrame.setVisible(true);
+		passwordFrame.getRootPane().setDefaultButton(addButton);
+		passwordFrame.add(passwordPanel, BorderLayout.CENTER);
+		passwordFrame.add(buttonPanel, BorderLayout.PAGE_END);
+		passwordFrame.pack(); //let layout managers in charge of the frame size
+		ImageIcon img = new ImageIcon(imageFileName);
+		passwordFrame.setIconImage(img.getImage());
+		passwordFrame.setLocationRelativeTo(this);
+		passwordFrame.setResizable(false);
+		passwordFrame.setVisible(true);
 	}
 
 	public void setRemoveAccountDialog(SecureMailService emailServer){
@@ -618,7 +656,7 @@ public class GUI extends JFrame{
 			GUIController.userEmails.remove(emailServer.getUsername());
 			GUIController.userEmailObjects.remove(emailServer);
 			setEmailJTreeLeftPanel(GUIController.userEmails, getMouseListener());
-			
+
 			Properties prop = new Properties();
 			OutputStream output = null;
 			try {
@@ -636,7 +674,7 @@ public class GUI extends JFrame{
 			}
 		} 
 	}
-	
+
 	public void setLoginFrame(SecureMailService emailServer){//ask for email on emailPanel
 
 		emailServer.setLoginFrame(new JFrame("Log In"));

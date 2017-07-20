@@ -1,5 +1,6 @@
 package client;
 
+import java.awt.BorderLayout;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +11,7 @@ import java.security.GeneralSecurityException;
 import java.security.NoSuchProviderException;
 import java.util.Properties;
 import java.util.Scanner;
+
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -25,8 +27,12 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextPane;
 
 import org.bouncycastle.openpgp.PGPException;
 
@@ -39,7 +45,7 @@ public class SecureMailService {
 	private String subject;
 	private String emailType;
 	private boolean smtpLoggedIn = false;
-	
+
 	private String imapHost = "";
 	@SuppressWarnings("unused")
 	private String mailStoreType = "imap";  
@@ -47,8 +53,9 @@ public class SecureMailService {
 	private String password = "";
 	JFrame writeFrame, secureWriteFrame, loginFrame, yubikeyFrame;
 	JTable emailTable;
+	JPanel rightEmailContentPanel;
 	private int emailID;
-	
+
 	public void encryptedSend() throws Exception{
 		TestBCOpenPGP x = new TestBCOpenPGP();
 		x.encrypt();
@@ -88,7 +95,7 @@ public class SecureMailService {
 				message.getRecipients(Message.RecipientType.TO));
 		transport.close();
 	}
-	
+
 	public void send(String host, String messageContent) throws Exception{
 		Properties props = new Properties();
 
@@ -110,7 +117,7 @@ public class SecureMailService {
 		message.addRecipient(Message.RecipientType.TO,
 				new InternetAddress(getRecipient()));
 		message.setText(messageContent);
-		
+
 		transport.connect(SMTP_HOST_NAME, SMTP_HOST_PORT, username, password);
 		transport.sendMessage(message,
 				message.getRecipients(Message.RecipientType.TO));
@@ -119,7 +126,7 @@ public class SecureMailService {
 
 	public boolean connect() throws GeneralSecurityException{
 		Properties props = new Properties();
-		
+
 		switch(emailType){
 
 		case "GMAIL":
@@ -137,7 +144,7 @@ public class SecureMailService {
 			props.put("mail.host", SMTP_HOST_NAME);
 			props.put("mail.smtps.auth", "true");
 			break;
-			
+
 		case "OUTLOOK":
 			props.put("mail.smtp.starttls.enable", "true");
 			props.put("mail.transport.protocol", "smtp");
@@ -145,21 +152,21 @@ public class SecureMailService {
 			props.put("mail.smtps.auth", "true");
 			//props.put("mail.smtp.port", "587");
 			break;
-			
+
 		case "OFFICE365":
 			props.put("mail.smtp.starttls.enable", "true");
 			props.put("mail.transport.protocol", "smtp");
 			props.put("mail.host", SMTP_HOST_NAME);
 			props.put("mail.smtps.auth", "true");
 			break;
-			
+
 		case "AOL":
 			props.put("mail.smtp.starttls.enable", "true");
 			props.put("mail.transport.protocol", "smtp");
 			props.put("mail.host", SMTP_HOST_NAME);
 			props.put("mail.smtps.auth", "true");
 			break;
-			
+
 		case "YAHOO":
 			props.put("mail.smtp.ssl.trust", "smtp.mail.yahoo.com");
 			props.put("mail.transport.protocol", "smtps");
@@ -168,7 +175,7 @@ public class SecureMailService {
 			//props.put("mail.smtps.ssl.trust", "*");
 			//props.put("mail.smtps.quitwait", "false");
 			break;
-			
+
 		default:
 			break;
 		}
@@ -208,8 +215,75 @@ public class SecureMailService {
 			return sb.toString();
 		}
 	}
-	
-	public void receiveEmail() throws Exception {  
+
+	public void getEmailByNumber(int emailNumber) throws Exception {  
+		try {  
+			//1) get the session object  
+			Properties props2=System.getProperties();
+
+			props2.setProperty("mail.store.protocol", "imaps");
+			//props2.put("mail.imaps.ssl.trust", "*");
+
+			Session session2=Session.getDefaultInstance(props2, null);
+
+
+			@SuppressWarnings("unused")
+			Store store=session2.getStore("imaps");
+
+
+			//2) create the POP3 store object and connect with the pop server  
+			Store emailStore=session2.getStore("imaps");
+			emailStore.connect(imapHost, username, password);  
+
+			//3) create the folder object and open it  
+			Folder emailFolder = emailStore.getFolder("INBOX");  
+			emailFolder.open(Folder.READ_ONLY);  
+
+			//4) retrieve the messages from the folder in an array and print it  
+			Message[] messages = emailFolder.getMessages();  
+			//Message message = messages[messages.length - 1 - emailNumber];  
+			Message message = messages[messages.length - 1 - emailNumber]; 
+			rightEmailContentPanel = new JPanel();
+			
+			
+			Scanner s;
+			s = new Scanner(message.getInputStream()).useDelimiter("\\A");
+			String result = s.hasNext() ? s.next() : " ";
+			System.out.println(result);
+			JEditorPane editorPane = new JEditorPane();
+			//editorPane.setContentType("text/html");
+			editorPane.setText(result);
+			JScrollPane emailScroll = new JScrollPane(editorPane);
+			//emailScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			rightEmailContentPanel.setLayout(new BorderLayout());
+			rightEmailContentPanel.add(emailScroll, BorderLayout.CENTER);
+			/*System.out.println("---------------------------------");  
+			System.out.println("Email Number " + (emailNumber + 1));  
+			System.out.println("Subject: " + message.getSubject());  
+			System.out.println("From: " + message.getFrom()[0]); 
+			message.getReceivedDate();
+			Scanner s;
+			s = new Scanner(message.getInputStream()).useDelimiter("\\A");
+			String result = s.hasNext() ? s.next() : " ";
+			System.out.println(result);*/
+			//encryptedEmail.println(result);  
+			//encryptedEmail.close();
+
+			/*getMultipart(message);
+			TestBCOpenPGP x = new TestBCOpenPGP();
+			x.decrypt();//once the cipher-text.dat is downloaded, start to decrypt
+			s.close();*/
+			
+			//5) close the store and folder objects  
+			emailFolder.close(false);  
+			emailStore.close(); 
+
+		} /*catch (NoSuchProviderException e) {e.printStackTrace();} */  
+		catch (MessagingException e) {e.printStackTrace();}  
+		//catch (IOException e) {e.printStackTrace();}  
+	} 
+
+	/*public void getEmailByNumber(int emailNumber) throws Exception {  
 		try {  
 			//1) get the session object  
 			Properties props2=System.getProperties();
@@ -261,7 +335,7 @@ public class SecureMailService {
 		} catch (NoSuchProviderException e) {e.printStackTrace();}   
 		catch (MessagingException e) {e.printStackTrace();}  
 		catch (IOException e) {e.printStackTrace();}  
-	} 
+	} */
 
 	public Message[] getMessages() throws Exception {  
 		try {  
@@ -337,7 +411,7 @@ public class SecureMailService {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 	public boolean isSmtpLoggedIn() {
 		return smtpLoggedIn;
 	}
@@ -361,7 +435,7 @@ public class SecureMailService {
 	public void setPort(int sMTP_HOST_PORT) {
 		SMTP_HOST_PORT = sMTP_HOST_PORT;
 	}
-	
+
 	public String getRecipient() {
 		return recipient;
 	}
@@ -369,7 +443,7 @@ public class SecureMailService {
 	public void setRecipient(String sMTP_RECIPIENT) {
 		recipient = sMTP_RECIPIENT;
 	}
-	
+
 	public String getSubject() {
 		return subject;
 	}
@@ -377,7 +451,7 @@ public class SecureMailService {
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
-	
+
 	public String getImapHost() {
 		return imapHost;
 	}
@@ -385,7 +459,7 @@ public class SecureMailService {
 	public void setImapHost(String imapHost) {
 		this.imapHost = imapHost;
 	}
-	
+
 	public JTable getEmailTable() {
 		return emailTable;
 	}
@@ -409,7 +483,7 @@ public class SecureMailService {
 	public void setSecureWriteFrame(JFrame secureWriteFrame) {
 		this.secureWriteFrame = secureWriteFrame;
 	}
-	
+
 	public JFrame getLoginFrame() {
 		return loginFrame;
 	}
@@ -425,7 +499,7 @@ public class SecureMailService {
 	public void setEmailType(String emailType) {
 		this.emailType = emailType;
 	}
-	
+
 	public JFrame getYubikeyFrame() {
 		return yubikeyFrame;
 	}
@@ -433,12 +507,20 @@ public class SecureMailService {
 	public void setYubikeyFrame(JFrame yubikeyFrame) {
 		this.yubikeyFrame = yubikeyFrame;
 	}
-	
+
 	public int getEmailID() {
 		return emailID;
 	}
 
 	public void setEmailID(int emailID) {
 		this.emailID = emailID;
+	}
+	
+	public JPanel getRightEmailContentPanel() {
+		return rightEmailContentPanel;
+	}
+
+	public void setRightEmailContentPanel(JPanel rightEmailContentPanel) {
+		this.rightEmailContentPanel = rightEmailContentPanel;
 	}
 }
