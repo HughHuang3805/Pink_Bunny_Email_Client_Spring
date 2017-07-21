@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchProviderException;
+import java.sql.Date;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -250,10 +251,10 @@ public class SecureMailService {
 			Scanner s = new Scanner(message.getInputStream()).useDelimiter("\\A");
 			String result = s.hasNext() ? s.next() : " ";
 			System.out.println(message.getContentType());
-			
+
 			JScrollPane emailScroll;
 			rightEmailContentPanel.setLayout(new BorderLayout());
-			if(message.getContentType().contains("text/html")){
+			if(message.isMimeType("text/html")){
 				JEditorPane editorPane = new JEditorPane();
 				editorPane.setContentType("text/html");
 				editorPane.getDocument().putProperty("IgnoreCharsetDirective", Boolean.TRUE);
@@ -261,7 +262,7 @@ public class SecureMailService {
 				emailScroll = new JScrollPane(editorPane);
 				rightEmailContentPanel.add(emailScroll, BorderLayout.CENTER);
 				System.out.println(message.getContentType());
-			} else if(message.getContentType().contains("TEXT/PLAIN") || message.getContentType().contains("text/plain")){
+			} else if(message.isMimeType("text/plain")){
 				JEditorPane editorPane = new JEditorPane();
 				editorPane.setContentType("text/plain");
 				//editorPane.getDocument().putProperty("IgnoreCharsetDirective", Boolean.TRUE);
@@ -270,7 +271,7 @@ public class SecureMailService {
 				emailScroll = new JScrollPane(editorPane);
 				rightEmailContentPanel.add(emailScroll, BorderLayout.CENTER);
 				System.out.println(message.getContentType());
-			} else if(message.getContentType().contains("multipart")){
+			} else if(message.isMimeType("multipart/*")){
 				MimeMultipart mp = (MimeMultipart) message.getContent();
 				result = getTextFromMimeMultipart(mp);
 				JEditorPane editorPane = new JEditorPane();
@@ -281,8 +282,8 @@ public class SecureMailService {
 				System.out.println(message.getContentType());
 			}
 			//emailScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-			
-			
+
+
 			/*System.out.println("---------------------------------");  
 			System.out.println("Email Number " + (emailNumber + 1));  
 			System.out.println("Subject: " + message.getSubject());  
@@ -309,9 +310,8 @@ public class SecureMailService {
 		catch (MessagingException e) {e.printStackTrace();}  
 		//catch (IOException e) {e.printStackTrace();}  
 	} 
-	
-	private String getTextFromMimeMultipart(
-	        MimeMultipart mimeMultipart)  throws MessagingException, IOException{
+
+	private String getTextFromMimeMultipart(MimeMultipart mimeMultipart)  throws MessagingException, IOException{
 	    String result = "";
 	    int count = mimeMultipart.getCount();
 	    for (int i = 0; i < count; i++) {
@@ -323,6 +323,8 @@ public class SecureMailService {
 	            String html = (String) bodyPart.getContent();
 	            result = result + "\n" + org.jsoup.Jsoup.parse(html).text();
 	        } else if (bodyPart.getContent() instanceof MimeMultipart){
+	            result = result + getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
+	        } else if (bodyPart.isMimeType("multipart/*")){
 	            result = result + getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
 	        }
 	    }
