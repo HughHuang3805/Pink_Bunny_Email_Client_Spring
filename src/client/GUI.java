@@ -418,6 +418,7 @@ public class GUI extends JFrame{
 				};
 			};
 			emailServer.setEmailTable(emailTable);
+			emailTable.getTableHeader().setFont(new Font("Serif", Font.PLAIN, 20));
 			emailTable.setFillsViewportHeight(true);
 			/*emailTable.getModel().addTableModelListener(new TableModelListener() {
 				@Override
