@@ -254,8 +254,8 @@ public class GUI extends JFrame{
 		setEmailJTreeLeftPanel(userEmails, a);//for left panel email lists
 		//leftPanel.add(jTree);
 
-		leftPanel.setBorder(new LineBorder(Color.GRAY));
-		rightPanel.setBorder(new LineBorder(Color.GRAY));
+		leftPanel.setBorder(new LineBorder(Color.BLACK));
+		rightPanel.setBorder(new LineBorder(Color.BLACK));
 
 		JScrollPane leftPanelScrollPane = new JScrollPane(leftPanel);
 		leftPanelScrollPane.getVerticalScrollBar().setUnitIncrement(16);//scrolling speed
@@ -426,6 +426,7 @@ public class GUI extends JFrame{
 			emailTable.setFillsViewportHeight(true);
 			emailTable.setFont(new Font("Serif", Font.PLAIN, 14));
 			emailTable.setRowHeight(20);
+			emailTable.setAutoCreateRowSorter(true);
 			/*emailTable.getModel().addTableModelListener(new TableModelListener() {
 				@Override
 				public void tableChanged(TableModelEvent e) {
