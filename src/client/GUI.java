@@ -72,25 +72,10 @@ public class GUI extends JFrame{
 	Vector<JMenuItem> menuItems = new Vector<JMenuItem>();
 	Vector<JMenu> menus = new Vector<JMenu>();
 	JPanel emailPanel, passwordPanel, yubikeyPanel, buttonPanel;
-	JButton signInButton = new JButton("Sign-in");
-	JButton loginButton = new JButton("Log-in");
-	JButton cancelButton = new JButton("Cancel");
-	JButton verifyButton = new JButton("Verify");
-	JButton nextButton = new JButton("Next");
-	JButton sendButton = new JButton("Send");
-	JButton discardButton = new JButton("Discard");
-	JButton secureDiscardButton = new JButton("Secure Discard");
-	JTextField emailTextField, senderTextField, recipientTextField, subjectTextField;
-	JTextField secureEmailTextField, secureSenderTextField, secureRecipientTextField, secureSubjectTextField;
 	JPasswordField passwordText, yubikeyText;
-	JScrollPane jsp;
-	JFrame writeFrame, secureWriteFrame, addAccountFrame;
 	JMenu fileMenu = new JMenu("File");
 	JMenu toolMenu = new JMenu("Source");
-	JTextArea emailContentText;
-	JTextArea secureEmailContentText;
 	JScrollPane jspForBody;
-	JScrollPane secureJSPForBody;
 	JComboBox<String> emailList;
 	String imageFileName = "icons/favicon.png";
 	Vector<JTree> trees = new Vector<JTree>();
@@ -121,15 +106,6 @@ public class GUI extends JFrame{
 
 	//adds listeners to each of the buttons
 	public void setButtonListener(ActionListener a){
-		/*signInButton.addActionListener(a);
-		loginButton.addActionListener(a);
-		cancelButton.addActionListener(a);
-		nextButton.addActionListener(a);
-		verifyButton.addActionListener(a);
-		sendButton.addActionListener(a);
-		//secureSendButton.addActionListener(a);
-		discardButton.addActionListener(a);
-		secureDiscardButton.addActionListener(a);*/
 		for(JMenuItem x : menuItems)
 			x.addActionListener(a);
 	}
@@ -190,52 +166,6 @@ public class GUI extends JFrame{
 	public void enableAllMenuItems(){
 		for(JMenuItem x : menuItems)
 			x.setEnabled(true);
-	}
-
-	public void setSendDebugTextArea(){
-		try {
-			@SuppressWarnings("resource")
-			BufferedReader br = new BufferedReader(new FileReader("debug.txt"));
-			String line = null;
-			String debug = "";
-			while ((line = br.readLine()) != null) {
-				debug = debug + line + "\n";
-			}
-			emailContentText.setText(debug);
-			emailContentText.setEditable(false);
-
-			repaint();
-			setVisible(true);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void setSecureSendDebugTextArea(){
-		try {
-			@SuppressWarnings("resource")
-			BufferedReader br = new BufferedReader(new FileReader("debug.txt"));
-			String line = null;
-			String debug = "";
-			while ((line = br.readLine()) != null) {
-				debug = debug + line + "\n";
-			}
-			secureEmailContentText.setText(debug);
-			secureEmailContentText.setEditable(false);
-
-			repaint();
-			setVisible(true);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	public void setMainPanel(Vector<String> userEmails, MouseListener a) throws Exception{
@@ -457,14 +387,6 @@ public class GUI extends JFrame{
 		rightPanel.add(new JScrollPane(emailServer.getEmailTable()));
 		repaint();
 		revalidate();
-	}
-
-	public void setReceivedEmailTextArea(String message){
-		emailContentText.setText(message);
-		emailContentText.setEditable(false);
-
-		repaint();
-		setVisible(true);
 	}
 
 	public void setAddAccountEmailFrame(){//ask for email on emailPanel
@@ -1255,9 +1177,6 @@ public class GUI extends JFrame{
 		return ((String) emailList.getSelectedItem()).replaceAll("\\s+", "");
 	}
 
-	public String getEmail(){
-		return emailTextField.getText().replaceAll("\\s+", "");
-	}
 
 	public String getPassword(){
 		if(passwordText != null){
@@ -1272,74 +1191,12 @@ public class GUI extends JFrame{
 		return passText;
 	}
 
-	public String getRecipient() {
-		if(recipientTextField != null){
-			return recipientTextField.getText().replaceAll("\\s+", "");
-		}
-		return null;
-	}
-
-	public String getRecipient(JFrame writeFrame) {
-		if(recipientTextField != null){
-			return recipientTextField.getText().replaceAll("\\s+", "");
-		}
-		return null;
-	}
-
-
-	public String getSecureRecipient() {
-		if(secureRecipientTextField != null){
-			return secureRecipientTextField.getText().replaceAll("\\s+", "");
-		}
-		return null;
-	}
-
-	public void setRecipient(JTextField recipientTextField) {
-		this.recipientTextField = recipientTextField;
-	}
-
-	public void setSecureRecipient(JTextField secureRecipientTextField) {
-		this.secureRecipientTextField = secureRecipientTextField;
-	}
-
-	public String getSubject() {
-		return subjectTextField.getText();
-	}
-
-	public String getSecureSubject() {
-		return secureSubjectTextField.getText();
-	}
-
-	public void setSubject(JTextField subjectTextField) {
-		this.subjectTextField = subjectTextField;
-	}
-
-	public void setSecureSubject(JTextField secureSubjectTextField) {
-		this.secureSubjectTextField = secureSubjectTextField;
-	}
-
 	public JPanel getEmailPanel() {
 		return emailPanel;
 	}
 
 	public void setEmailPanel(JPanel emailPanel) {
 		this.emailPanel = emailPanel;
-	}
-
-	public String getEmailContentText() {
-		return emailContentText.getText();
-	}
-
-	public void setEmailContentText(JTextArea emailContentText) {
-		this.emailContentText = emailContentText;
-	}
-
-	public String getSecureEmailContentText() {
-		return secureEmailContentText.getText();
-	}
-
-	public void setSecureEmailContentText(JTextArea secureEmailContentText) {
-		this.secureEmailContentText = secureEmailContentText;
 	}
 
 	public void setActionListener(ActionListener b){
