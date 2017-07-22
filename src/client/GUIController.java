@@ -30,7 +30,7 @@ import org.bouncycastle.openpgp.PGPException;
 public class GUIController implements ActionListener, MouseListener{
 
 	GUI myGui;
-	SecureMailService emailServer = new SecureMailService();
+	SecureMailService emailServer;
 	/*private static String smtpServer = "";
 	private static String portNumber = "";
 	private static String imapServer = "";*/
