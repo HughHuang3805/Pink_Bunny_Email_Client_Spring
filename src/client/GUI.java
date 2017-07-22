@@ -54,6 +54,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -418,8 +419,13 @@ public class GUI extends JFrame{
 				};
 			};
 			emailServer.setEmailTable(emailTable);
-			emailTable.getTableHeader().setFont(new Font("Serif", Font.PLAIN, 20));
+			emailTable.getTableHeader().setFont(new Font("Serif", Font.BOLD, 20));
+			TableCellRenderer rendererFromHeader = emailTable.getTableHeader().getDefaultRenderer();
+			JLabel headerLabel = (JLabel) rendererFromHeader;
+			//headerLabel.setHorizontalAlignment(JLabel.CENTER);//center header text
 			emailTable.setFillsViewportHeight(true);
+			emailTable.setFont(new Font("Serif", Font.PLAIN, 14));
+			emailTable.setRowHeight(20);
 			/*emailTable.getModel().addTableModelListener(new TableModelListener() {
 				@Override
 				public void tableChanged(TableModelEvent e) {
