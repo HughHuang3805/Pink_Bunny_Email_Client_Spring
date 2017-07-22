@@ -1183,6 +1183,7 @@ public class GUI extends JFrame{
 					emailServer.setRecipient(secureRecipientTextField.getText());
 				} else{
 					JOptionPane.showMessageDialog(secureWriteFrame, "Please specify recipient.", "Failed", JOptionPane.ERROR_MESSAGE);
+					return;
 				}
 				emailServer.setSubject(secureSubjectTextField.getText());
 				try {
