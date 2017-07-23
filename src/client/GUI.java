@@ -194,9 +194,9 @@ public class GUI extends JFrame{
 		leftPanel.removeAll();
 		trees.removeAllElements();
 		for(int i = 0; i < userEmails.size(); i++){
-			DefaultMutableTreeNode emailRoot = new DefaultMutableTreeNode(userEmails.elementAt(i));
-			trees.add(new JTree(emailRoot));
-			JTree tree = trees.elementAt(i);
+			DefaultMutableTreeNode emailRoot = new DefaultMutableTreeNode(userEmails.elementAt(i));//the root is the email
+			trees.add(new JTree(emailRoot));//add to trees vector containing all the JTree objects
+			JTree tree = trees.elementAt(i);//get the Jtree from the tree vector
 			tree.setShowsRootHandles(true);
 
 			DefaultMutableTreeNode inboxLeaf = new DefaultMutableTreeNode("Inbox");
