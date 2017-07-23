@@ -16,7 +16,6 @@ public class SpringEmailClient {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			@SuppressWarnings("unused")
 			GUIController x = new GUIController();
-			//GUI y = new GUI();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

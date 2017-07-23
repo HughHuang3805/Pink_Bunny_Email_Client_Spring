@@ -100,16 +100,6 @@ public class GUIController implements ActionListener, MouseListener{
 		//setEmailTreeListener(this, userEmails);
 		//myGui.setEmailTreeListener(this, userEmails);
 		//myGui.tree.addTreeSelectionListener(this);
-		/*Properties prop = new Properties();
-		OutputStream output = null;
-		output = new FileOutputStream(fileName);
-		prop.setProperty("email1", "pinkbunnychickenmarsala@gmail.com");
-		prop.setProperty("email2", "pinkbunnychickenmarsala@yahoo.com");
-		prop.setProperty("email3", "pinkbunnychickenmarsala@outlook.com");
-		prop.store(output, null);*/
-
-
-
 	}
 
 	@Override
