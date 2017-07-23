@@ -246,7 +246,7 @@ public class GUIController implements ActionListener, MouseListener{
 
 				if(node.isRoot()) {
 					emailServer = emailObjectMap.get(node.getRoot().toString());
-					myGui.emailPopupMenu.show(tree, e.getX(), e.getY());
+					myGui.getEmailPopupMenu().show(tree, e.getX(), e.getY());
 					email = node.getUserObject().toString();
 					//myGui.emailTextField = new JTextField(email);
 					//emailServer = emailObjectMap.get(email);
@@ -286,8 +286,10 @@ public class GUIController implements ActionListener, MouseListener{
 
 	}
 	public void setEmailTreeListener(MouseListener a, Vector<String> userEmails){//might not needed at all
-		for(int i = 0; i < myGui.trees.size(); i++){
-			JTree treeRoot = myGui.trees.elementAt(i);
+		int size = myGui.getTrees().size();
+		Vector<JTree> trees = myGui.getTrees();
+		for(int i = 0; i < size; i++){
+			JTree treeRoot = trees.elementAt(i);
 			treeRoot.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 			treeRoot.addTreeSelectionListener(new TreeSelectionListener() {//add listener to individual tree
 				public void valueChanged(TreeSelectionEvent e) {

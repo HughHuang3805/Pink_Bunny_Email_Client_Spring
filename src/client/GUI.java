@@ -164,7 +164,6 @@ public class GUI extends JFrame{
 
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);//split the middle
 		setEmailJTreeLeftPanel(userEmails, a);//for left panel email lists
-		//leftPanel.add(jTree);
 
 		leftPanel.setBorder(new LineBorder(Color.BLACK));
 		rightPanel.setBorder(new LineBorder(Color.BLACK));
@@ -212,8 +211,6 @@ public class GUI extends JFrame{
 			emailRoot.add(draftLeaf);
 			emailRoot.add(sentLeaf);
 			emailRoot.add(spamLeaf);
-
-
 			tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 			tree.setCellRenderer(new TreeRenderer());
 			tree.setRowHeight(23);//gap between each email
@@ -292,7 +289,6 @@ public class GUI extends JFrame{
 		leftPanel.revalidate();
 		leftPanel.setBackground(Color.white);
 
-		//splitPane.remove(leftPanel);
 		JScrollPane leftPanelScrollPane = new JScrollPane(leftPanel);
 		leftPanelScrollPane.getVerticalScrollBar().setUnitIncrement(16);//scrolling speed
 		splitPane.setLeftComponent(leftPanelScrollPane);//left component in the split pane is the left panel
@@ -471,7 +467,6 @@ public class GUI extends JFrame{
 		emailFrame.setResizable(false);
 		emailFrame.setVisible(true);
 		emailFrame.setLocationRelativeTo(this);
-		//add(emailFrame);
 	}
 
 	public void setAddAccountPasswordFrame(SecureMailService emailServer){//ask for password on passwordPanel
@@ -480,6 +475,7 @@ public class GUI extends JFrame{
 		passwordPanel.setLayout(new GridBagLayout());
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 		cs.fill = GridBagConstraints.HORIZONTAL;
+		
 		//Password label and password textfield
 		JLabel passwordLabel = new JLabel("Password: ");
 		passwordLabel.setFont(new Font("Serif", Font.PLAIN, 40));
@@ -1187,5 +1183,21 @@ public class GUI extends JFrame{
 
 	public MouseListener getMouseListener(){
 		return a;
+	}
+	
+	public Vector<JTree> getTrees() {
+		return trees;
+	}
+
+	public void setTrees(Vector<JTree> trees) {
+		this.trees = trees;
+	}
+
+	public JPopupMenu getEmailPopupMenu() {
+		return emailPopupMenu;
+	}
+
+	public void setEmailPopupMenu(JPopupMenu emailPopupMenu) {
+		this.emailPopupMenu = emailPopupMenu;
 	}
 }
