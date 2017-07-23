@@ -316,20 +316,24 @@ public class GUIController implements ActionListener, MouseListener{
 	}
 
 	public void setUserEmailObjects(){
+		/*base on "userconfig.property", make appropriate objects, add them to userEmailObjects 
+		 *and set the attributes of these objects *
+		 */
 		for(int i = 0; i < userEmails.size(); i++){
-			SecureMailService emailServer = new SecureMailService();
-			emailServer.setUsername(userEmails.elementAt(i));
-			userEmailObjects.add(emailServer);
+			SecureMailService emailServer = new SecureMailService();//make an email object
+			emailServer.setUsername(userEmails.elementAt(i));//set its username
+			userEmailObjects.add(emailServer);//add to userEmailObjects
 
+			//emailType is what kind of email it is, gmail, outlook, etc.
 			String emailType = (userEmails.elementAt(i).substring(emailServer.getUsername().indexOf("@") + 1, emailServer.getUsername().indexOf("."))).toUpperCase();
-			emailServer.setSMTPServer(smtpServers.get(emailType));
+			emailServer.setSMTPServer(smtpServers.get(emailType));//find and set the appropriate smtp server
 			emailServer.setEmailType(emailType);
-			emailServer.setPort(Integer.parseInt(portNumbers.get(emailType)));
-			emailServer.setImapHost(imapServers.get(emailType));
+			emailServer.setPort(Integer.parseInt(portNumbers.get(emailType)));//find and set the appropriate port number
+			emailServer.setImapHost(imapServers.get(emailType));//find and set the appropriate imap server
 			emailServer.setEmailID(i);
 			
 			System.out.println(userEmails.elementAt(i));
-			emailObjectMap.put(userEmails.elementAt(i), emailServer);
+			emailObjectMap.put(userEmails.elementAt(i), emailServer);//maps an email with the appropriate email object
 		};
 	}
 }
