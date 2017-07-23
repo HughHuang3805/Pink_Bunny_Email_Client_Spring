@@ -97,9 +97,6 @@ public class GUIController implements ActionListener, MouseListener{
 		myGui = new GUI(this, this, userEmails);
 		myGui.setButtonListener(this);
 		setUserEmailObjects();
-		//setEmailTreeListener(this, userEmails);
-		//myGui.setEmailTreeListener(this, userEmails);
-		//myGui.tree.addTreeSelectionListener(this);
 	}
 
 	@Override
@@ -113,7 +110,6 @@ public class GUIController implements ActionListener, MouseListener{
 			break;
 
 		case "Log in":
-			//System.out.println(emailServer.getUsername());
 			if(emailServer.isSmtpLoggedIn()){
 				JOptionPane.showMessageDialog(myGui, "Already logged in", "oops ...", JOptionPane.INFORMATION_MESSAGE);
 			} else{
@@ -123,7 +119,6 @@ public class GUIController implements ActionListener, MouseListener{
 
 		case "Get new messages":
 			try {
-				//emailServer.getEmailByNumber();
 				BufferedReader br = new BufferedReader(new FileReader("dec-plain-text.txt"));
 				String message = "";
 
@@ -183,7 +178,6 @@ public class GUIController implements ActionListener, MouseListener{
 			line = br.readLine();
 		}
 		br.close();
-		//System.out.println(counter);
 	}
 
 	public void loadEmailsFromFile() throws IOException{
@@ -194,11 +188,9 @@ public class GUIController implements ActionListener, MouseListener{
 		if(inputStream != null){
 			for(int i = 1; i <= counter; i++){
 				user = prop.getProperty("email" + i);
-				//System.out.println(user);
 				userEmails.add(user);
 			}
 		}
-		//return userEmails;
 	}
 
 	@Override
@@ -207,7 +199,6 @@ public class GUIController implements ActionListener, MouseListener{
 		JTree tree = (JTree) e.getComponent();
 		tree.getLastSelectedPathComponent();
 		int row = tree.getRowForLocation(e.getX(), e.getY());
-		//System.out.println(row);
 		//2 is the number of clicks, row != 0 means if it is not root, get the path of which the item is clicked
 		if(tree.getLastSelectedPathComponent() != null){
 			DefaultMutableTreeNode node;
