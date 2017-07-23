@@ -15,7 +15,6 @@ import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -54,7 +53,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -69,22 +67,23 @@ import org.apache.http.message.BasicNameValuePair;
 public class GUI extends JFrame{
 
 	private static final long serialVersionUID = 1L;
-	Vector<JMenuItem> menuItems = new Vector<JMenuItem>();
-	Vector<JMenu> menus = new Vector<JMenu>();
-	JPanel emailPanel, passwordPanel, yubikeyPanel, buttonPanel;
-	JPasswordField passwordText, yubikeyText;
-	JMenu fileMenu = new JMenu("File");
-	JMenu toolMenu = new JMenu("Source");
-	JScrollPane jspForBody;
-	JComboBox<String> emailList;
-	String imageFileName = "icons/favicon.png";
-	Vector<JTree> trees = new Vector<JTree>();
-	JPanel mainPanel, leftPanel, rightPanel, emailsPanel, emailInboxPanel, previewPanel;
-	JPopupMenu emailPopupMenu = new JPopupMenu();
-	JTable emailTable;
-	MouseListener a;
-	ActionListener b;
-	JSplitPane splitPane;
+	private String imageFileName = "icons/favicon.png";
+	private Vector<JMenuItem> menuItems = new Vector<JMenuItem>();
+	private Vector<JMenu> menus = new Vector<JMenu>();
+	private Vector<JTree> trees = new Vector<JTree>();
+	private JPanel mainPanel = new JPanel();
+	private JPanel leftPanel = new JPanel();
+	private JPanel rightPanel = new JPanel();
+	private JPasswordField passwordText, yubikeyText;
+	private JMenu fileMenu = new JMenu("File");
+	private JMenu toolMenu = new JMenu("Source");
+	private JPopupMenu emailPopupMenu = new JPopupMenu();
+	private JSplitPane splitPane;
+	private JScrollPane jspForBody;
+	private JComboBox<String> emailList;
+	private MouseListener a;
+	private ActionListener b;
+	
 
 	public GUI(MouseListener a, ActionListener b, Vector<String> userEmails) throws Exception{
 		setTitle("Pink Bunny E-mail Client");
@@ -112,7 +111,7 @@ public class GUI extends JFrame{
 
 	public void setMenuItems(){
 		JMenuBar menuBar = new JMenuBar();
-		//writeItem, secureWriteItem,
+		
 		JMenuItem getAllNewMessagesItem, exitItem, generateKeyPairItem, addNewAccountItem;
 		menus.add(fileMenu);
 		menus.add(toolMenu);
@@ -120,27 +119,17 @@ public class GUI extends JFrame{
 		addNewAccountItem = new JMenuItem("Add New Account");
 		addNewAccountItem.setIcon(new ImageIcon("icons/addicon.png"));
 		getAllNewMessagesItem = new JMenuItem("Get All New Messages");
-		/*writeItem = new JMenuItem("Write");
-		writeItem.setToolTipText("Send Emails Un-Encrypted");
-		secureWriteItem = new JMenuItem("Secure Write");
-		secureWriteItem.setToolTipText("Send Emails Encrypted");*/
 		exitItem = new JMenuItem("Exit");
 		generateKeyPairItem = new JMenuItem("Generate Key Pair");
 		generateKeyPairItem.setIcon(new ImageIcon("icons/keyicon.png"));
 
 		//add items to a list for adding actionlistener
-		//menuItems.add(writeItem);
 		menuItems.add(getAllNewMessagesItem);
 		menuItems.add(exitItem);
 		menuItems.add(generateKeyPairItem);
-		//menuItems.add(secureWriteItem);
 		menuItems.add(addNewAccountItem);
 
 		fileMenu.add(addNewAccountItem);
-		//fileMenu.add(secureWriteItem);
-		//secureWriteItem.setEnabled(false);
-		//fileMenu.add(writeItem);
-		//writeItem.setEnabled(false);
 		fileMenu.add(getAllNewMessagesItem);
 		getAllNewMessagesItem.setEnabled(false);
 		//menu1.addSeparator();
@@ -169,13 +158,6 @@ public class GUI extends JFrame{
 	}
 
 	public void setMainPanel(Vector<String> userEmails, MouseListener a) throws Exception{
-		mainPanel = new JPanel();
-		leftPanel = new JPanel();
-		rightPanel = new JPanel();
-		emailsPanel = new JPanel();
-		emailInboxPanel = new JPanel();
-		previewPanel = new JPanel();
-
 		mainPanel.setLayout(new GridLayout());
 		leftPanel.setLayout(new GridBagLayout());
 		rightPanel.setLayout(new GridLayout());
@@ -350,8 +332,8 @@ public class GUI extends JFrame{
 			};
 			emailServer.setEmailTable(emailTable);
 			emailTable.getTableHeader().setFont(new Font("Serif", Font.BOLD, 20));
-			TableCellRenderer rendererFromHeader = emailTable.getTableHeader().getDefaultRenderer();
-			JLabel headerLabel = (JLabel) rendererFromHeader;
+			//TableCellRenderer rendererFromHeader = emailTable.getTableHeader().getDefaultRenderer();
+			//JLabel headerLabel = (JLabel) rendererFromHeader;
 			//headerLabel.setHorizontalAlignment(JLabel.CENTER);//center header text
 			emailTable.setFillsViewportHeight(true);
 			emailTable.setFont(new Font("Serif", Font.PLAIN, 14));
@@ -1189,14 +1171,6 @@ public class GUI extends JFrame{
 	public String getYubikey(){
 		String passText = new String(yubikeyText.getPassword());
 		return passText;
-	}
-
-	public JPanel getEmailPanel() {
-		return emailPanel;
-	}
-
-	public void setEmailPanel(JPanel emailPanel) {
-		this.emailPanel = emailPanel;
 	}
 
 	public void setActionListener(ActionListener b){
