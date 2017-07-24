@@ -377,7 +377,7 @@ public class GUI extends JFrame{
 
 		//Email label and email textfield
 		JLabel emailLabel = new JLabel("Email: ");
-		emailLabel.setFont(new Font("Serif", Font.PLAIN, 40));
+		emailLabel.setFont(new Font("Serif", Font.PLAIN, 30));
 		cs.gridx = 0;//position in tje column
 		cs.gridy = 0;//position in the row
 		cs.gridwidth = 1;
@@ -386,7 +386,7 @@ public class GUI extends JFrame{
 		emailPanel.add(emailLabel, cs);
 
 		JTextField emailTextField = new JTextField(13);
-		emailTextField.setFont(new Font("Serif", Font.PLAIN, 40));
+		emailTextField.setFont(new Font("Serif", Font.PLAIN, 30));
 		cs.gridx = 1;
 		cs.gridy = 0;
 		cs.gridwidth = 2;
@@ -450,8 +450,8 @@ public class GUI extends JFrame{
 			}
 
 		});
-		nextButton.setFont(new Font("Serif", Font.PLAIN, 23));
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
+		nextButton.setFont(new Font("Serif", Font.PLAIN, 20));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 20));
 
 		JPanel buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(nextButton);
@@ -478,14 +478,14 @@ public class GUI extends JFrame{
 		
 		//Password label and password textfield
 		JLabel passwordLabel = new JLabel("Password: ");
-		passwordLabel.setFont(new Font("Serif", Font.PLAIN, 40));
+		passwordLabel.setFont(new Font("Serif", Font.PLAIN, 30));
 		cs.gridx = 0;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		passwordPanel.add(passwordLabel, cs);
 
 		JPasswordField passwordText = new JPasswordField(13);
-		passwordText.setFont(new Font("Serif", Font.PLAIN, 40));
+		passwordText.setFont(new Font("Serif", Font.PLAIN, 30));
 		cs.gridx = 1;
 		cs.gridy = 1;
 		cs.gridwidth = 2;
@@ -530,8 +530,8 @@ public class GUI extends JFrame{
 			}
 
 		});
-		addButton.setFont(new Font("Serif", Font.PLAIN, 23));
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
+		addButton.setFont(new Font("Serif", Font.PLAIN, 20));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 20));
 
 		JPanel buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(addButton);
@@ -584,7 +584,7 @@ public class GUI extends JFrame{
 
 		//Email label and email textfield
 		JLabel emailLabel = new JLabel("Password: ");
-		emailLabel.setFont(new Font("Serif", Font.PLAIN, 40));
+		emailLabel.setFont(new Font("Serif", Font.PLAIN, 30));
 		cs.gridx = 0;//position in tje column
 		cs.gridy = 0;//position in the row
 		cs.gridwidth = 1;
@@ -593,7 +593,7 @@ public class GUI extends JFrame{
 		passwordPanel.add(emailLabel, cs);
 
 		JPasswordField passwordText = new JPasswordField(13);
-		passwordText.setFont(new Font("Serif", Font.PLAIN, 40));
+		passwordText.setFont(new Font("Serif", Font.PLAIN, 30));
 		cs.gridx = 1;
 		cs.gridy = 0;
 		cs.gridwidth = 2;
@@ -671,8 +671,8 @@ public class GUI extends JFrame{
 			}
 
 		});
-		loginButton.setFont(new Font("Serif", Font.PLAIN, 23));
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
+		loginButton.setFont(new Font("Serif", Font.PLAIN, 20));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 20));
 
 		JPanel buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(loginButton);
@@ -701,7 +701,7 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		//Yubikey label and yubikey password
 		JLabel yubikeyLabel = new JLabel("YubiKey: ");
-		yubikeyLabel.setFont(new Font("Serif", Font.PLAIN, 40));
+		yubikeyLabel.setFont(new Font("Serif", Font.PLAIN, 30));
 		cs.gridx = 0;
 		cs.gridy = 2;
 		cs.gridwidth = 1;
@@ -710,7 +710,7 @@ public class GUI extends JFrame{
 		yubikeyPanel.add(yubikeyLabel, cs);
 
 		JPasswordField yubikeyText = new JPasswordField(13);
-		yubikeyText.setFont(new Font("Serif", Font.PLAIN, 40));
+		yubikeyText.setFont(new Font("Serif", Font.PLAIN, 30));
 		cs.gridx = 1;
 		cs.gridy = 2;
 		cs.gridwidth = 2;
@@ -785,8 +785,8 @@ public class GUI extends JFrame{
 			}
 
 		});
-		verifyButton.setFont(new Font("Serif", Font.PLAIN, 23));
-		cancelButton.setFont(new Font("Serif", Font.PLAIN, 23));
+		verifyButton.setFont(new Font("Serif", Font.PLAIN, 20));
+		cancelButton.setFont(new Font("Serif", Font.PLAIN, 20));
 
 		JPanel buttonPanel = new JPanel();//create a panel for the buttons
 		buttonPanel.add(verifyButton);
