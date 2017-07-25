@@ -185,12 +185,12 @@ public class SecureMailService {
 		default:
 			break;
 		}
-		//System.out.println(host);
+		
 		Session mailSession = Session.getDefaultInstance(props);
 		Transport transport;
 		try {
 			transport = mailSession.getTransport();
-			System.out.print(SMTP_HOST_NAME + " " + SMTP_HOST_PORT + " " + username + " " + password);
+			//System.out.print(SMTP_HOST_NAME + " " + SMTP_HOST_PORT + " " + username + " " + password);
 			transport.connect
 			(SMTP_HOST_NAME, SMTP_HOST_PORT, username, password);
 			smtpLoggedIn = true;

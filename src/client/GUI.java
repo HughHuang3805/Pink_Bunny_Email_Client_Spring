@@ -1,5 +1,8 @@
 package client;
 
+/**work on jtable history to reduce load time, let it work on a few at a time
+ * add new message to existing jtable when "Get new message" is clicked*/
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
