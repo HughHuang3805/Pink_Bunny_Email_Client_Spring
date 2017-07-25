@@ -158,7 +158,7 @@ public class GUI extends JFrame{
 		this.addWindowListener(new java.awt.event.WindowAdapter(){
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-				if (JOptionPane.showConfirmDialog(null, "Close application?", "Really?", 
+				if (JOptionPane.showConfirmDialog(null, "Close application?", "Confirm", 
 						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
 					//save objects
 					GUIController.writeUserEmailObject();

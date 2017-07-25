@@ -12,7 +12,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -21,7 +20,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.util.Hashtable;
-import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -36,15 +34,17 @@ import org.bouncycastle.openpgp.PGPException;
 
 public class GUIController implements ActionListener, MouseListener, Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	GUI myGui;
 	SecureMailService emailServer;
 	private static String email = "";
-	private static String objectFileName = "myObjects.ser";
+	private static String objectFileName = "config.ser";
 	public static int counter = 0;
 	public static Vector<String> userEmails = new Vector<String>();
 	public static Vector<SecureMailService> userEmailObjects = new Vector<SecureMailService>();
-	private final String fileName = "userconfig.properties";
-	private InputStream inputStream;
 	public static Hashtable<String, SecureMailService> emailObjectMap = new Hashtable<String, SecureMailService>();
 
 	public final static Hashtable<String, String> smtpServers = new Hashtable<String, String>() {/**
@@ -204,11 +204,11 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 
 	public static void writeUserEmailObject(){
 		File objectFile = new File(objectFileName);//save objects before program closes
-
 		try(ObjectOutputStream oos =
 				new ObjectOutputStream(new FileOutputStream(objectFile))) {
 			for(int i = 0; i < GUIController.userEmailObjects.size(); i++){
 				// Write objects to file
+				GUIController.userEmailObjects.elementAt(i).setSmtpLoggedIn(false);;
 				oos.writeObject(GUIController.userEmailObjects.elementAt(i));
 			}
 			//oos.close();
