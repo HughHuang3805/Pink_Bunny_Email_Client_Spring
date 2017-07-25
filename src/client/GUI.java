@@ -94,11 +94,9 @@ public class GUI extends JFrame{
 		setMenuItems();
 		setMenuInsets();
 		setLocationRelativeTo(null);
-		setLocationRelativeTo(null);
 		ImageIcon img = new ImageIcon(imageFileName);
 		setIconImage(img.getImage());
 		setPopupItems(b);
-		//addMouseListener(a);
 		setMainPanel(userEmails, a);
 		setVisible(true);
 	}
