@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchProviderException;
 import java.util.Date;
@@ -43,7 +44,7 @@ import javax.swing.JTable;
 import org.bouncycastle.openpgp.PGPException;
 
 
-public class SecureMailService {
+public class SecureMailService implements Serializable{
 
 	private String SMTP_HOST_NAME;
 	private int SMTP_HOST_PORT;
@@ -264,6 +265,7 @@ public class SecureMailService {
 				editorPane.setContentType("text/html");
 				editorPane.getDocument().putProperty("IgnoreCharsetDirective", Boolean.TRUE);
 				editorPane.setText(result);
+				editorPane.setEditable(false);
 				emailScroll = new JScrollPane(editorPane);
 				rightEmailContentPanel.add(emailScroll, BorderLayout.CENTER);
 				System.out.println(message.getContentType());

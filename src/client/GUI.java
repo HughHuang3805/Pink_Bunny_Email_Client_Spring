@@ -1,6 +1,6 @@
 package client;
 
-/**work on jtable history to reduce load time, let it work on a few at a time
+/**work on jtable history to reduce load time, let it work on a few at a time, thread
  * add new message to existing jtable when "Get new message" is clicked*/
 
 import java.awt.BorderLayout;
@@ -15,13 +15,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
@@ -67,7 +70,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 
-public class GUI extends JFrame{
+public class GUI extends JFrame implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	private String imageFileName = "icons/favicon.png";
@@ -86,12 +89,12 @@ public class GUI extends JFrame{
 	private JComboBox<String> emailList;
 	private MouseListener a;
 	private ActionListener b;
-	
+
 
 	public GUI(MouseListener a, ActionListener b, Vector<String> userEmails) throws Exception{
 		setTitle("Pink Bunny E-mail Client");
 		setSize(1250, 800);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setActionListener(b);
 		setMouseListener(a);
 		setMenuItems();
@@ -100,8 +103,9 @@ public class GUI extends JFrame{
 		ImageIcon img = new ImageIcon(imageFileName);
 		setIconImage(img.getImage());
 		setPopupItems(b);
-		setMainPanel(userEmails, a);
+		setMainPanel(a);
 		setVisible(true);
+		setWindowListener();
 	}
 
 	//adds listeners to each of the buttons
@@ -157,13 +161,43 @@ public class GUI extends JFrame{
 			x.setEnabled(true);
 	}
 
-	public void setMainPanel(Vector<String> userEmails, MouseListener a) throws Exception{
+	public void setWindowListener(){
+
+		this.addWindowListener(new java.awt.event.WindowAdapter(){
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+				if (JOptionPane.showConfirmDialog(null, "Close application?", "Really?", 
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+					//save objects
+					File objectFile = new File("myObjects.ser");//save objects before program closes
+
+					try(ObjectOutputStream oos =
+							new ObjectOutputStream(new FileOutputStream(objectFile))) {
+						for(int i = 0; i < GUIController.userEmailObjects.size(); i++){
+							// Write objects to file
+							oos.writeObject(GUIController.userEmailObjects.elementAt(i));
+						}
+						//oos.close();
+					} catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					System.exit(0);
+				}
+			}
+		});
+	}
+
+	public void setMainPanel(MouseListener a) throws Exception{
 		mainPanel.setLayout(new GridLayout());
 		leftPanel.setLayout(new GridBagLayout());
 		rightPanel.setLayout(new GridLayout());
 
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);//split the middle
-		setEmailJTreeLeftPanel(userEmails, a);//for left panel email lists
+		setEmailJTreeLeftPanel(a);//for left panel email lists
 
 		leftPanel.setBorder(new LineBorder(Color.BLACK));
 		rightPanel.setBorder(new LineBorder(Color.BLACK));
@@ -187,14 +221,14 @@ public class GUI extends JFrame{
 		setResizable(true);
 	}
 
-	public void setEmailJTreeLeftPanel(Vector<String> userEmails, MouseListener a){
+	public void setEmailJTreeLeftPanel(MouseListener a){
 
 		UIManager.put("Tree.expandedIcon",  new ImageIcon("icons/clapsedicon.png"));//changes the expand icon
 		UIManager.put("Tree.collapsedIcon", new ImageIcon("icons/expandicon.png"));//changes the clapsed icon
 		leftPanel.removeAll();
 		trees.removeAllElements();
-		for(int i = 0; i < userEmails.size(); i++){
-			DefaultMutableTreeNode emailRoot = new DefaultMutableTreeNode(userEmails.elementAt(i));//the root is the email
+		for(int i = 0; i < GUIController.userEmailObjects.size(); i++){
+			DefaultMutableTreeNode emailRoot = new DefaultMutableTreeNode(GUIController.userEmailObjects.elementAt(i).getUsername());//the root is the email
 			trees.add(new JTree(emailRoot));//add to trees vector containing all the JTree objects
 			JTree tree = trees.elementAt(i);//get the Jtree from the tree vector
 			tree.setShowsRootHandles(true);
@@ -228,7 +262,19 @@ public class GUI extends JFrame{
 						//System.out.println("email server is null" + emailServer == null);
 						if(emailServer.isSmtpLoggedIn()){
 							try {
-								setDisplayRightPanel(emailServer);
+								Thread rightPanelThread = new Thread(){
+
+									public void run(){
+										try {
+											setDisplayRightPanel(emailServer);
+										} catch (Exception e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+									}
+
+								};
+								rightPanelThread.start();
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -243,7 +289,7 @@ public class GUI extends JFrame{
 					if(node.toString() == "Secure write"){
 						SecureMailService emailServer = GUIController.emailObjectMap.get(node.getRoot().toString());
 						if(emailServer.isSmtpLoggedIn()){
-							setSecureWritePanel(userEmails, emailServer);
+							setSecureWriteFrame(emailServer);
 						} else{
 							JOptionPane.showMessageDialog(null, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
 							//myGui.setLoginFrame(emailServer);
@@ -253,7 +299,7 @@ public class GUI extends JFrame{
 					} else if(node.toString() == "Write"){
 						SecureMailService emailServer = GUIController.emailObjectMap.get(node.getRoot().toString());
 						if(emailServer.isSmtpLoggedIn()){
-							setWriteFrame(userEmails, emailServer);
+							setWriteFrame(emailServer);
 						} else{
 							JOptionPane.showMessageDialog(null, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
 							//myGui.setLoginFrame(emailServer);
@@ -279,7 +325,7 @@ public class GUI extends JFrame{
 		}
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 		cs.fill = GridBagConstraints.BOTH;
-		cs.gridy = userEmails.size() + 1;
+		cs.gridy = GUIController.userEmailObjects.size() + 1;
 		cs.weightx = 1;
 		cs.weighty = 1;
 		JPanel filler = new JPanel();
@@ -419,7 +465,7 @@ public class GUI extends JFrame{
 						emailServer.setEmailType(emailType);
 						GUIController.emailObjectMap.put(email, emailServer);
 
-						Properties prop = new Properties();
+						/*Properties prop = new Properties();
 						OutputStream output = null;
 						try {
 							prop.load(new FileInputStream("userconfig.properties"));
@@ -434,7 +480,8 @@ public class GUI extends JFrame{
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-
+*/	
+						GUIController.userEmailObjects.add(emailServer);
 						setAddAccountPasswordFrame(emailServer);
 						emailFrame.dispose();
 					}
@@ -475,7 +522,7 @@ public class GUI extends JFrame{
 		passwordPanel.setLayout(new GridBagLayout());
 		GridBagConstraints cs = new GridBagConstraints();//constraints
 		cs.fill = GridBagConstraints.HORIZONTAL;
-		
+
 		//Password label and password textfield
 		JLabel passwordLabel = new JLabel("Password: ");
 		passwordLabel.setFont(new Font("Serif", Font.PLAIN, 30));
@@ -507,7 +554,8 @@ public class GUI extends JFrame{
 						boolean connectSuccessful =  emailServer.connect();
 						if(connectSuccessful){
 							GUIController.userEmails.add(emailServer.getUsername());
-							setEmailJTreeLeftPanel(GUIController.userEmails, getMouseListener());
+							setEmailJTreeLeftPanel(getMouseListener());
+							emailServer.setSmtpLoggedIn(true);
 							passwordFrame.dispose();
 						} else{
 							JOptionPane.showMessageDialog(passwordFrame, "Error adding account, please try again.", "oops ...", JOptionPane.ERROR_MESSAGE);
@@ -553,9 +601,9 @@ public class GUI extends JFrame{
 		if(dialogResult == JOptionPane.YES_OPTION){
 			GUIController.userEmails.remove(emailServer.getUsername());
 			GUIController.userEmailObjects.remove(emailServer);
-			setEmailJTreeLeftPanel(GUIController.userEmails, getMouseListener());
+			setEmailJTreeLeftPanel(getMouseListener());
 
-			Properties prop = new Properties();
+			/*Properties prop = new Properties();
 			OutputStream output = null;
 			try {
 				prop.load(new FileInputStream("userconfig.properties"));
@@ -569,7 +617,7 @@ public class GUI extends JFrame{
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 		} 
 	}
 
@@ -801,7 +849,7 @@ public class GUI extends JFrame{
 		yubikeyFrame.setLocationRelativeTo(this);
 	}
 
-	public void setWriteFrame(Vector<String> userEmails, SecureMailService emailServer){//write email
+	public void setWriteFrame(SecureMailService emailServer){//write email
 
 		//JComboBox<String> emailList = new JComboBox<>(userEmails);
 		emailServer.setWriteFrame(new JFrame("Write: New Email"));
@@ -963,7 +1011,7 @@ public class GUI extends JFrame{
 		writeFrame.setVisible(true);
 	}
 
-	public void setSecureWritePanel(Vector<String> userEmails, SecureMailService emailServer){
+	public void setSecureWriteFrame(SecureMailService emailServer){
 
 		//JComboBox<String> emailList = new JComboBox<>(userEmails);
 		//System.out.println(emailList.getSelectedItem());
@@ -1180,7 +1228,7 @@ public class GUI extends JFrame{
 	public MouseListener getMouseListener(){
 		return a;
 	}
-	
+
 	public Vector<JTree> getTrees() {
 		return trees;
 	}
