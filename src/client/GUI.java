@@ -109,7 +109,6 @@ public class GUI extends JFrame{
 
 	public void setMenuItems(){
 		JMenuBar menuBar = new JMenuBar();
-		
 		JMenuItem getAllNewMessagesItem, exitItem, generateKeyPairItem, addNewAccountItem;
 		menus.add(fileMenu);
 		menus.add(toolMenu);
@@ -376,7 +375,7 @@ public class GUI extends JFrame{
 		//Email label and email textfield
 		JLabel emailLabel = new JLabel("Email: ");
 		emailLabel.setFont(new Font("Serif", Font.PLAIN, 30));
-		cs.gridx = 0;//position in tje column
+		cs.gridx = 0;//position in the column
 		cs.gridy = 0;//position in the row
 		cs.gridwidth = 1;
 		cs.weightx = 1.0;//a non-0 value such as 1.0 for most fields and 0 for fields whose size you don't want changed if the GUI changes size
@@ -602,7 +601,7 @@ public class GUI extends JFrame{
 		passwordPanel.setBorder(new LineBorder(Color.GRAY));//make a border for login panel
 
 		//create next and cancel button
-		JButton loginButton = new JButton("Log-in");
+		JButton loginButton = new JButton("Log in");
 		JButton cancelButton = new JButton("Cancel");
 		loginButton.addActionListener(new ActionListener(){
 			@Override
@@ -686,7 +685,6 @@ public class GUI extends JFrame{
 		loginFrame.setResizable(false);
 		loginFrame.setVisible(true);
 		loginFrame.setLocationRelativeTo(this);
-		//add(emailFrame);
 	}
 
 	public void setYubikeyFrame(SecureMailService emailServer){//ask for yubikey on yubikeyPanel
@@ -715,7 +713,6 @@ public class GUI extends JFrame{
 		cs.weightx = 1.0;
 		cs.weighty = 0;
 		yubikeyPanel.add(yubikeyText, cs);
-
 		yubikeyPanel.setBorder(new LineBorder(Color.GRAY));
 
 		JButton verifyButton = new JButton("Verify");
@@ -890,7 +887,7 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		writePanel.add(subjectTextField, cs);
 
-		JTextArea emailContentText = new JTextArea("Enter your email body ...", 15, 23);//email content
+		JTextArea emailContentText = new JTextArea("", 15, 23);//email content
 		emailContentText.setEditable(true);
 		emailContentText.setFont(new Font("Serif", Font.PLAIN, 30));
 		emailContentText.setLineWrap(true);
@@ -1055,7 +1052,7 @@ public class GUI extends JFrame{
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		writePanel.add(secureSubjectTextField, cs);
 
-		JTextArea secureEmailContentText = new JTextArea("Enter your email body ...", 15, 23);//email content
+		JTextArea secureEmailContentText = new JTextArea("", 15, 23);//email content
 		secureEmailContentText.setEditable(true);
 		secureEmailContentText.setFont(new Font("Serif", Font.PLAIN, 30));
 		secureEmailContentText.setLineWrap(true);
@@ -1142,7 +1139,6 @@ public class GUI extends JFrame{
 		getMessageItem.addActionListener(a);
 		JMenuItem deleteAccountItem = new JMenuItem("Remove account");
 		deleteAccountItem.addActionListener(a);
-		//getMessageItem.setActionCommand("Get New Messages");
 		emailPopupMenu.add(loginItem);
 		emailPopupMenu.add(getMessageItem);
 		emailPopupMenu.add(deleteAccountItem);
@@ -1152,7 +1148,6 @@ public class GUI extends JFrame{
 		//get rid of any space in the username
 		return ((String) emailList.getSelectedItem()).replaceAll("\\s+", "");
 	}
-
 
 	public String getPassword(){
 		if(passwordText != null){

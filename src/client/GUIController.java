@@ -26,17 +26,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 import org.bouncycastle.openpgp.PGPException;
 
-//, TreeSelectionListener
 public class GUIController implements ActionListener, MouseListener{
 
 	GUI myGui;
 	SecureMailService emailServer;
-	/*private static String smtpServer = "";
-	private static String portNumber = "";
-	private static String imapServer = "";*/
 	private static String email = "";
-	/*private static String host = "";
-	private static boolean hasYubikey = false;*/
 	public static int counter = 0;
 	public static Vector<String> userEmails = new Vector<String>();
 	public static Vector<SecureMailService> userEmailObjects = new Vector<SecureMailService>();
@@ -57,7 +51,6 @@ public class GUIController implements ActionListener, MouseListener{
 			put("AOL", "smtp.aol.com");
 			put("HOTMAIL", "smtp-mail.outlook.com");
 		}
-
 	};
 
 	public final static Hashtable<String, String> portNumbers = new Hashtable<String, String>() {/**
@@ -91,7 +84,6 @@ public class GUIController implements ActionListener, MouseListener{
 	};
 
 	public GUIController() throws Exception{
-		//myGui = g;
 		getNumberOfEmails();
 		loadEmailsFromFile();
 		myGui = new GUI(this, this, userEmails);
@@ -242,8 +234,8 @@ public class GUIController implements ActionListener, MouseListener{
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-			} else */if(SwingUtilities.isRightMouseButton(e)){
-
+			} else */
+			if(SwingUtilities.isRightMouseButton(e)){
 				if(node.isRoot()) {
 					emailServer = emailObjectMap.get(node.getRoot().toString());
 					myGui.getEmailPopupMenu().show(tree, e.getX(), e.getY());
@@ -258,7 +250,6 @@ public class GUIController implements ActionListener, MouseListener{
 
 			if(row == -1) //When user clicks on the "empty surface"
 				tree.getSelectionModel().clearSelection();
-			//tree.clearSelection();
 		}
 	}
 
