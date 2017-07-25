@@ -15,22 +15,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.Vector;
 
 import javax.mail.Message;
@@ -70,7 +62,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 
-public class GUI extends JFrame implements Serializable{
+public class GUI extends JFrame{
 
 	private static final long serialVersionUID = 1L;
 	private String imageFileName = "icons/favicon.png";
@@ -91,7 +83,7 @@ public class GUI extends JFrame implements Serializable{
 	private ActionListener b;
 
 
-	public GUI(MouseListener a, ActionListener b, Vector<String> userEmails) throws Exception{
+	public GUI(MouseListener a, ActionListener b) throws Exception{
 		setTitle("Pink Bunny E-mail Client");
 		setSize(1250, 800);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -169,22 +161,7 @@ public class GUI extends JFrame implements Serializable{
 				if (JOptionPane.showConfirmDialog(null, "Close application?", "Really?", 
 						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
 					//save objects
-					File objectFile = new File("myObjects.ser");//save objects before program closes
-
-					try(ObjectOutputStream oos =
-							new ObjectOutputStream(new FileOutputStream(objectFile))) {
-						for(int i = 0; i < GUIController.userEmailObjects.size(); i++){
-							// Write objects to file
-							oos.writeObject(GUIController.userEmailObjects.elementAt(i));
-						}
-						//oos.close();
-					} catch (FileNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					GUIController.writeUserEmailObject();
 					System.exit(0);
 				}
 			}
@@ -229,6 +206,7 @@ public class GUI extends JFrame implements Serializable{
 		trees.removeAllElements();
 		for(int i = 0; i < GUIController.userEmailObjects.size(); i++){
 			DefaultMutableTreeNode emailRoot = new DefaultMutableTreeNode(GUIController.userEmailObjects.elementAt(i).getUsername());//the root is the email
+			System.out.println(GUIController.userEmailObjects.elementAt(i).getUsername());
 			trees.add(new JTree(emailRoot));//add to trees vector containing all the JTree objects
 			JTree tree = trees.elementAt(i);//get the Jtree from the tree vector
 			tree.setShowsRootHandles(true);
@@ -381,12 +359,6 @@ public class GUI extends JFrame implements Serializable{
 			emailTable.setFont(new Font("Serif", Font.PLAIN, 14));
 			emailTable.setRowHeight(20);
 			emailTable.setAutoCreateRowSorter(true);
-			/*emailTable.getModel().addTableModelListener(new TableModelListener() {
-				@Override
-				public void tableChanged(TableModelEvent e) {
-					System.out.println("hi");
-				}
-			});*/
 			emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 				public void valueChanged(ListSelectionEvent e) {
 					if(e.getValueIsAdjusting() == false){//this makes the event go once
@@ -406,6 +378,28 @@ public class GUI extends JFrame implements Serializable{
 					}
 				}
 			});
+		} else{
+			JTable emailTable = emailServer.getEmailTable();
+			emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+				public void valueChanged(ListSelectionEvent e) {
+					if(e.getValueIsAdjusting() == false){//this makes the event go once
+						int row = emailTable.getSelectedRow();
+						System.out.println(row);
+						try {
+							emailServer.getEmailByNumber(row);
+							rightPanel.removeAll();
+							rightPanel.add(emailServer.getRightEmailContentPanel());
+							repaint();
+							revalidate();
+							return;
+						} catch (Exception e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+				}
+			});
+			
 		}
 		rightPanel.removeAll();
 		rightPanel.add(new JScrollPane(emailServer.getEmailTable()));
@@ -463,8 +457,6 @@ public class GUI extends JFrame implements Serializable{
 						emailServer.setUsername(email);//set user email
 						emailServer.setImapHost(imapServer);
 						emailServer.setEmailType(emailType);
-						GUIController.emailObjectMap.put(email, emailServer);
-
 						/*Properties prop = new Properties();
 						OutputStream output = null;
 						try {
@@ -480,8 +472,7 @@ public class GUI extends JFrame implements Serializable{
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-*/	
-						GUIController.userEmailObjects.add(emailServer);
+						 */	
 						setAddAccountPasswordFrame(emailServer);
 						emailFrame.dispose();
 					}
@@ -553,7 +544,8 @@ public class GUI extends JFrame implements Serializable{
 						emailServer.setPassword(new String(passwordText.getPassword()));
 						boolean connectSuccessful =  emailServer.connect();
 						if(connectSuccessful){
-							GUIController.userEmails.add(emailServer.getUsername());
+							GUIController.userEmailObjects.add(emailServer);
+							GUIController.emailObjectMap.put(emailServer.getUsername(), emailServer);
 							setEmailJTreeLeftPanel(getMouseListener());
 							emailServer.setSmtpLoggedIn(true);
 							passwordFrame.dispose();
@@ -599,7 +591,6 @@ public class GUI extends JFrame implements Serializable{
 	public void setRemoveAccountDialog(SecureMailService emailServer){
 		int dialogResult = JOptionPane.showConfirmDialog(this, "Are you sure you want to remove this account?", "Caution", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 		if(dialogResult == JOptionPane.YES_OPTION){
-			GUIController.userEmails.remove(emailServer.getUsername());
 			GUIController.userEmailObjects.remove(emailServer);
 			setEmailJTreeLeftPanel(getMouseListener());
 

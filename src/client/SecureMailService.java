@@ -275,6 +275,7 @@ public class SecureMailService implements Serializable{
 				//editorPane.getDocument().putProperty("IgnoreCharsetDirective", Boolean.TRUE);
 				//String x = URLDecoder.decode(result, "US-ASCII");
 				editorPane.setText(result);
+				editorPane.setEditable(false);
 				emailScroll = new JScrollPane(editorPane);
 				rightEmailContentPanel.add(emailScroll, BorderLayout.CENTER);
 				System.out.println(message.getContentType());
@@ -285,6 +286,7 @@ public class SecureMailService implements Serializable{
 				JEditorPane editorPane = new JEditorPane();
 				editorPane.setContentType("multipart/ALTERNATIVE");
 				editorPane.setText(result);
+				editorPane.setEditable(false);
 				emailScroll = new JScrollPane(editorPane);
 				rightEmailContentPanel.add(emailScroll, BorderLayout.CENTER);
 				System.out.println(message.getContentType());

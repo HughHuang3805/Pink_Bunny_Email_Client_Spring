@@ -5,13 +5,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -36,6 +39,7 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 	GUI myGui;
 	SecureMailService emailServer;
 	private static String email = "";
+	private static String objectFileName = "myObjects.ser";
 	public static int counter = 0;
 	public static Vector<String> userEmails = new Vector<String>();
 	public static Vector<SecureMailService> userEmailObjects = new Vector<SecureMailService>();
@@ -89,12 +93,9 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 	};
 
 	public GUIController() throws Exception{
-		//getNumberOfEmails();
-		//loadEmailsFromFile();
 		readUserEmailObjects();
-		myGui = new GUI(this, this, userEmails);
+		myGui = new GUI(this, this);
 		myGui.setButtonListener(this);
-		//setUserEmailObjects();
 	}
 
 	@Override
@@ -140,7 +141,6 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-
 			break;
 
 		case "Remove account":
@@ -167,32 +167,8 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 		}
 	}
 
-	public void getNumberOfEmails() throws IOException{
-		BufferedReader br = new BufferedReader(new FileReader(fileName));//just to see how many records there are
-		String line = br.readLine();
-		line = br.readLine();
-		while(line != null){
-			counter++;
-			line = br.readLine();
-		}
-		br.close();
-	}
-
-	public void loadEmailsFromFile() throws IOException{
-		Properties prop = new Properties();//get each of the email and store them in the userEmail vector
-		inputStream = new FileInputStream(fileName);
-		prop.load(inputStream);
-		String user;
-		if(inputStream != null){
-			for(int i = 1; i <= counter; i++){
-				user = prop.getProperty("email" + i);
-				userEmails.add(user);
-			}
-		}
-	}
-
 	public void readUserEmailObjects(){
-		File f = new File("myObjects.ser");
+		File f = new File(objectFileName);
 		if(f.exists() && !f.isDirectory()) { 
 			// do something
 			try {
@@ -201,15 +177,18 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 				// Read objects
 				SecureMailService emailServer;
 
-				//while(oi.available() > 0){
-				System.out.println("hi");
-				emailServer = (SecureMailService) oi.readObject();
-				//setUserEmailObjects(emailServer);
-				counter++;
-				System.out.println(emailServer.getUsername());
-				userEmailObjects.add(emailServer);
-				emailObjectMap.put(emailServer.getUsername(), emailServer);//maps an email with the appropriate email object
-				//}
+				while(true){
+					try{
+						System.out.println("hi");
+						emailServer = (SecureMailService) oi.readObject();
+						counter++;
+						System.out.println(emailServer.getUsername());
+						userEmailObjects.add(emailServer);
+						emailObjectMap.put(emailServer.getUsername(), emailServer);//maps an email with the appropriate email object
+					} catch (EOFException e){
+						break;
+					}
+				}
 				oi.close();
 				fi.close();
 			} catch (IOException e) {
@@ -223,46 +202,23 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 		}
 	}
 
-	public void setUserEmailObjects(SecureMailService emailServer){
-		/*base on "userconfig.property", make appropriate objects, add them to userEmailObjects 
-		 *and set the attributes of these objects *
-		 */
-		for(int i = 0; i < userEmails.size(); i++){
-			emailServer.setUsername(userEmails.elementAt(i));//set its username
-			userEmailObjects.add(emailServer);//add to userEmailObjects
+	public static void writeUserEmailObject(){
+		File objectFile = new File(objectFileName);//save objects before program closes
 
-			//emailType is what kind of email it is, gmail, outlook, etc.
-			String emailType = (userEmails.elementAt(i).substring(emailServer.getUsername().indexOf("@") + 1, emailServer.getUsername().indexOf("."))).toUpperCase();
-			emailServer.setSMTPServer(smtpServers.get(emailType));//find and set the appropriate smtp server
-			emailServer.setEmailType(emailType);
-			emailServer.setPort(Integer.parseInt(portNumbers.get(emailType)));//find and set the appropriate port number
-			emailServer.setImapHost(imapServers.get(emailType));//find and set the appropriate imap server
-			emailServer.setEmailID(i);
-
-			System.out.println(userEmails.elementAt(i));
-			emailObjectMap.put(emailServer.getUsername(), emailServer);//maps an email with the appropriate email object
-		};
-
-		/*public void setUserEmailObjects(){
-		base on "userconfig.property", make appropriate objects, add them to userEmailObjects 
-		 *and set the attributes of these objects *
-
-		for(int i = 0; i < userEmails.size(); i++){
-			SecureMailService emailServer = new SecureMailService();//make an email object
-			emailServer.setUsername(userEmails.elementAt(i));//set its username
-			userEmailObjects.add(emailServer);//add to userEmailObjects
-
-			//emailType is what kind of email it is, gmail, outlook, etc.
-			String emailType = (userEmails.elementAt(i).substring(emailServer.getUsername().indexOf("@") + 1, emailServer.getUsername().indexOf("."))).toUpperCase();
-			emailServer.setSMTPServer(smtpServers.get(emailType));//find and set the appropriate smtp server
-			emailServer.setEmailType(emailType);
-			emailServer.setPort(Integer.parseInt(portNumbers.get(emailType)));//find and set the appropriate port number
-			emailServer.setImapHost(imapServers.get(emailType));//find and set the appropriate imap server
-			emailServer.setEmailID(i);
-
-			System.out.println(userEmails.elementAt(i));
-			emailObjectMap.put(userEmails.elementAt(i), emailServer);//maps an email with the appropriate email object
-		};*/
+		try(ObjectOutputStream oos =
+				new ObjectOutputStream(new FileOutputStream(objectFile))) {
+			for(int i = 0; i < GUIController.userEmailObjects.size(); i++){
+				// Write objects to file
+				oos.writeObject(GUIController.userEmailObjects.elementAt(i));
+			}
+			//oos.close();
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
