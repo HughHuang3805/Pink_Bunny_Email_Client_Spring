@@ -38,6 +38,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -278,6 +279,7 @@ public class SecureMailService implements Serializable{
 				editorPane.getDocument().putProperty("IgnoreCharsetDirective", Boolean.TRUE);
 				editorPane.setText(result);
 				editorPane.setEditable(false);
+				editorPane.setCaretPosition(0);//show email from the top down
 				emailScroll = new JScrollPane(editorPane);
 				rightEmailContentPanel.add(emailScroll, BorderLayout.CENTER);
 				System.out.println(message.getContentType());
@@ -288,6 +290,7 @@ public class SecureMailService implements Serializable{
 				//String x = URLDecoder.decode(result, "US-ASCII");
 				editorPane.setText(result);
 				editorPane.setEditable(false);
+				editorPane.setCaretPosition(0);//show email from the top down
 				emailScroll = new JScrollPane(editorPane);
 				rightEmailContentPanel.add(emailScroll, BorderLayout.CENTER);
 				System.out.println(message.getContentType());
@@ -299,6 +302,7 @@ public class SecureMailService implements Serializable{
 				editorPane.setContentType("multipart/ALTERNATIVE");
 				editorPane.setText(result);
 				editorPane.setEditable(false);
+				editorPane.setCaretPosition(0);//show email from the top down
 				emailScroll = new JScrollPane(editorPane);
 				rightEmailContentPanel.add(emailScroll, BorderLayout.CENTER);
 				System.out.println(message.getContentType());

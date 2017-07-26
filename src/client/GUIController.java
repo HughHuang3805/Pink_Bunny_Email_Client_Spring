@@ -175,10 +175,10 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 				FileInputStream fi = new FileInputStream(f);
 				ObjectInputStream oi = new ObjectInputStream(fi);
 				// Read objects
-				SecureMailService emailServer;
 
 				while(true){
 					try{
+						SecureMailService emailServer;
 						System.out.println("hi");
 						emailServer = (SecureMailService) oi.readObject();
 						counter++;
@@ -187,14 +187,14 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 						emailObjectMap.put(emailServer.getUsername(), emailServer);//maps an email with the appropriate email object
 					} catch (EOFException e){
 						break;
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 				oi.close();
 				fi.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -220,6 +220,23 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 		}
 	}
 
+	public void populateEmailTable(){
+		for(int i = 0; i < userEmailObjects.size(); i++){
+			SecureMailService emailServer = userEmailObjects.elementAt(i);
+			new Thread(){
+				@Override
+				public void run(){
+					try {
+						myGui.populateEmailTable(emailServer);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}.start();
+		}
+	}
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
