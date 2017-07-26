@@ -27,13 +27,10 @@ import java.util.Vector;
 
 import javax.mail.Folder;
 import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.swing.ImageIcon;
-import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -43,14 +40,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
-import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -72,14 +67,13 @@ import org.apache.http.message.BasicNameValuePair;
 public class GUI extends JFrame{
 
 	private static final long serialVersionUID = 1L;
-	private String imageFileName = "icons/favicon.png";
+	private String iconFileName = "icons/favicon.png";
 	private Vector<JMenuItem> menuItems = new Vector<JMenuItem>();
 	private Vector<JMenu> menus = new Vector<JMenu>();
 	private Vector<JTree> trees = new Vector<JTree>();
 	private JPanel mainPanel = new JPanel();
 	private JPanel leftPanel = new JPanel();
 	private JPanel rightPanel = new JPanel();
-	private JPasswordField passwordText, yubikeyText;
 	private JMenu fileMenu = new JMenu("File");
 	private JMenu toolMenu = new JMenu("Source");
 	private JPopupMenu emailPopupMenu = new JPopupMenu();
@@ -98,7 +92,7 @@ public class GUI extends JFrame{
 		setMenuItems();
 		setMenuInsets();
 		setLocationRelativeTo(null);
-		ImageIcon img = new ImageIcon(imageFileName);
+		ImageIcon img = new ImageIcon(iconFileName);
 		setIconImage(img.getImage());
 		setPopupItems(b);
 		setMainPanel(a);
@@ -544,7 +538,7 @@ public class GUI extends JFrame{
 		emailFrame.add(emailPanel, BorderLayout.CENTER);
 		emailFrame.add(buttonPanel, BorderLayout.PAGE_END);
 		emailFrame.pack(); //let layout managers in charge of the frame size
-		ImageIcon img = new ImageIcon(imageFileName);
+		ImageIcon img = new ImageIcon(iconFileName);
 		emailFrame.setIconImage(img.getImage());
 		emailFrame.setResizable(false);
 		emailFrame.setVisible(true);
@@ -629,7 +623,7 @@ public class GUI extends JFrame{
 		passwordFrame.add(passwordPanel, BorderLayout.CENTER);
 		passwordFrame.add(buttonPanel, BorderLayout.PAGE_END);
 		passwordFrame.pack(); //let layout managers in charge of the frame size
-		ImageIcon img = new ImageIcon(imageFileName);
+		ImageIcon img = new ImageIcon(iconFileName);
 		passwordFrame.setIconImage(img.getImage());
 		passwordFrame.setLocationRelativeTo(this);
 		passwordFrame.setResizable(false);
@@ -755,7 +749,7 @@ public class GUI extends JFrame{
 		loginFrame.add(passwordPanel, BorderLayout.CENTER);
 		loginFrame.add(buttonPanel, BorderLayout.PAGE_END);
 		loginFrame.pack(); //let layout managers in charge of the frame size
-		ImageIcon img = new ImageIcon(imageFileName);
+		ImageIcon img = new ImageIcon(iconFileName);
 		loginFrame.setIconImage(img.getImage());
 		loginFrame.setResizable(false);
 		loginFrame.setVisible(true);
@@ -871,7 +865,7 @@ public class GUI extends JFrame{
 		yubikeyFrame.add(yubikeyPanel, BorderLayout.CENTER);
 		yubikeyFrame.add(buttonPanel, BorderLayout.PAGE_END);
 		yubikeyFrame.pack(); //let layout managers in charge of the frame size
-		ImageIcon img = new ImageIcon(imageFileName);
+		ImageIcon img = new ImageIcon(iconFileName);
 		yubikeyFrame.setIconImage(img.getImage());
 		yubikeyFrame.setResizable(false);
 		yubikeyFrame.setVisible(true);
@@ -884,7 +878,7 @@ public class GUI extends JFrame{
 		emailServer.setWriteFrame(new JFrame("Write: New Email"));
 		JFrame writeFrame = emailServer.getWriteFrame();
 		writeFrame.setSize(1000, 800);
-		ImageIcon img = new ImageIcon(imageFileName);
+		ImageIcon img = new ImageIcon(iconFileName);
 		writeFrame.setIconImage(img.getImage());
 		writeFrame.setVisible(true);
 
@@ -1048,7 +1042,7 @@ public class GUI extends JFrame{
 		emailServer.setSecureWriteFrame(new JFrame("Secure Write: New Email"));
 		JFrame secureWriteFrame = emailServer.getSecureWriteFrame();
 		secureWriteFrame.setSize(1000, 800);
-		ImageIcon img = new ImageIcon(imageFileName);
+		ImageIcon img = new ImageIcon(iconFileName);
 		secureWriteFrame.setIconImage(img.getImage());
 		secureWriteFrame.setVisible(true);
 
@@ -1230,19 +1224,6 @@ public class GUI extends JFrame{
 	public String getEmailFromCombobox(){
 		//get rid of any space in the username
 		return ((String) emailList.getSelectedItem()).replaceAll("\\s+", "");
-	}
-
-	public String getPassword(){
-		if(passwordText != null){
-			String passText = new String(passwordText.getPassword());
-			return passText;
-		}
-		return null;
-	}
-
-	public String getYubikey(){
-		String passText = new String(yubikeyText.getPassword());
-		return passText;
 	}
 
 	public void setActionListener(ActionListener b){

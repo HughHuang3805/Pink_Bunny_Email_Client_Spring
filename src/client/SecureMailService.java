@@ -1,20 +1,15 @@
 package client;
 
 import java.awt.BorderLayout;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchProviderException;
-import java.util.Date;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -38,16 +33,19 @@ import javax.mail.internet.MimeMultipart;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 
 import org.bouncycastle.openpgp.PGPException;
 
 
 public class SecureMailService implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private String SMTP_HOST_NAME;
 	private int SMTP_HOST_PORT;
 	private String recipient;
@@ -57,7 +55,7 @@ public class SecureMailService implements Serializable{
 
 	private String imapHost = "";
 	@SuppressWarnings("unused")
-	private String mailStoreType = "imap";  
+	private String mailStoreType = "";  
 	private String username = "";  
 	private String password = "";
 	JFrame writeFrame, secureWriteFrame, loginFrame, yubikeyFrame;
@@ -76,74 +74,6 @@ public class SecureMailService implements Serializable{
 	private int emailID;
 	private int numberOfMessages = 0;
 	
-	public void encryptedSend() throws Exception{
-		TestBCOpenPGP x = new TestBCOpenPGP();
-		x.encrypt();
-
-		Properties props = new Properties();
-
-		props.put("mail.transport.protocol", "smtps");
-		props.put("mail.smtps.host", SMTP_HOST_NAME);
-		props.put("mail.smtps.auth", "true");
-		//props.put("mail.smtps.ssl.trust", "*");
-		//props.put("mail.smtps.quitwait", "false");
-
-		Session mailSession = Session.getDefaultInstance(props);
-		mailSession.setDebug(true);
-		PrintStream ps = new PrintStream(new File("debug.txt"));//output to debug.txt
-		mailSession.setDebugOut(ps);
-		Transport transport = mailSession.getTransport();
-
-		MimeMessage message = new MimeMessage(mailSession);
-		message.setSubject(getSubject());
-
-		MimeBodyPart messageBodyPart = new MimeBodyPart();
-		String filename = "cypher-text.dat";
-		DataSource source = new FileDataSource(filename);
-		messageBodyPart.setDataHandler(new DataHandler(source));
-		messageBodyPart.setFileName(filename);
-		MimeMultipart multipart = new MimeMultipart();
-		multipart.addBodyPart(messageBodyPart);
-
-		message.setContent(multipart);
-
-		message.addRecipient(Message.RecipientType.TO,
-				new InternetAddress(getRecipient()));
-
-		transport.connect(SMTP_HOST_NAME, SMTP_HOST_PORT, username, password);
-		transport.sendMessage(message,
-				message.getRecipients(Message.RecipientType.TO));
-		transport.close();
-	}
-
-	public void send(String host, String messageContent) throws Exception{
-		Properties props = new Properties();
-
-		props.put("mail.transport.protocol", "smtps");
-		props.put("mail.smtps.host", SMTP_HOST_NAME);
-		props.put("mail.smtps.auth", "true");
-		//props.put("mail.smtps.ssl.trust", "*");
-		//props.put("mail.smtps.quitwait", "false");
-
-		Session mailSession = Session.getDefaultInstance(props);
-		mailSession.setDebug(true);
-		PrintStream ps = new PrintStream(new File("debug.txt"));//output to debug.txt
-		mailSession.setDebugOut(ps);
-		Transport transport = mailSession.getTransport();
-
-		MimeMessage message = new MimeMessage(mailSession);
-		message.setSubject(getSubject());
-		message.setFrom(new InternetAddress(getUsername()));
-		message.addRecipient(Message.RecipientType.TO,
-				new InternetAddress(getRecipient()));
-		message.setText(messageContent);
-
-		transport.connect(SMTP_HOST_NAME, SMTP_HOST_PORT, username, password);
-		transport.sendMessage(message,
-				message.getRecipients(Message.RecipientType.TO));
-		transport.close();
-	}
-
 	public boolean connect() throws GeneralSecurityException{
 		Properties props = new Properties();
 
@@ -219,6 +149,74 @@ public class SecureMailService implements Serializable{
 		return true;
 	}
 
+	public void send(String host, String messageContent) throws Exception{
+		Properties props = new Properties();
+
+		props.put("mail.transport.protocol", "smtps");
+		props.put("mail.smtps.host", SMTP_HOST_NAME);
+		props.put("mail.smtps.auth", "true");
+		//props.put("mail.smtps.ssl.trust", "*");
+		//props.put("mail.smtps.quitwait", "false");
+
+		Session mailSession = Session.getDefaultInstance(props);
+		mailSession.setDebug(true);
+		PrintStream ps = new PrintStream(new File("debug.txt"));//output to debug.txt
+		mailSession.setDebugOut(ps);
+		Transport transport = mailSession.getTransport();
+
+		MimeMessage message = new MimeMessage(mailSession);
+		message.setSubject(getSubject());
+		message.setFrom(new InternetAddress(getUsername()));
+		message.addRecipient(Message.RecipientType.TO,
+				new InternetAddress(getRecipient()));
+		message.setText(messageContent);
+
+		transport.connect(SMTP_HOST_NAME, SMTP_HOST_PORT, username, password);
+		transport.sendMessage(message,
+				message.getRecipients(Message.RecipientType.TO));
+		transport.close();
+	}
+	
+	public void encryptedSend() throws Exception{
+		TestBCOpenPGP x = new TestBCOpenPGP();
+		x.encrypt();
+
+		Properties props = new Properties();
+
+		props.put("mail.transport.protocol", "smtps");
+		props.put("mail.smtps.host", SMTP_HOST_NAME);
+		props.put("mail.smtps.auth", "true");
+		//props.put("mail.smtps.ssl.trust", "*");
+		//props.put("mail.smtps.quitwait", "false");
+
+		Session mailSession = Session.getDefaultInstance(props);
+		mailSession.setDebug(true);
+		PrintStream ps = new PrintStream(new File("debug.txt"));//output to debug.txt
+		mailSession.setDebugOut(ps);
+		Transport transport = mailSession.getTransport();
+
+		MimeMessage message = new MimeMessage(mailSession);
+		message.setSubject(getSubject());
+
+		MimeBodyPart messageBodyPart = new MimeBodyPart();
+		String filename = "cypher-text.dat";
+		DataSource source = new FileDataSource(filename);
+		messageBodyPart.setDataHandler(new DataHandler(source));
+		messageBodyPart.setFileName(filename);
+		MimeMultipart multipart = new MimeMultipart();
+		multipart.addBodyPart(messageBodyPart);
+
+		message.setContent(multipart);
+
+		message.addRecipient(Message.RecipientType.TO,
+				new InternetAddress(getRecipient()));
+
+		transport.connect(SMTP_HOST_NAME, SMTP_HOST_PORT, username, password);
+		transport.sendMessage(message,
+				message.getRecipients(Message.RecipientType.TO));
+		transport.close();
+	}
+
 	public String getEncryptedString() throws NoSuchProviderException, IOException, PGPException{
 		String encryptedString;
 		TestBCOpenPGP x = new TestBCOpenPGP();
@@ -245,7 +243,6 @@ public class SecureMailService implements Serializable{
 			//props2.put("mail.imaps.ssl.trust", "*");
 
 			Session session2=Session.getDefaultInstance(props2, null);
-
 
 			@SuppressWarnings("unused")
 			Store store=session2.getStore("imaps");
@@ -339,7 +336,7 @@ public class SecureMailService implements Serializable{
 		return result;
 	}
 
-	public static void writePart(Part p) throws Exception {
+	/*public static void writePart(Part p) throws Exception {
 		if (p instanceof Message)
 			//Call methos writeEnvelope
 			writeEnvelope((Message) p);
@@ -424,7 +421,7 @@ public class SecureMailService implements Serializable{
 				System.out.println(o.toString());
 			}
 		}
-	}
+	}*/
 
 	/*
 	 * This method would print FROM,TO and SUBJECT of the message

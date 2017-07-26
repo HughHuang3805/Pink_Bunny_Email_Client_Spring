@@ -40,10 +40,7 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 	private static final long serialVersionUID = 1L;
 	GUI myGui;
 	SecureMailService emailServer;
-	private static String email = "";
 	private static String objectFileName = "config.ser";
-	public static int counter = 0;
-	public static Vector<String> userEmails = new Vector<String>();
 	public static Vector<SecureMailService> userEmailObjects = new Vector<SecureMailService>();
 	public static Hashtable<String, SecureMailService> emailObjectMap = new Hashtable<String, SecureMailService>();
 
@@ -181,7 +178,6 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 						SecureMailService emailServer;
 						System.out.println("hi");
 						emailServer = (SecureMailService) oi.readObject();
-						counter++;
 						System.out.println(emailServer.getUsername());
 						userEmailObjects.add(emailServer);
 						emailObjectMap.put(emailServer.getUsername(), emailServer);//maps an email with the appropriate email object
@@ -220,23 +216,6 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 		}
 	}
 
-	public void populateEmailTable(){
-		for(int i = 0; i < userEmailObjects.size(); i++){
-			SecureMailService emailServer = userEmailObjects.elementAt(i);
-			new Thread(){
-				@Override
-				public void run(){
-					try {
-						myGui.populateEmailTable(emailServer);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}.start();
-		}
-	}
-	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -291,7 +270,7 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 				if(node.isRoot()) {
 					emailServer = emailObjectMap.get(node.getRoot().toString());
 					myGui.getEmailPopupMenu().show(tree, e.getX(), e.getY());
-					email = node.getUserObject().toString();
+					String email = node.getUserObject().toString();
 					//myGui.emailTextField = new JTextField(email);
 					//emailServer = emailObjectMap.get(email);
 					System.out.println(email);
