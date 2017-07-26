@@ -329,7 +329,7 @@ public class GUI extends JFrame{
 					InputMap im = vertical.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 					im.put(KeyStroke.getKeyStroke("DOWN"), "positiveUnitIncrement");
 					im.put(KeyStroke.getKeyStroke("UP"), "negativeUnitIncrement");
-*/
+					 */
 					rightPanel.removeAll();
 					x.getViewport().add(emailServer.getEmailTable());
 					rightPanel.add(x);
@@ -345,63 +345,64 @@ public class GUI extends JFrame{
 	}
 
 	public void populateEmailTable(SecureMailService emailServer) throws Exception{
-		new Thread(){
-			@Override
-			public void run(){
-				try {
-					Folder messageFolder = emailServer.getMessagesFolder();
-					String[] headerNames = {"Subject", "From", "Date", "Read"};
-					Message[] messages = messageFolder.getMessages();
+		if(emailServer.getEmailTable().getRowCount() == 0){
+			new Thread(){
+				@Override
+				public void run(){
+					try {
+						Folder messageFolder = emailServer.getMessagesFolder();
+						String[] headerNames = {"Subject", "From", "Date", "Read"};
+						Message[] messages = messageFolder.getMessages();
 
-					JTable emailTable = emailServer.getEmailTable();
-					DefaultTableModel model = (DefaultTableModel) emailTable.getModel();
-					model.setColumnIdentifiers(headerNames);
-					emailTable.setFillsViewportHeight(true);
-					emailTable.setFont(new Font("Serif", Font.PLAIN, 14));
-					emailTable.setRowHeight(20);
-					emailTable.setAutoCreateRowSorter(true);
-					emailTable.getTableHeader().setFont(new Font("Serif", Font.BOLD, 20));
-					emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-						public void valueChanged(ListSelectionEvent e) {//things to do if an email is clicked
-							int row = emailTable.getSelectedRow();
-							if(e.getValueIsAdjusting() == false && row != -1){//this makes the event go once
-								System.out.println(row);
-								try {
-									emailServer.getEmailByNumber(row);
-									rightPanel.removeAll();
-									rightPanel.add(emailServer.getRightEmailContentPanel());
-									repaint();
-									revalidate();
-									return;
-								} catch (Exception e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
+						JTable emailTable = emailServer.getEmailTable();
+						DefaultTableModel model = (DefaultTableModel) emailTable.getModel();
+						model.setColumnIdentifiers(headerNames);
+						emailTable.setFillsViewportHeight(true);
+						emailTable.setFont(new Font("Serif", Font.PLAIN, 14));
+						emailTable.setRowHeight(20);
+						//emailTable.setAutoCreateRowSorter(true);
+						emailTable.getTableHeader().setFont(new Font("Serif", Font.BOLD, 20));
+						emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+							public void valueChanged(ListSelectionEvent e) {//things to do if an email is clicked
+								int row = emailTable.getSelectedRow();
+								if(e.getValueIsAdjusting() == false && row != -1){//this makes the event go once
+									System.out.println(row);
+									try {
+										emailServer.getEmailByNumber(row);
+										rightPanel.removeAll();
+										rightPanel.add(emailServer.getRightEmailContentPanel());
+										repaint();
+										revalidate();
+										return;
+									} catch (Exception e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
 								}
 							}
+						});
+						//TableCellRenderer rendererFromHeader = emailTable.getTableHeader().getDefaultRenderer();
+						//JLabel headerLabel = (JLabel) rendererFromHeader;
+						//headerLabel.setHorizontalAlignment(JLabel.CENTER);//center header text
+						int counter = 0;
+						while(counter != messages.length){
+							Message message = messages[messages.length - counter - 1];
+							ByteBuffer bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
+							model.addRow(new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
+							counter++;
+							//rightPanel.removeAll();
+							//x.getViewport().add(emailServer.getEmailTable());
+							//rightPanel.add(x);
+							//repaint();
+							//revalidate();
 						}
-					});
-					//TableCellRenderer rendererFromHeader = emailTable.getTableHeader().getDefaultRenderer();
-					//JLabel headerLabel = (JLabel) rendererFromHeader;
-					//headerLabel.setHorizontalAlignment(JLabel.CENTER);//center header text
-					int counter = 0;
-					while(counter != messages.length){
-						Message message = messages[messages.length - counter - 1];
-						ByteBuffer bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
-						model.addRow(new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
-						counter++;
-						//rightPanel.removeAll();
-						//x.getViewport().add(emailServer.getEmailTable());
-						//rightPanel.add(x);
-						//repaint();
-						//revalidate();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
-			}
-		}.start();
-
+			}.start();
+		}
 
 	}
 
