@@ -40,6 +40,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 import org.bouncycastle.openpgp.PGPException;
 
@@ -59,10 +60,21 @@ public class SecureMailService implements Serializable{
 	private String username = "";  
 	private String password = "";
 	JFrame writeFrame, secureWriteFrame, loginFrame, yubikeyFrame;
-	JTable emailTable;
+	JTable emailTable = new JTable(){
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public boolean isCellEditable(int row, int column) {
+			return false;
+		};
+	};
 	JPanel rightEmailContentPanel;
 	private int emailID;
-
+	private int numberOfMessages = 0;
+	
 	public void encryptedSend() throws Exception{
 		TestBCOpenPGP x = new TestBCOpenPGP();
 		x.encrypt();
@@ -436,7 +448,7 @@ public class SecureMailService implements Serializable{
 
 	}
 
-	public Message[] getMessages() throws Exception {  
+	public Folder getMessagesFolder() throws Exception {  
 		try {  
 			//1) get the session object  
 			Properties props2=System.getProperties();
@@ -459,11 +471,12 @@ public class SecureMailService implements Serializable{
 
 			//4) retrieve the messages from the folder in an array and print it  
 			Message[] messages = emailFolder.getMessages();  
-
+			numberOfMessages = messages.length;
 			//5) close the store and folder objects  
 			//emailFolder.close(false);  
 			//emailStore.close();  
-			return messages;
+			
+			return emailFolder;
 		} catch (MessagingException e) {
 			e.printStackTrace();
 		}  
@@ -621,5 +634,13 @@ public class SecureMailService implements Serializable{
 
 	public void setRightEmailContentPanel(JPanel rightEmailContentPanel) {
 		this.rightEmailContentPanel = rightEmailContentPanel;
+	}
+	
+	public int getNumberOfMessages() {
+		return numberOfMessages;
+	}
+
+	public void setNumberOfMessages(int numberOfMessages) {
+		this.numberOfMessages = numberOfMessages;
 	}
 }

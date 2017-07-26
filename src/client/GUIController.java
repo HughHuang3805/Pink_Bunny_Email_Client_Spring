@@ -198,7 +198,6 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 		}
 	}
 
@@ -343,5 +342,4 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 			treeRoot.addMouseListener(a);
 		}
 	}
-
 }

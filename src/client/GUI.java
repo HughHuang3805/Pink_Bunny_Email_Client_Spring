@@ -25,11 +25,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -39,18 +42,21 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -81,7 +87,7 @@ public class GUI extends JFrame{
 	private JComboBox<String> emailList;
 	private MouseListener a;
 	private ActionListener b;
-
+	private static int counter = 0;
 
 	public GUI(MouseListener a, ActionListener b) throws Exception{
 		setTitle("Pink Bunny E-mail Client");
@@ -240,19 +246,18 @@ public class GUI extends JFrame{
 						//System.out.println("email server is null" + emailServer == null);
 						if(emailServer.isSmtpLoggedIn()){
 							try {
-								Thread rightPanelThread = new Thread(){
-
+								Thread rightPanelEmailDisplayThread = new Thread(){
 									public void run(){
 										try {
-											setDisplayRightPanel(emailServer);
+											Folder messageFolder = emailServer.getMessagesFolder();
+											setDisplayRightPanel(emailServer, messageFolder);
 										} catch (Exception e) {
 											// TODO Auto-generated catch block
 											e.printStackTrace();
 										}
 									}
-
 								};
-								rightPanelThread.start();
+								rightPanelEmailDisplayThread.start();
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -325,7 +330,63 @@ public class GUI extends JFrame{
 		revalidate();
 	}
 
-	@SuppressWarnings({ "serial" })
+	public void setDisplayRightPanel(SecureMailService emailServer, Folder messageFolder) throws Exception{
+
+		String[] headerNames = {"Subject", "From", "Date", "Read"};
+		Message[] messages = messageFolder.getMessages();
+		  
+		JTable emailTable = emailServer.getEmailTable();
+		DefaultTableModel model = (DefaultTableModel) emailTable.getModel();
+		model.setColumnIdentifiers(headerNames);
+		emailTable.setFillsViewportHeight(true);
+		emailTable.setFont(new Font("Serif", Font.PLAIN, 14));
+		emailTable.setRowHeight(20);
+		emailTable.setAutoCreateRowSorter(true);
+		emailTable.getTableHeader().setFont(new Font("Serif", Font.BOLD, 20));
+		emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				int row = emailTable.getSelectedRow();
+				if(e.getValueIsAdjusting() == false && row != -1){//this makes the event go once
+					System.out.println(row);
+					try {
+						emailServer.getEmailByNumber(row);
+						rightPanel.removeAll();
+						rightPanel.add(emailServer.getRightEmailContentPanel());
+						repaint();
+						revalidate();
+						return;
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
+		//TableCellRenderer rendererFromHeader = emailTable.getTableHeader().getDefaultRenderer();
+		//JLabel headerLabel = (JLabel) rendererFromHeader;
+		//headerLabel.setHorizontalAlignment(JLabel.CENTER);//center header text
+		JScrollPane x = new JScrollPane();
+		JScrollBar vertical = x.getVerticalScrollBar();
+		InputMap im = vertical.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		im.put(KeyStroke.getKeyStroke("DOWN"), "positiveUnitIncrement");
+		im.put(KeyStroke.getKeyStroke("UP"), "negativeUnitIncrement");
+		while(counter != messages.length){
+			Message message = messages[messages.length - counter - 1];
+			ByteBuffer bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
+			model.addRow(new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
+			counter++;
+			rightPanel.removeAll();
+			
+			x.getViewport().add(emailServer.getEmailTable());
+			rightPanel.add(x);
+			repaint();
+			revalidate();
+		}
+		repaint();
+		revalidate();
+	}
+
+	/*@SuppressWarnings({ "serial" })
 	public void setDisplayRightPanel(SecureMailService emailServer) throws Exception{
 
 		if(emailServer.getEmailTable() == null){
@@ -351,61 +412,40 @@ public class GUI extends JFrame{
 				};
 			};
 			emailServer.setEmailTable(emailTable);
-			emailTable.getTableHeader().setFont(new Font("Serif", Font.BOLD, 20));
-			//TableCellRenderer rendererFromHeader = emailTable.getTableHeader().getDefaultRenderer();
-			//JLabel headerLabel = (JLabel) rendererFromHeader;
-			//headerLabel.setHorizontalAlignment(JLabel.CENTER);//center header text
-			emailTable.setFillsViewportHeight(true);
-			emailTable.setFont(new Font("Serif", Font.PLAIN, 14));
-			emailTable.setRowHeight(20);
-			emailTable.setAutoCreateRowSorter(true);
-			emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-				public void valueChanged(ListSelectionEvent e) {
-					if(e.getValueIsAdjusting() == false){//this makes the event go once
-						int row = emailTable.getSelectedRow();
-						System.out.println(row);
-						try {
-							emailServer.getEmailByNumber(row);
-							rightPanel.removeAll();
-							rightPanel.add(emailServer.getRightEmailContentPanel());
-							repaint();
-							revalidate();
-							return;
-						} catch (Exception e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-					}
-				}
-			});
-		} else{
-			JTable emailTable = emailServer.getEmailTable();
-			emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-				public void valueChanged(ListSelectionEvent e) {
-					if(e.getValueIsAdjusting() == false){//this makes the event go once
-						int row = emailTable.getSelectedRow();
-						System.out.println(row);
-						try {
-							emailServer.getEmailByNumber(row);
-							rightPanel.removeAll();
-							rightPanel.add(emailServer.getRightEmailContentPanel());
-							repaint();
-							revalidate();
-							return;
-						} catch (Exception e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-					}
-				}
-			});
-			
 		}
+		JTable emailTable = emailServer.getEmailTable();
+		emailTable.getTableHeader().setFont(new Font("Serif", Font.BOLD, 20));
+		//TableCellRenderer rendererFromHeader = emailTable.getTableHeader().getDefaultRenderer();
+		//JLabel headerLabel = (JLabel) rendererFromHeader;
+		//headerLabel.setHorizontalAlignment(JLabel.CENTER);//center header text
+		emailTable.setFillsViewportHeight(true);
+		emailTable.setFont(new Font("Serif", Font.PLAIN, 14));
+		emailTable.setRowHeight(20);
+		emailTable.setAutoCreateRowSorter(true);
+		emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				int row = emailTable.getSelectedRow();
+				if(e.getValueIsAdjusting() == false && row != -1){//this makes the event go once
+					System.out.println(row);
+					try {
+						emailServer.getEmailByNumber(row);
+						rightPanel.removeAll();
+						rightPanel.add(emailServer.getRightEmailContentPanel());
+						repaint();
+						revalidate();
+						return;
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
 		rightPanel.removeAll();
 		rightPanel.add(new JScrollPane(emailServer.getEmailTable()));
 		repaint();
 		revalidate();
-	}
+	}*/
 
 	public void setAddAccountEmailFrame(){//ask for email on emailPanel
 
@@ -457,22 +497,6 @@ public class GUI extends JFrame{
 						emailServer.setUsername(email);//set user email
 						emailServer.setImapHost(imapServer);
 						emailServer.setEmailType(emailType);
-						/*Properties prop = new Properties();
-						OutputStream output = null;
-						try {
-							prop.load(new FileInputStream("userconfig.properties"));
-							output = new FileOutputStream("userconfig.properties");
-							GUIController.counter++;
-							prop.setProperty("email" + GUIController.counter, emailServer.getUsername());
-							prop.store(output, null);
-						} catch (FileNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						 */	
 						setAddAccountPasswordFrame(emailServer);
 						emailFrame.dispose();
 					}
@@ -593,22 +617,6 @@ public class GUI extends JFrame{
 		if(dialogResult == JOptionPane.YES_OPTION){
 			GUIController.userEmailObjects.remove(emailServer);
 			setEmailJTreeLeftPanel(getMouseListener());
-
-			/*Properties prop = new Properties();
-			OutputStream output = null;
-			try {
-				prop.load(new FileInputStream("userconfig.properties"));
-				output = new FileOutputStream("userconfig.properties");
-				prop.remove("email" + (emailServer.getEmailID() + 1));
-				GUIController.counter--;
-				prop.store(output, null);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
 		} 
 	}
 
@@ -1181,9 +1189,12 @@ public class GUI extends JFrame{
 		getMessageItem.addActionListener(a);
 		JMenuItem deleteAccountItem = new JMenuItem("Remove account");
 		deleteAccountItem.addActionListener(a);
+		JMenuItem setupYubikeyItem = new JMenuItem("Setup YubiKey");
+		setupYubikeyItem.addActionListener(a);
 		emailPopupMenu.add(loginItem);
 		emailPopupMenu.add(getMessageItem);
 		emailPopupMenu.add(deleteAccountItem);
+		emailPopupMenu.add(setupYubikeyItem);
 	}
 
 	public String getEmailFromCombobox(){
