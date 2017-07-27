@@ -132,7 +132,6 @@ public class GUI extends JFrame{
 		fileMenu.addSeparator();
 		fileMenu.add(exitItem);
 		//menu1.setFont(new Font("DejaVu Sans Mono", Font.PLAIN, 14));
-
 		toolMenu.add(generateKeyPairItem);
 
 		menuBar.add(fileMenu);
@@ -153,7 +152,7 @@ public class GUI extends JFrame{
 			x.setEnabled(true);
 	}
 
-	public void setWindowListener(){
+	public void setWindowListener(){//before the program exits, write the objects to file
 
 		this.addWindowListener(new java.awt.event.WindowAdapter(){
 			@Override
@@ -343,7 +342,7 @@ public class GUI extends JFrame{
 				@Override
 				public void run(){
 					try {
-						Folder messageFolder = emailServer.getInboxMessagesFolder();
+						Folder messageFolder = emailServer.getInboxMessagesFolder();//get the folder from the emailServer
 						String[] headerNames = {"Subject", "From", "Date", "Read"};
 						Message[] messages = messageFolder.getMessages();
 
@@ -383,11 +382,6 @@ public class GUI extends JFrame{
 							ByteBuffer bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
 							model.addRow(new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
 							counter++;
-							//rightPanel.removeAll();
-							//x.getViewport().add(emailServer.getEmailTable());
-							//rightPanel.add(x);
-							//repaint();
-							//revalidate();
 						}
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
