@@ -16,7 +16,6 @@ import java.util.Scanner;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
-import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -58,6 +57,7 @@ public class SecureMailService implements Serializable{
 	private String mailStoreType = "";  
 	private String username = "";  
 	private String password = "";
+	Store emailStore;
 	JFrame writeFrame, secureWriteFrame, loginFrame, yubikeyFrame;
 	JTable emailTable = new JTable(){
 		/**
@@ -148,6 +148,27 @@ public class SecureMailService implements Serializable{
 		}
 		return true;
 	}
+	
+	public void connectIMAPStore(){
+		
+		try {
+			Properties props2=System.getProperties();
+			props2.setProperty("mail.store.protocol", "imaps");
+			//props2.put("mail.imaps.ssl.trust", "*");
+			Session session2=Session.getDefaultInstance(props2, null);
+			@SuppressWarnings("unused")
+			Store store=session2.getStore("imaps");
+			emailStore=session2.getStore("imaps");
+			emailStore.connect(imapHost, username, password);  
+		} catch (javax.mail.NoSuchProviderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 
 	public void send(String host, String messageContent) throws Exception{
 		Properties props = new Properties();
@@ -236,22 +257,6 @@ public class SecureMailService implements Serializable{
 
 	public void getEmailByNumber(int emailNumber) throws Exception {  
 		try {  
-			//1) get the session object  
-			Properties props2=System.getProperties();
-
-			props2.setProperty("mail.store.protocol", "imaps");
-			//props2.put("mail.imaps.ssl.trust", "*");
-
-			Session session2=Session.getDefaultInstance(props2, null);
-
-			@SuppressWarnings("unused")
-			Store store=session2.getStore("imaps");
-
-
-			//2) create the POP3 store object and connect with the pop server  
-			Store emailStore=session2.getStore("imaps");
-			emailStore.connect(imapHost, username, password);  
-
 			//3) create the folder object and open it  
 			Folder emailFolder = emailStore.getFolder("INBOX");  
 			emailFolder.open(Folder.READ_ONLY);  
@@ -336,122 +341,9 @@ public class SecureMailService implements Serializable{
 		return result;
 	}
 
-	/*public static void writePart(Part p) throws Exception {
-		if (p instanceof Message)
-			//Call methos writeEnvelope
-			writeEnvelope((Message) p);
-
-		System.out.println("----------------------------");
-		System.out.println("CONTENT-TYPE: " + p.getContentType());
-
-		//check if the content is plain text
-		if (p.isMimeType("text/plain")) {
-			System.out.println("This is plain text");
-			System.out.println("---------------------------");
-			System.out.println((String) p.getContent());
-		} 
-		//check if the content has attachment
-		else if (p.isMimeType("multipart/*")) {
-			System.out.println("This is a Multipart");
-			System.out.println("---------------------------");
-			Multipart mp = (Multipart) p.getContent();
-			int count = mp.getCount();
-			for (int i = 0; i < count; i++)
-				writePart(mp.getBodyPart(i));
-		} 
-		//check if the content is a nested message
-		else if (p.isMimeType("message/rfc822")) {
-			System.out.println("This is a Nested Message");
-			System.out.println("---------------------------");
-			writePart((Part) p.getContent());
-		} 
-		//check if the content is an inline image
-		else if (p.isMimeType("image/jpeg")) {
-			System.out.println("--------> image/jpeg");
-			Object o = p.getContent();
-
-			InputStream x = (InputStream) o;
-			// Construct the required byte array
-			System.out.println("x.length = " + x.available());
-			byte[] bArray = new byte[x.available()];
-			int i;
-			while (( ((InputStream) x).available()) > 0) {
-				bArray = new byte[x.available()];
-				int result = (int) (((InputStream) x).read(bArray));
-				if (result == -1)
-					i = 0;
-				break;
-			}
-			FileOutputStream f2 = new FileOutputStream("/tmp/image.jpg");
-			f2.write(bArray);
-		} 
-		else if (p.getContentType().contains("image/")) {
-			System.out.println("content type" + p.getContentType());
-			File f = new File("image" + new Date().getTime() + ".jpg");
-			DataOutputStream output = new DataOutputStream(
-					new BufferedOutputStream(new FileOutputStream(f)));
-			com.sun.mail.util.BASE64DecoderStream test = 
-					(com.sun.mail.util.BASE64DecoderStream) p
-					.getContent();
-			byte[] buffer = new byte[1024];
-			int bytesRead;
-			while ((bytesRead = test.read(buffer)) != -1) {
-				output.write(buffer, 0, bytesRead);
-			}
-		} 
-		else {
-			Object o = p.getContent();
-			if (o instanceof String) {
-				System.out.println("This is a string");
-				System.out.println("---------------------------");
-				System.out.println((String) o);
-			} 
-			else if (o instanceof InputStream) {
-				System.out.println("This is just an input stream");
-				System.out.println("---------------------------");
-				InputStream is = (InputStream) o;
-				is = (InputStream) o;
-				int c;
-				while ((c = is.read()) != -1)
-					System.out.write(c);
-			} 
-			else {
-				System.out.println("This is an unknown type");
-				System.out.println("---------------------------");
-				System.out.println(o.toString());
-			}
-		}
-	}*/
-
-	/*
-	 * This method would print FROM,TO and SUBJECT of the message
-	 */
-	public static void writeEnvelope(Message m) throws Exception {
-		System.out.println("This is the message envelope");
-		System.out.println("---------------------------");
-		Address[] a;
-
-		// FROM
-		if ((a = m.getFrom()) != null) {
-			for (int j = 0; j < a.length; j++)
-				System.out.println("FROM: " + a[j].toString());
-		}
-
-		// TO
-		if ((a = m.getRecipients(Message.RecipientType.TO)) != null) {
-			for (int j = 0; j < a.length; j++)
-				System.out.println("TO: " + a[j].toString());
-		}
-
-		// SUBJECT
-		if (m.getSubject() != null)
-			System.out.println("SUBJECT: " + m.getSubject());
-
-	}
-
-	public Folder getMessagesFolder() throws Exception {  
+	public Folder getInboxMessagesFolder() throws Exception {  
 		try {  
-			//1) get the session object  
+			/*//1) get the session object  
 			Properties props2=System.getProperties();
 
 			props2.setProperty("mail.store.protocol", "imaps");
@@ -464,8 +356,11 @@ public class SecureMailService implements Serializable{
 
 			//2) create the POP3 store object and connect with the pop server  
 			Store emailStore=session2.getStore("imaps");
-			emailStore.connect(imapHost, username, password);  
-
+			emailStore.connect(imapHost, username, password);  */
+			Folder[] f = emailStore.getDefaultFolder().list("*");
+			for(Folder fd:f)
+			    System.out.println(">> "+fd.getName());
+			
 			//3) create the folder object and open it  
 			Folder emailFolder = emailStore.getFolder("INBOX");  
 			emailFolder.open(Folder.READ_ONLY);  
@@ -476,7 +371,6 @@ public class SecureMailService implements Serializable{
 			//5) close the store and folder objects  
 			//emailFolder.close(false);  
 			//emailStore.close();  
-			
 			return emailFolder;
 		} catch (MessagingException e) {
 			e.printStackTrace();

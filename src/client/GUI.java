@@ -344,7 +344,7 @@ public class GUI extends JFrame{
 				@Override
 				public void run(){
 					try {
-						Folder messageFolder = emailServer.getMessagesFolder();
+						Folder messageFolder = emailServer.getInboxMessagesFolder();
 						String[] headerNames = {"Subject", "From", "Date", "Read"};
 						Message[] messages = messageFolder.getMessages();
 
@@ -586,6 +586,7 @@ public class GUI extends JFrame{
 							GUIController.emailObjectMap.put(emailServer.getUsername(), emailServer);
 							setEmailJTreeLeftPanel(getMouseListener());
 							emailServer.setSmtpLoggedIn(true);
+							emailServer.connectIMAPStore();
 							populateEmailTable(emailServer);//start populating this emailServer's emailtable as soon it is logged in
 							passwordFrame.dispose();
 						} else{
