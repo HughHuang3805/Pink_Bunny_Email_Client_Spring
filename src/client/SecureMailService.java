@@ -57,7 +57,6 @@ public class SecureMailService implements Serializable{
 	private String mailStoreType = "";  
 	private String username = "";  
 	private String password = "";
-	Store emailStore;
 	JFrame writeFrame, secureWriteFrame, loginFrame, yubikeyFrame;
 	JTable emailTable = new JTable(){
 		/**
@@ -148,27 +147,6 @@ public class SecureMailService implements Serializable{
 		}
 		return true;
 	}
-	
-	public void connectIMAPStore(){
-		
-		try {
-			Properties props2=System.getProperties();
-			props2.setProperty("mail.store.protocol", "imaps");
-			//props2.put("mail.imaps.ssl.trust", "*");
-			Session session2=Session.getDefaultInstance(props2, null);
-			@SuppressWarnings("unused")
-			Store store=session2.getStore("imaps");
-			emailStore=session2.getStore("imaps");
-			emailStore.connect(imapHost, username, password);  
-		} catch (javax.mail.NoSuchProviderException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
 
 	public void send(String host, String messageContent) throws Exception{
 		Properties props = new Properties();
@@ -257,6 +235,22 @@ public class SecureMailService implements Serializable{
 
 	public void getEmailByNumber(int emailNumber) throws Exception {  
 		try {  
+			//1) get the session object  
+			Properties props2=System.getProperties();
+
+			props2.setProperty("mail.store.protocol", "imaps");
+			//props2.put("mail.imaps.ssl.trust", "*");
+
+			Session session2=Session.getDefaultInstance(props2, null);
+
+			@SuppressWarnings("unused")
+			Store store=session2.getStore("imaps");
+
+
+			//2) create the POP3 store object and connect with the pop server  
+			Store emailStore=session2.getStore("imaps");
+			emailStore.connect(imapHost, username, password);  
+
 			//3) create the folder object and open it  
 			Folder emailFolder = emailStore.getFolder("INBOX");  
 			emailFolder.open(Folder.READ_ONLY);  
@@ -343,7 +337,7 @@ public class SecureMailService implements Serializable{
 
 	public Folder getInboxMessagesFolder() throws Exception {  
 		try {  
-			/*//1) get the session object  
+			//1) get the session object  
 			Properties props2=System.getProperties();
 
 			props2.setProperty("mail.store.protocol", "imaps");
@@ -356,7 +350,8 @@ public class SecureMailService implements Serializable{
 
 			//2) create the POP3 store object and connect with the pop server  
 			Store emailStore=session2.getStore("imaps");
-			emailStore.connect(imapHost, username, password);  */
+			emailStore.connect(imapHost, username, password);  
+
 			Folder[] f = emailStore.getDefaultFolder().list("*");
 			for(Folder fd:f)
 			    System.out.println(">> "+fd.getName());
@@ -371,6 +366,9 @@ public class SecureMailService implements Serializable{
 			//5) close the store and folder objects  
 			//emailFolder.close(false);  
 			//emailStore.close();  
+			
+			
+			
 			return emailFolder;
 		} catch (MessagingException e) {
 			e.printStackTrace();

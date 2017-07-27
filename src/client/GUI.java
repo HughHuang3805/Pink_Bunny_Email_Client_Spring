@@ -311,7 +311,6 @@ public class GUI extends JFrame{
 
 		repaint();
 		revalidate();
-		System.out.println("done left panel");
 	}
 
 	public void setDisplayRightPanel(SecureMailService emailServer) throws Exception{
@@ -586,7 +585,7 @@ public class GUI extends JFrame{
 							GUIController.emailObjectMap.put(emailServer.getUsername(), emailServer);
 							setEmailJTreeLeftPanel(getMouseListener());
 							emailServer.setSmtpLoggedIn(true);
-							emailServer.connectIMAPStore();
+							//emailServer.connectIMAPStore();
 							populateEmailTable(emailServer);//start populating this emailServer's emailtable as soon it is logged in
 							passwordFrame.dispose();
 						} else{
@@ -636,6 +635,11 @@ public class GUI extends JFrame{
 		if(dialogResult == JOptionPane.YES_OPTION){
 			GUIController.userEmailObjects.remove(emailServer);
 			setEmailJTreeLeftPanel(getMouseListener());
+			if(emailServer.emailTable.isFocusable()){
+				rightPanel.removeAll();
+				repaint();
+				revalidate();
+			}
 		} 
 	}
 
@@ -677,8 +681,6 @@ public class GUI extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				emailServer.setPassword(new String(passwordText.getPassword()));
-				System.out.println(emailServer.getUsername());
-				System.out.println(new String(passwordText.getPassword()));
 				System.out.println("Email server name: " + emailServer.getUsername());
 				HttpClient yubikeyClient = HttpClients.createDefault();
 				//https://boiling-fjord-84786.herokuapp.com/yubikey
