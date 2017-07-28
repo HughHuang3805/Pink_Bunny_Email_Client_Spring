@@ -115,28 +115,10 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 
 		case "Get new messages":
 			try {
-				BufferedReader br = new BufferedReader(new FileReader("dec-plain-text.txt"));
-				String message = "";
-
-				String line = null;
-				while ((line = br.readLine()) != null) {
-					message = message + line + "\n";
-				}
-				br.close();
-				//myGui.textAreaPanel.setVisible(false);
-				myGui.repaint();
-				//myGui.setReceivedEmailTextArea(message);
-				myGui.repaint();
-				JOptionPane.showMessageDialog(myGui, "Message received!");
-			} catch (FileNotFoundException e1) {
+				myGui.populateEmailTable(emailServer);
+			} catch (Exception e2) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e2.printStackTrace();
 			}
 			break;
 

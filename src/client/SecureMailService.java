@@ -72,6 +72,7 @@ public class SecureMailService implements Serializable{
 	JPanel rightEmailContentPanel;
 	private int emailID;
 	private int numberOfMessages = 0;
+	private int emailCounter = 0;
 	
 	public boolean connect() throws GeneralSecurityException{
 		Properties props = new Properties();
@@ -535,5 +536,13 @@ public class SecureMailService implements Serializable{
 
 	public void setNumberOfMessages(int numberOfMessages) {
 		this.numberOfMessages = numberOfMessages;
+	}
+
+	public int getEmailCounter() {
+		return emailCounter;
+	}
+
+	public void setEmailCounter(int emailCounter) {
+		this.emailCounter = emailCounter;
 	}
 }

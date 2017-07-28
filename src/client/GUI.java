@@ -317,11 +317,6 @@ public class GUI extends JFrame{
 			public void run(){
 				try {
 					JScrollPane x = new JScrollPane();
-					/*JScrollBar vertical = x.getVerticalScrollBar();
-					InputMap im = vertical.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-					im.put(KeyStroke.getKeyStroke("DOWN"), "positiveUnitIncrement");
-					im.put(KeyStroke.getKeyStroke("UP"), "negativeUnitIncrement");
-					 */
 					rightPanel.removeAll();
 					x.getViewport().add(emailServer.getEmailTable());
 					rightPanel.add(x);
@@ -337,16 +332,18 @@ public class GUI extends JFrame{
 	}
 
 	public void populateEmailTable(SecureMailService emailServer) throws Exception{
-		if(emailServer.getEmailTable().getRowCount() == 0){
-			new Thread(){
-				@Override
-				public void run(){
-					try {
+		new Thread(){
+			@Override
+			public void run(){
+				try{
+					JTable emailTable = emailServer.getEmailTable();
+					System.out.println(emailTable.getRowCount());
+					if(emailTable.getRowCount() == 0){//if the table has nothing
 						Folder messageFolder = emailServer.getInboxMessagesFolder();//get the folder from the emailServer
 						String[] headerNames = {"Subject", "From", "Date", "Read"};
 						Message[] messages = messageFolder.getMessages();
 
-						JTable emailTable = emailServer.getEmailTable();
+						//JTable emailTable = emailServer.getEmailTable();
 						DefaultTableModel model = (DefaultTableModel) emailTable.getModel();
 						model.setColumnIdentifiers(headerNames);
 						emailTable.setFillsViewportHeight(true);
@@ -376,23 +373,66 @@ public class GUI extends JFrame{
 						//TableCellRenderer rendererFromHeader = emailTable.getTableHeader().getDefaultRenderer();
 						//JLabel headerLabel = (JLabel) rendererFromHeader;
 						//headerLabel.setHorizontalAlignment(JLabel.CENTER);//center header text
-						int counter = 0;
+						int counter = emailServer.getEmailCounter();
 						while(counter != messages.length){
 							Message message = messages[messages.length - counter - 1];
 							ByteBuffer bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
 							model.addRow(new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
 							counter++;
 						}
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						emailServer.setEmailCounter(counter);
+					} else{
+						emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+							public void valueChanged(ListSelectionEvent e) {//things to do if an email is clicked
+								int row = emailTable.getSelectedRow();
+								if(e.getValueIsAdjusting() == false && row != -1){//this makes the event go once
+									System.out.println(row);
+									try {
+										emailServer.getEmailByNumber(row);
+										rightPanel.removeAll();
+										rightPanel.add(emailServer.getRightEmailContentPanel());
+										repaint();
+										revalidate();
+										return;
+									} catch (Exception e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+								}
+							}
+						});
+						Folder messageFolder = emailServer.getInboxMessagesFolder();//get the folder from the emailServer
+						Message[] messages;
+						DefaultTableModel model;
+						int counter;
+						Message message;
+						int emailNumber;
+						ByteBuffer bb;
+						while(true){
+							messages = messageFolder.getMessages();//get the message of this folder
+							model = (DefaultTableModel) emailTable.getModel();
+							counter = emailServer.getEmailCounter();//see how many emails there are in this emailServer
+							System.out.println(counter);
+							System.out.println(messages.length);
+							while(counter != messages.length){//check for new emails
+								emailNumber = messages.length - counter;
+								message = messages[messages.length - emailNumber];//get the new emails
+								bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
+								//then insert it in the front of the emailTable
+								model.insertRow(0, new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
+								counter++;
+							}
+							emailServer.setEmailCounter(counter);
+							sleep(30000);//this is 30 seconds
+						}
+
 					}
+				} catch (Exception e){
+
 				}
-			}.start();
-		}
-
+			}
+		}.start();
 	}
-
 	/*@SuppressWarnings({ "serial" })
 	public void setDisplayRightPanel(SecureMailService emailServer) throws Exception{
 
