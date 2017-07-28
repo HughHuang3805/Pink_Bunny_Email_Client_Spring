@@ -322,6 +322,7 @@ public class GUI extends JFrame{
 					rightPanel.add(x);
 					repaint();
 					revalidate();
+					System.out.println("Repainted right panel");
 					//sleep(10000);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -337,6 +338,25 @@ public class GUI extends JFrame{
 			public void run(){
 				try{
 					JTable emailTable = emailServer.getEmailTable();
+					emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {//add listener to the table
+						public void valueChanged(ListSelectionEvent e) {//things to do if an email is clicked
+							int row = emailTable.getSelectedRow();
+							if(e.getValueIsAdjusting() == false && row != -1){//this makes the event go once
+								System.out.println(row);
+								try {
+									emailServer.getEmailByNumber(row);
+									rightPanel.removeAll();
+									rightPanel.add(emailServer.getRightEmailContentPanel());
+									repaint();
+									revalidate();
+									return;
+								} catch (Exception e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+							}
+						}
+					});
 					System.out.println(emailTable.getRowCount());
 					if(emailTable.getRowCount() == 0){//if the table has nothing
 						Folder messageFolder = emailServer.getInboxMessagesFolder();//get the folder from the emailServer
@@ -351,25 +371,6 @@ public class GUI extends JFrame{
 						emailTable.setRowHeight(20);
 						//emailTable.setAutoCreateRowSorter(true);
 						emailTable.getTableHeader().setFont(new Font("Serif", Font.BOLD, 20));
-						emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-							public void valueChanged(ListSelectionEvent e) {//things to do if an email is clicked
-								int row = emailTable.getSelectedRow();
-								if(e.getValueIsAdjusting() == false && row != -1){//this makes the event go once
-									System.out.println(row);
-									try {
-										emailServer.getEmailByNumber(row);
-										rightPanel.removeAll();
-										rightPanel.add(emailServer.getRightEmailContentPanel());
-										repaint();
-										revalidate();
-										return;
-									} catch (Exception e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									}
-								}
-							}
-						});
 						//TableCellRenderer rendererFromHeader = emailTable.getTableHeader().getDefaultRenderer();
 						//JLabel headerLabel = (JLabel) rendererFromHeader;
 						//headerLabel.setHorizontalAlignment(JLabel.CENTER);//center header text
@@ -381,33 +382,16 @@ public class GUI extends JFrame{
 							counter++;
 						}
 						emailServer.setEmailCounter(counter);
-					} else{
-						emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-							public void valueChanged(ListSelectionEvent e) {//things to do if an email is clicked
-								int row = emailTable.getSelectedRow();
-								if(e.getValueIsAdjusting() == false && row != -1){//this makes the event go once
-									System.out.println(row);
-									try {
-										emailServer.getEmailByNumber(row);
-										rightPanel.removeAll();
-										rightPanel.add(emailServer.getRightEmailContentPanel());
-										repaint();
-										revalidate();
-										return;
-									} catch (Exception e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									}
-								}
-							}
-						});
-						Folder messageFolder = emailServer.getInboxMessagesFolder();//get the folder from the emailServer
-						Message[] messages;
-						DefaultTableModel model;
-						int counter;
-						Message message;
-						int emailNumber;
-						ByteBuffer bb;
+					} //else{
+					Folder messageFolder = emailServer.getInboxMessagesFolder();//get the folder from the emailServer
+					Message[] messages;
+					DefaultTableModel model;
+					int counter;
+					Message message;
+					int emailNumber;
+					ByteBuffer bb;
+					//wait for the same object, sleep in the mean time
+					synchronized(emailServer){
 						while(true){
 							messages = messageFolder.getMessages();//get the message of this folder
 							model = (DefaultTableModel) emailTable.getModel();
@@ -423,76 +407,18 @@ public class GUI extends JFrame{
 								counter++;
 							}
 							emailServer.setEmailCounter(counter);
-							sleep(30000);//this is 30 seconds
+							//emailServer.wait();
+							sleep(15000);//this is 15 seconds
 						}
-
 					}
-				} catch (Exception e){
 
+					//}
+				} catch (Exception e){
+					System.out.println("Exception in populating email table.");
 				}
 			}
 		}.start();
 	}
-	/*@SuppressWarnings({ "serial" })
-	public void setDisplayRightPanel(SecureMailService emailServer) throws Exception{
-
-		if(emailServer.getEmailTable() == null){
-			JTable emailTable; 
-			String[] columnNames = {"Subject", "From", "Date", "Read"};
-			Message[] messages = emailServer.getMessages();
-			String[][] data = new String[messages.length][4] ;
-			//messages.length - 1
-			for (int i = messages.length - 1; i >= 0 ; i--) {  
-				Message message = messages[i];  
-
-				data[(messages.length - 1) - i][0] = message.getSubject();
-				ByteBuffer bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
-				//Charset.forName("UTF-8").decode(bb).toString();
-				//String address = new String(message.getFrom().toString().getBytes());
-				data[(messages.length - 1) - i][1] = Charset.forName("UTF-8").decode(bb).toString();
-				data[(messages.length - 1) - i][2] = message.getReceivedDate().toString();
-			}  
-			emailTable = new JTable(data, columnNames){
-				@Override
-				public boolean isCellEditable(int row, int column) {
-					return false;
-				};
-			};
-			emailServer.setEmailTable(emailTable);
-		}
-		JTable emailTable = emailServer.getEmailTable();
-		emailTable.getTableHeader().setFont(new Font("Serif", Font.BOLD, 20));
-		//TableCellRenderer rendererFromHeader = emailTable.getTableHeader().getDefaultRenderer();
-		//JLabel headerLabel = (JLabel) rendererFromHeader;
-		//headerLabel.setHorizontalAlignment(JLabel.CENTER);//center header text
-		emailTable.setFillsViewportHeight(true);
-		emailTable.setFont(new Font("Serif", Font.PLAIN, 14));
-		emailTable.setRowHeight(20);
-		emailTable.setAutoCreateRowSorter(true);
-		emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				int row = emailTable.getSelectedRow();
-				if(e.getValueIsAdjusting() == false && row != -1){//this makes the event go once
-					System.out.println(row);
-					try {
-						emailServer.getEmailByNumber(row);
-						rightPanel.removeAll();
-						rightPanel.add(emailServer.getRightEmailContentPanel());
-						repaint();
-						revalidate();
-						return;
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
-			}
-		});
-		rightPanel.removeAll();
-		rightPanel.add(new JScrollPane(emailServer.getEmailTable()));
-		repaint();
-		revalidate();
-	}*/
 
 	public void setAddAccountEmailFrame(){//ask for email on emailPanel
 

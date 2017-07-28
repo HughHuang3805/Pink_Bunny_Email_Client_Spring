@@ -115,7 +115,11 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 
 		case "Get new messages":
 			try {
-				myGui.populateEmailTable(emailServer);
+				//interrupt the sleeping populateEmailTables, wake them up and let them work
+				synchronized(emailServer){
+					emailServer.notify();
+					//myGui.populateEmailTable(emailServer);
+				}
 			} catch (Exception e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
