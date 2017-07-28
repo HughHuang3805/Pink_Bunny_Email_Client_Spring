@@ -406,7 +406,7 @@ public class GUI extends JFrame{
 							counter++;
 						}
 						emailServer.setEmailCounter(counter);
-					} //else{
+					}
 					Folder messageFolder = emailServer.getInboxMessagesFolder();//get the folder from the emailServer
 					Message[] messages;
 					DefaultTableModel model;
@@ -435,8 +435,6 @@ public class GUI extends JFrame{
 							sleep(15000);//15 seconds before checking for new emails
 						}
 					}
-
-					//}
 				} catch (Exception e){
 					System.out.println("Exception in populating email table.");
 				}
