@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
@@ -170,8 +171,8 @@ public class GUI extends JFrame{
 	public void setMainPanel(MouseListener a) throws Exception{
 		mainPanel.setLayout(new GridLayout());
 		leftPanel.setLayout(new GridBagLayout());
-		
-		
+
+
 		mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);//split the middle
 		rightSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);//split the middle 
 		setEmailJTreeLeftPanel(a);//for left panel email lists
@@ -183,7 +184,7 @@ public class GUI extends JFrame{
 
 		rightSplitPane.setDividerSize(4);//top is email table
 		rightSplitPane.setResizeWeight(0.5);//bottom is email preview
-		
+
 		mainSplitPane.setLeftComponent(leftPanelScrollPane);//left component in the split pane is the left panel
 		mainSplitPane.setRightComponent(rightSplitPane);//right component in the split pane is the right panel
 		mainSplitPane.setDividerSize(2);
@@ -312,7 +313,7 @@ public class GUI extends JFrame{
 		mainSplitPane.setRightComponent(rightSplitPane);//right component in the split pane is the right panel
 		mainSplitPane.setDividerSize(2);
 		//splitPane.setDividerLocation(0.75);
-		
+
 
 		repaint();
 		revalidate();
@@ -353,7 +354,7 @@ public class GUI extends JFrame{
 					JTable emailTable = emailServer.getEmailTable();
 					JPanel rightPanelBottom = emailServer.getRightPanelBottom();
 					emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {//respond to table event
-					  	//add listener to the table
+						//add listener to the table
 						public void valueChanged(ListSelectionEvent e) {//things to do if an email is clicked
 							int row = emailTable.getSelectedRow();
 							if(e.getValueIsAdjusting() == false && row != -1){//this makes the event go once
@@ -377,9 +378,9 @@ public class GUI extends JFrame{
 						}
 					});
 					emailTable.addMouseListener(new java.awt.event.MouseAdapter() {//respond to mouse event
-					    @Override
-					    public void mouseClicked(java.awt.event.MouseEvent e) {
-					    	int row = emailTable.getSelectedRow();
+						@Override
+						public void mouseClicked(java.awt.event.MouseEvent e) {
+							int row = emailTable.getSelectedRow();
 							if(e.getClickCount() == 2 && row != -1){//this makes the event go once
 								System.out.println(row);
 								try {
@@ -403,7 +404,7 @@ public class GUI extends JFrame{
 									e1.printStackTrace();
 								}
 							}
-					    }
+						}
 					});
 					System.out.println(emailTable.getRowCount());
 					if(emailTable.getRowCount() == 0){//if the table has nothing
@@ -426,8 +427,21 @@ public class GUI extends JFrame{
 						while(counter != messages.length){
 							Message message = messages[messages.length - counter - 1];
 							ByteBuffer bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
-							model.addRow(new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
-							counter++;
+							if(! message.isSet(Flags.Flag.SEEN)){
+								bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
+								//then insert it in the front of the emailTable
+								JLabel sender = new JLabel(Charset.forName("UTF-8").decode(bb).toString());
+								sender.setText("<html><b>"+ sender.getText() + "</b></html>");
+								JLabel subject = new JLabel(message.getSubject());
+								subject.setText("<html><b>"+ subject.getText() + "</b></html>");
+								JLabel receivedDate = new JLabel(message.getReceivedDate().toString());
+								receivedDate.setText("<html><b>"+ receivedDate.getText() + "</b></html>");
+								model.addRow(new Object[]{subject.getText(), sender.getText(), receivedDate.getText()});
+								counter++;
+							} else{
+								model.addRow(new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
+								counter++;
+							}
 						}
 						emailServer.setEmailCounter(counter);
 					}
@@ -449,10 +463,23 @@ public class GUI extends JFrame{
 							while(counter != messages.length){//check for new emails
 								emailNumber = messages.length - counter;
 								message = messages[messages.length - emailNumber];//get the new emails
-								bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
-								//then insert it in the front of the emailTable
-								model.insertRow(0, new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
-								counter++;
+								if(!message.isSet(Flags.Flag.SEEN)){//bold text if it is unread
+									bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
+									//then insert it in the front of the emailTable
+									JLabel sender = new JLabel(Charset.forName("UTF-8").decode(bb).toString());
+									sender.setText("<html><b>"+ sender.getText() + "</b></html>");
+									JLabel subject = new JLabel(message.getSubject());
+									subject.setText("<html><b>"+ subject.getText() + "</b></html>");
+									JLabel receivedDate = new JLabel(message.getReceivedDate().toString());
+									receivedDate.setText("<html><b>"+ receivedDate.getText() + "</b></html>");
+									model.insertRow(0, new Object[]{subject.getText(), sender.getText(), receivedDate.getText()});
+									counter++;
+								} else{
+									bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
+									//then insert it in the front of the emailTable
+									model.insertRow(0, new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
+									counter++;
+								}
 							}
 							emailServer.setEmailCounter(counter);
 							//emailServer.wait();

@@ -268,7 +268,7 @@ public class SecureMailService implements Serializable{
 
 			//3) create the folder object and open it  
 			Folder emailFolder = emailStore.getFolder("INBOX");  
-			emailFolder.open(Folder.READ_ONLY);  
+			emailFolder.open(Folder.READ_WRITE);  
 
 			//4) retrieve the messages from the folder in an array and print it  
 			Message[] messages = emailFolder.getMessages();  
