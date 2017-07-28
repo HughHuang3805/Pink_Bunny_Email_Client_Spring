@@ -338,7 +338,8 @@ public class GUI extends JFrame{
 			public void run(){
 				try{
 					JTable emailTable = emailServer.getEmailTable();
-					emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {//add listener to the table
+					/*emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {//respond to table event
+					  	//add listener to the table
 						public void valueChanged(ListSelectionEvent e) {//things to do if an email is clicked
 							int row = emailTable.getSelectedRow();
 							if(e.getValueIsAdjusting() == false && row != -1){//this makes the event go once
@@ -347,6 +348,7 @@ public class GUI extends JFrame{
 									emailServer.getEmailByNumber(row);
 									rightPanel.removeAll();
 									rightPanel.add(emailServer.getRightEmailContentPanel());
+									//emailTable.clearSelection();
 									repaint();
 									revalidate();
 									return;
@@ -356,6 +358,27 @@ public class GUI extends JFrame{
 								}
 							}
 						}
+					});*/
+					emailTable.addMouseListener(new java.awt.event.MouseAdapter() {//respond to mouse event
+					    @Override
+					    public void mouseClicked(java.awt.event.MouseEvent e) {
+					    	int row = emailTable.getSelectedRow();
+							if(e.getClickCount() == 2 && row != -1){//this makes the event go once
+								System.out.println(row);
+								try {
+									emailServer.getEmailByNumber(row);
+									rightPanel.removeAll();
+									rightPanel.add(emailServer.getRightEmailContentPanel());
+									//emailTable.clearSelection();
+									repaint();
+									revalidate();
+									return;
+								} catch (Exception e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+							}
+					    }
 					});
 					System.out.println(emailTable.getRowCount());
 					if(emailTable.getRowCount() == 0){//if the table has nothing
@@ -408,7 +431,7 @@ public class GUI extends JFrame{
 							}
 							emailServer.setEmailCounter(counter);
 							//emailServer.wait();
-							sleep(15000);//this is 15 seconds
+							sleep(15000);//15 seconds before checking for new emails
 						}
 					}
 
