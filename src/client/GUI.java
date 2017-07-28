@@ -73,11 +73,11 @@ public class GUI extends JFrame{
 	private Vector<JTree> trees = new Vector<JTree>();
 	private JPanel mainPanel = new JPanel();
 	private JPanel leftPanel = new JPanel();
-	private JPanel rightPanel = new JPanel();
 	private JMenu fileMenu = new JMenu("File");
 	private JMenu toolMenu = new JMenu("Source");
 	private JPopupMenu emailPopupMenu = new JPopupMenu();
-	private JSplitPane splitPane;
+	private JSplitPane mainSplitPane;
+	private JSplitPane rightSplitPane;
 	private JScrollPane jspForBody;
 	private JComboBox<String> emailList;
 	private MouseListener a;
@@ -170,22 +170,30 @@ public class GUI extends JFrame{
 	public void setMainPanel(MouseListener a) throws Exception{
 		mainPanel.setLayout(new GridLayout());
 		leftPanel.setLayout(new GridBagLayout());
-		rightPanel.setLayout(new GridLayout());
-
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);//split the middle
+		
+		
+		mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);//split the middle
+		rightSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);//split the middle 
 		setEmailJTreeLeftPanel(a);//for left panel email lists
 
 		leftPanel.setBorder(new LineBorder(Color.BLACK));
-		rightPanel.setBorder(new LineBorder(Color.BLACK));
+		//rightPanelTop.setBorder(new LineBorder(Color.BLACK));
 
 		JScrollPane leftPanelScrollPane = new JScrollPane(leftPanel);
 		leftPanelScrollPane.getVerticalScrollBar().setUnitIncrement(16);//scrolling speed
-		splitPane.setLeftComponent(leftPanelScrollPane);//left component in the split pane is the left panel
-		splitPane.setRightComponent(rightPanel);//right component in the split pane is the right panel
-		splitPane.setDividerSize(2);
+		//rightSplitPane.setTopComponent(rightPanelTop);
+		//rightSplitPane.setBottomComponent(rightPanelBottom);
+		rightSplitPane.setDividerSize(2);
+		rightSplitPane.setResizeWeight(0.5);
+		//rightSplitPane.setDividerLocation(0.5);
+		
+		//mainSplitPane.setDividerLocation(mainSplitPane.getDividerLocation());
+		mainSplitPane.setLeftComponent(leftPanelScrollPane);//left component in the split pane is the left panel
+		mainSplitPane.setRightComponent(rightSplitPane);//right component in the split pane is the right panel
+		mainSplitPane.setDividerSize(2);
 		//splitPane.setDividerLocation(0.75);
-		splitPane.setResizeWeight(0.01);
-		mainPanel.add(splitPane);
+		mainSplitPane.setResizeWeight(0.01);
+		mainPanel.add(mainSplitPane);
 
 		add(mainPanel);
 		repaint();
@@ -302,11 +310,13 @@ public class GUI extends JFrame{
 
 		JScrollPane leftPanelScrollPane = new JScrollPane(leftPanel);
 		leftPanelScrollPane.getVerticalScrollBar().setUnitIncrement(16);//scrolling speed
-		splitPane.setLeftComponent(leftPanelScrollPane);//left component in the split pane is the left panel
-		splitPane.setRightComponent(rightPanel);//right component in the split pane is the right panel
-		splitPane.setDividerSize(2);
+		//mainSplitPane.setDividerLocation(mainSplitPane.getDividerLocation());
+		mainSplitPane.setResizeWeight(0.01);
+		mainSplitPane.setLeftComponent(leftPanelScrollPane);//left component in the split pane is the left panel
+		mainSplitPane.setRightComponent(rightSplitPane);//right component in the split pane is the right panel
+		mainSplitPane.setDividerSize(2);
 		//splitPane.setDividerLocation(0.75);
-		splitPane.setResizeWeight(0.01);
+		
 
 		repaint();
 		revalidate();
@@ -318,9 +328,15 @@ public class GUI extends JFrame{
 			public void run(){
 				try {
 					JScrollPane x = new JScrollPane();
-					rightPanel.removeAll();
+					JPanel rightPanelTop = emailServer.getRightPanelTop();
+					JPanel rightPanelBottom = emailServer.getRightPanelBottom();
+					rightPanelTop.removeAll();
 					x.getViewport().add(emailServer.getEmailTable());
-					rightPanel.add(x);
+					rightPanelTop.add(x);
+					//rightSplitPane.setDividerLocation(rightSplitPane.getDividerLocation());
+					rightSplitPane.setTopComponent(rightPanelTop);
+					rightSplitPane.setBottomComponent(rightPanelBottom);
+					//rightSplitPane.setEnabled(false);
 					repaint();
 					revalidate();
 					System.out.println("Repainted right panel");
@@ -339,7 +355,8 @@ public class GUI extends JFrame{
 			public void run(){
 				try{
 					JTable emailTable = emailServer.getEmailTable();
-					/*emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {//respond to table event
+					JPanel rightPanelBottom = emailServer.getRightPanelBottom();
+					emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {//respond to table event
 					  	//add listener to the table
 						public void valueChanged(ListSelectionEvent e) {//things to do if an email is clicked
 							int row = emailTable.getSelectedRow();
@@ -347,9 +364,12 @@ public class GUI extends JFrame{
 								System.out.println(row);
 								try {
 									emailServer.getEmailByNumber(row);
-									rightPanel.removeAll();
-									rightPanel.add(emailServer.getRightEmailContentPanel());
+									rightPanelBottom.removeAll();
+									rightPanelBottom.add(emailServer.getRightEmailContentPanel());
 									//emailTable.clearSelection();
+									rightSplitPane.setDividerLocation(rightSplitPane.getDividerLocation());
+									rightSplitPane.setBottomComponent(rightPanelBottom);
+									System.out.println(rightSplitPane.getDividerLocation() + " location");
 									repaint();
 									revalidate();
 									return;
@@ -359,7 +379,7 @@ public class GUI extends JFrame{
 								}
 							}
 						}
-					});*/
+					});
 					emailTable.addMouseListener(new java.awt.event.MouseAdapter() {//respond to mouse event
 					    @Override
 					    public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -368,8 +388,14 @@ public class GUI extends JFrame{
 								System.out.println(row);
 								try {
 									emailServer.getEmailByNumber(row);
-									rightPanel.removeAll();
-									rightPanel.add(emailServer.getRightEmailContentPanel());
+									/*rightPanel.removeAll();
+									rightPanel.add(emailServer.getRightEmailContentPanel());*/
+									JFrame emailContentFrame = new JFrame("Email");
+									emailContentFrame.add(emailServer.getRightEmailContentPanel());
+									emailContentFrame.setSize(800, 600);
+									//emailContentFrame.setUndecorated(true);//hides the border of the frame
+									emailContentFrame.setLocationRelativeTo(null);
+									emailContentFrame.setVisible(true);
 									//emailTable.clearSelection();
 									repaint();
 									revalidate();
@@ -618,7 +644,8 @@ public class GUI extends JFrame{
 			GUIController.userEmailObjects.remove(emailServer);
 			setEmailJTreeLeftPanel(getMouseListener());
 			if(emailServer.emailTable.isFocusable()){
-				rightPanel.removeAll();
+				emailServer.getRightPanelTop().removeAll();
+				emailServer.getRightPanelBottom().removeAll();
 				repaint();
 				revalidate();
 			}

@@ -1,6 +1,8 @@
 package client;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridLayout;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,6 +36,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.border.LineBorder;
 
 import org.bouncycastle.openpgp.PGPException;
 
@@ -58,6 +61,10 @@ public class SecureMailService implements Serializable{
 	private String username = "";  
 	private String password = "";
 	JFrame writeFrame, secureWriteFrame, loginFrame, yubikeyFrame;
+	private JPanel rightPanelTop = new JPanel();
+	private JPanel rightPanelBottom = new JPanel();
+	
+
 	JTable emailTable = new JTable(){
 		/**
 		 * 
@@ -73,6 +80,13 @@ public class SecureMailService implements Serializable{
 	private int emailID;
 	private int numberOfMessages = 0;
 	private int emailCounter = 0;
+	
+	public SecureMailService(){
+		rightPanelTop.setLayout(new GridLayout());
+		rightPanelTop.setBorder(new LineBorder(Color.BLACK));
+		rightPanelBottom.setLayout(new GridLayout());
+		rightPanelBottom.setBorder(new LineBorder(Color.BLACK));
+	}
 	
 	public boolean connect() throws GeneralSecurityException{
 		Properties props = new Properties();
@@ -544,5 +558,21 @@ public class SecureMailService implements Serializable{
 
 	public void setEmailCounter(int emailCounter) {
 		this.emailCounter = emailCounter;
+	}
+	
+	public JPanel getRightPanelTop() {
+		return rightPanelTop;
+	}
+
+	public void setRightPanelTop(JPanel rightPanelTop) {
+		this.rightPanelTop = rightPanelTop;
+	}
+
+	public JPanel getRightPanelBottom() {
+		return rightPanelBottom;
+	}
+
+	public void setRightPanelBottom(JPanel rightPanelBottom) {
+		this.rightPanelBottom = rightPanelBottom;
 	}
 }
