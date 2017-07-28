@@ -312,7 +312,7 @@ public class GUI extends JFrame{
 		revalidate();
 	}
 
-	public void setDisplayRightPanel(SecureMailService emailServer) throws Exception{
+	public void setDisplayRightPanel(SecureMailService emailServer) throws Exception{//called when "Inbox" is clicked
 		new Thread(){
 			public void run(){
 				try {
