@@ -312,7 +312,8 @@ public class GUI extends JFrame{
 		revalidate();
 	}
 
-	public void setDisplayRightPanel(SecureMailService emailServer) throws Exception{//called when "Inbox" is clicked
+	public void setDisplayRightPanel(SecureMailService emailServer) throws Exception{
+		//called when "Inbox" is clicked, more than one thread is possible
 		new Thread(){
 			public void run(){
 				try {
@@ -333,7 +334,7 @@ public class GUI extends JFrame{
 	}
 
 	public void populateEmailTable(SecureMailService emailServer) throws Exception{
-		new Thread(){
+		new Thread(){//only one thread is created when the program starts
 			@Override
 			public void run(){
 				try{
