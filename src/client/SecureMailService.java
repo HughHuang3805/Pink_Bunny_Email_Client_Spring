@@ -248,7 +248,7 @@ public class SecureMailService implements Serializable{
 		}
 	}
 
-	public void getEmailByNumber(int emailNumber) throws Exception {  
+	public String getEmailByNumber(int emailNumber) throws Exception {  
 		try {  
 			//1) get the session object  
 			Properties props2=System.getProperties();
@@ -321,13 +321,15 @@ public class SecureMailService implements Serializable{
 			//emailScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 			//5) close the store and folder objects  
+			String subject = message.getSubject();
 			s.close();
 			emailFolder.close(false);  
 			emailStore.close(); 
-
+			return subject;
 		} /*catch (NoSuchProviderException e) {e.printStackTrace();} */  
 		catch (MessagingException e) {e.printStackTrace();}  
 		//catch (IOException e) {e.printStackTrace();}  
+		return null;
 	} 
 
 	private String getTextFromMimeMultipart(MimeMultipart mimeMultipart)  throws MessagingException, IOException{

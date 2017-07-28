@@ -177,17 +177,13 @@ public class GUI extends JFrame{
 		setEmailJTreeLeftPanel(a);//for left panel email lists
 
 		leftPanel.setBorder(new LineBorder(Color.BLACK));
-		//rightPanelTop.setBorder(new LineBorder(Color.BLACK));
 
 		JScrollPane leftPanelScrollPane = new JScrollPane(leftPanel);
 		leftPanelScrollPane.getVerticalScrollBar().setUnitIncrement(16);//scrolling speed
-		//rightSplitPane.setTopComponent(rightPanelTop);
-		//rightSplitPane.setBottomComponent(rightPanelBottom);
-		rightSplitPane.setDividerSize(2);
-		rightSplitPane.setResizeWeight(0.5);
-		//rightSplitPane.setDividerLocation(0.5);
+
+		rightSplitPane.setDividerSize(4);//top is email table
+		rightSplitPane.setResizeWeight(0.5);//bottom is email preview
 		
-		//mainSplitPane.setDividerLocation(mainSplitPane.getDividerLocation());
 		mainSplitPane.setLeftComponent(leftPanelScrollPane);//left component in the split pane is the left panel
 		mainSplitPane.setRightComponent(rightSplitPane);//right component in the split pane is the right panel
 		mainSplitPane.setDividerSize(2);
@@ -367,7 +363,7 @@ public class GUI extends JFrame{
 									rightPanelBottom.removeAll();
 									rightPanelBottom.add(emailServer.getRightEmailContentPanel());
 									//emailTable.clearSelection();
-									rightSplitPane.setDividerLocation(rightSplitPane.getDividerLocation());
+									rightSplitPane.setDividerLocation(rightSplitPane.getDividerLocation());//use the current divider location
 									rightSplitPane.setBottomComponent(rightPanelBottom);
 									System.out.println(rightSplitPane.getDividerLocation() + " location");
 									repaint();
@@ -387,14 +383,16 @@ public class GUI extends JFrame{
 							if(e.getClickCount() == 2 && row != -1){//this makes the event go once
 								System.out.println(row);
 								try {
-									emailServer.getEmailByNumber(row);
+									String subject = emailServer.getEmailByNumber(row);
 									/*rightPanel.removeAll();
 									rightPanel.add(emailServer.getRightEmailContentPanel());*/
-									JFrame emailContentFrame = new JFrame("Email");
+									JFrame emailContentFrame = new JFrame(subject);
 									emailContentFrame.add(emailServer.getRightEmailContentPanel());
 									emailContentFrame.setSize(800, 600);
 									//emailContentFrame.setUndecorated(true);//hides the border of the frame
 									emailContentFrame.setLocationRelativeTo(null);
+									ImageIcon img = new ImageIcon(iconFileName);
+									emailContentFrame.setIconImage(img.getImage());
 									emailContentFrame.setVisible(true);
 									//emailTable.clearSelection();
 									repaint();
