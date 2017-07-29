@@ -5,6 +5,7 @@ package client;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -28,6 +29,7 @@ import java.util.Vector;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -53,7 +55,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -428,7 +432,31 @@ public class GUI extends JFrame{
 						while(counter != messages.length){
 							Message message = messages[messages.length - counter - 1];
 							ByteBuffer bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
-							//if(! message.isSet(Flags.Flag.SEEN)){
+							/*DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
+
+							    @Override
+							    public Component getTableCellRendererComponent(JTable table,
+							            Object value, boolean isSelected, boolean hasFocus,
+							            int row, int column) {
+							    	Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+							        //super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+							         //       row, column);
+							    	try {
+										if(! message.isSet(Flags.Flag.SEEN))
+											cellComponent.setFont(new Font("Serif", Font.BOLD, 14));
+										else if(message.isSet(Flags.Flag.SEEN) ){
+											cellComponent.setFont(new Font("serif", Font.PLAIN, 14));
+										}
+									} catch (MessagingException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+							        return this;
+							    }
+
+							};*/
+							
+							if(! message.isSet(Flags.Flag.SEEN)){
 								//bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
 								//then insert it in the front of the emailTable
 								//JLabel sender = new JLabel(Charset.forName("UTF-8").decode(bb).toString());
@@ -439,10 +467,54 @@ public class GUI extends JFrame{
 								//receivedDate.setText("<html><b>"+ receivedDate.getText() + "</b></html>");
 								//model.addRow(new Object[]{subject.getText(), sender.getText(), receivedDate.getText()});
 								//counter++;
-							//} //else{
+								int counter2 = counter;
+								DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
+
+								    @Override
+								    public Component getTableCellRendererComponent(JTable table,
+								            Object value, boolean isSelected, boolean hasFocus,
+								            int row, int column) {
+								    	Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+								        //super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+								         //       row, column);
+								    	try {
+								    		//SecureMailService x = (SecureMailService) value;
+								    		
+											if(!message.isSet(Flags.Flag.SEEN)){
+												cellComponent.setFont(new Font("Serif", Font.BOLD, 14));
+											}
+											//else if(message.isSet(Flags.Flag.SEEN) ){
+											//cellComponent.setFont(new Font("serif", Font.PLAIN, 14));
+											//}
+										} catch (MessagingException e) {
+											// TODO Auto-generated catch block
+										//	e.printStackTrace();
+										}
+								        return this;
+								    }
+
+								};
+								emailTable.setDefaultRenderer(Object.class, r);
 								model.addRow(new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
 								counter++;
-							//}
+							} else{
+								/*DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
+
+								    @Override
+								    public Component getTableCellRendererComponent(JTable table,
+								            Object value, boolean isSelected, boolean hasFocus,
+								            int row, int column) {
+								    	Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+								        //super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+								         //       row, column);
+								        return cellComponent;
+								    }
+
+								};*/
+								//emailTable.setDefaultRenderer(Object.class, r);
+								model.addRow(new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
+								counter++;
+							}
 						}
 						emailServer.setEmailCounter(counter);
 					}
@@ -475,12 +547,33 @@ public class GUI extends JFrame{
 								//	receivedDate.setText("<html><b>"+ receivedDate.getText() + "</b></html>");
 								//	model.insertRow(0, new Object[]{subject.getText(), sender.getText(), receivedDate.getText()});
 								//	counter++;
-								}
+									System.out.println("hi");
+									DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
+									    Font font = new Font("Serif", Font.BOLD, 14);
+
+									    @Override
+									    public Component getTableCellRendererComponent(JTable table,
+									            Object value, boolean isSelected, boolean hasFocus,
+									            int row, int column) {
+									    	Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+									        //super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+									         //       row, column);
+									        cellComponent.setBackground(Color.yellow);
+									        return cellComponent;
+									    }
+
+									};
+									emailTable.getColumnModel().getColumn(1).setCellRenderer(r);
 									bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
 									//then insert it in the front of the emailTable
 									model.insertRow(0, new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
 									counter++;
-								//}
+								} else{
+									bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
+									//then insert it in the front of the emailTable
+									model.insertRow(0, new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
+									counter++;
+								}
 							}
 							emailServer.setEmailCounter(counter);
 							//emailServer.wait();

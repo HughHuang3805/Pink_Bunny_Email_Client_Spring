@@ -2,6 +2,7 @@ package client;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,6 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.LineBorder;
+import javax.swing.table.TableCellRenderer;
 
 import org.bouncycastle.openpgp.PGPException;
 
@@ -75,6 +77,7 @@ public class SecureMailService implements Serializable{
 		public boolean isCellEditable(int row, int column) {
 			return false;
 		};
+		
 	};
 	JPanel rightEmailContentPanel;
 	private int emailID;
@@ -268,7 +271,7 @@ public class SecureMailService implements Serializable{
 
 			//3) create the folder object and open it  
 			Folder emailFolder = emailStore.getFolder("INBOX");  
-			emailFolder.open(Folder.READ_ONLY);  
+			emailFolder.open(Folder.READ_WRITE);  
 
 			//4) retrieve the messages from the folder in an array and print it  
 			Message[] messages = emailFolder.getMessages();  
