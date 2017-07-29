@@ -363,6 +363,7 @@ public class GUI extends JFrame{
 									emailServer.getEmailByNumber(row);
 									rightPanelBottom.removeAll();
 									rightPanelBottom.add(emailServer.getRightEmailContentPanel());
+									
 									//emailTable.clearSelection();
 									rightSplitPane.setDividerLocation(rightSplitPane.getDividerLocation());//use the current divider location
 									rightSplitPane.setBottomComponent(rightPanelBottom);
@@ -427,21 +428,21 @@ public class GUI extends JFrame{
 						while(counter != messages.length){
 							Message message = messages[messages.length - counter - 1];
 							ByteBuffer bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
-							if(! message.isSet(Flags.Flag.SEEN)){
-								bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
+							//if(! message.isSet(Flags.Flag.SEEN)){
+								//bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
 								//then insert it in the front of the emailTable
-								JLabel sender = new JLabel(Charset.forName("UTF-8").decode(bb).toString());
-								sender.setText("<html><b>"+ sender.getText() + "</b></html>");
-								JLabel subject = new JLabel(message.getSubject());
-								subject.setText("<html><b>"+ subject.getText() + "</b></html>");
-								JLabel receivedDate = new JLabel(message.getReceivedDate().toString());
-								receivedDate.setText("<html><b>"+ receivedDate.getText() + "</b></html>");
-								model.addRow(new Object[]{subject.getText(), sender.getText(), receivedDate.getText()});
-								counter++;
-							} else{
+								//JLabel sender = new JLabel(Charset.forName("UTF-8").decode(bb).toString());
+								//sender.setText("<html><b>"+ sender.getText() + "</b></html>");
+								//JLabel subject = new JLabel(message.getSubject());
+								//subject.setText("<html><b>"+ subject.getText() + "</b></html>");
+								//JLabel receivedDate = new JLabel(message.getReceivedDate().toString());
+								//receivedDate.setText("<html><b>"+ receivedDate.getText() + "</b></html>");
+								//model.addRow(new Object[]{subject.getText(), sender.getText(), receivedDate.getText()});
+								//counter++;
+							//} //else{
 								model.addRow(new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
 								counter++;
-							}
+							//}
 						}
 						emailServer.setEmailCounter(counter);
 					}
@@ -464,22 +465,22 @@ public class GUI extends JFrame{
 								emailNumber = messages.length - counter;
 								message = messages[messages.length - emailNumber];//get the new emails
 								if(!message.isSet(Flags.Flag.SEEN)){//bold text if it is unread
-									bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
+								//	bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
 									//then insert it in the front of the emailTable
-									JLabel sender = new JLabel(Charset.forName("UTF-8").decode(bb).toString());
-									sender.setText("<html><b>"+ sender.getText() + "</b></html>");
-									JLabel subject = new JLabel(message.getSubject());
-									subject.setText("<html><b>"+ subject.getText() + "</b></html>");
-									JLabel receivedDate = new JLabel(message.getReceivedDate().toString());
-									receivedDate.setText("<html><b>"+ receivedDate.getText() + "</b></html>");
-									model.insertRow(0, new Object[]{subject.getText(), sender.getText(), receivedDate.getText()});
-									counter++;
-								} else{
+								//	JLabel sender = new JLabel(Charset.forName("UTF-8").decode(bb).toString());
+								//	sender.setText("<html><b>"+ sender.getText() + "</b></html>");
+								//	JLabel subject = new JLabel(message.getSubject());
+								//	subject.setText("<html><b>"+ subject.getText() + "</b></html>");
+								//	JLabel receivedDate = new JLabel(message.getReceivedDate().toString());
+								//	receivedDate.setText("<html><b>"+ receivedDate.getText() + "</b></html>");
+								//	model.insertRow(0, new Object[]{subject.getText(), sender.getText(), receivedDate.getText()});
+								//	counter++;
+								}
 									bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
 									//then insert it in the front of the emailTable
 									model.insertRow(0, new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
 									counter++;
-								}
+								//}
 							}
 							emailServer.setEmailCounter(counter);
 							//emailServer.wait();
@@ -488,6 +489,7 @@ public class GUI extends JFrame{
 					}
 				} catch (Exception e){
 					System.out.println("Exception in populating email table.");
+					e.printStackTrace();
 				}
 			}
 		}.start();
