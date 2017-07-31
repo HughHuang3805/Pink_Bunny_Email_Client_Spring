@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.mail.Flags;
+import javax.mail.Flags.Flag;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -341,7 +342,6 @@ public class GUI extends JFrame{
 					repaint();
 					revalidate();
 					System.out.println("Repainted right panel");
-					//sleep(10000);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -411,13 +411,43 @@ public class GUI extends JFrame{
 							}
 						}
 					});
-					System.out.println(emailTable.getRowCount());
-					if(emailTable.getRowCount() == 0){//if the table has nothing
-						Folder messageFolder = emailServer.getInboxMessagesFolder();//get the folder from the emailServer
-						String[] headerNames = {"Subject", "From", "Date", "Read"};
+					//System.out.println(emailTable.getRowCount());
+					Folder messageFolder = emailServer.getInboxMessagesFolder();//get the folder from the emailServer
+					Message[] messages = messageFolder.getMessages();
+					DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
+						private static final long serialVersionUID = 1L;
+						
 						Message[] messages = messageFolder.getMessages();
+						int messageLength = messages.length;
+						Message message;
+						Flag i = Flags.Flag.SEEN;
+						Component cellComponent;
+						@Override
+						public Component getTableCellRendererComponent(JTable table,
+								Object value, boolean isSelected, boolean hasFocus,
+								int row, int column) {
+							cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-						//JTable emailTable = emailServer.getEmailTable();
+							try {
+								/*long startTime = System.nanoTime();
+								long endTime = System.nanoTime();
+								System.out.println(endTime - startTime + "nanosecond");*/
+								message = messages[messageLength - row - 1];
+								if(!message.isSet(i)){//isSet is the problem
+									cellComponent.setFont(new Font("Serif", Font.BOLD, 14));
+									//System.out.println(row + " " + message.toString() + " " + cellComponent.getFont().toString());
+								}
+							} catch (MessagingException e) {
+								// TODO Auto-generated catch block
+								//	e.printStackTrace();
+							}
+							return this;
+						}
+						
+					};
+					emailTable.setDefaultRenderer(Object.class, renderer);
+					if(emailTable.getRowCount() == 0){//if the table has nothing
+						String[] headerNames = {"Subject", "From", "Date", "Read"};
 						DefaultTableModel model = (DefaultTableModel) emailTable.getModel();
 						model.setColumnIdentifiers(headerNames);
 						emailTable.setFillsViewportHeight(true);
@@ -432,108 +462,35 @@ public class GUI extends JFrame{
 						while(counter != messages.length){
 							Message message = messages[messages.length - counter - 1];
 							ByteBuffer bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
-							//bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
-							//then insert it in the front of the emailTable
-							//JLabel sender = new JLabel(Charset.forName("UTF-8").decode(bb).toString());
-							//sender.setText("<html><b>"+ sender.getText() + "</b></html>");
-							//JLabel subject = new JLabel(message.getSubject());
-							//subject.setText("<html><b>"+ subject.getText() + "</b></html>");
-							//JLabel receivedDate = new JLabel(message.getReceivedDate().toString());
-							//receivedDate.setText("<html><b>"+ receivedDate.getText() + "</b></html>");
-							//model.addRow(new Object[]{subject.getText(), sender.getText(), receivedDate.getText()});
-							//counter++;
-							emailTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-
-								@Override
-								public Component getTableCellRendererComponent(JTable table,
-										Object value, boolean isSelected, boolean hasFocus,
-										int row, int column) {
-									Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-									try {
-										//SecureMailService x = (SecureMailService) value;
-										Message message = messages[messages.length - row - 1];
-										if(!message.isSet(Flags.Flag.SEEN)){
-											cellComponent.setFont(new Font("Serif", Font.BOLD, 14));
-											System.out.println(row + " " + message.toString() + " " + cellComponent.getFont().toString());
-										} else {
-											cellComponent.setFont(new Font("Serif", Font.PLAIN, 14));
-											System.out.println(row + " " + message.toString() + " " + cellComponent.getFont().toString());
-										}
-									} catch (MessagingException e) {
-										// TODO Auto-generated catch block
-										//	e.printStackTrace();
-									}
-									return this;
-								}
-							});
 							model.addRow(new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
 							counter++;
 						}
 						emailServer.setEmailCounter(counter);
 					}
 
-					Folder messageFolder = emailServer.getInboxMessagesFolder();//get the folder from the emailServer
-					Message[] messages;
+					//Folder messageFolder = emailServer.getInboxMessagesFolder();//get the folder from the emailServer
+					//Message[] messages;
 					DefaultTableModel model;
 					int counter;
 					Message message;
 					int emailNumber;
 					ByteBuffer bb;
-					//wait for the same object, sleep in the mean time
-					synchronized(emailServer){
-						while(true){
-							messages = messageFolder.getMessages();//get the message of this folder
-							model = (DefaultTableModel) emailTable.getModel();
-							counter = emailServer.getEmailCounter();//see how many emails there are in this emailServer
-							System.out.println(counter);
-							System.out.println(messages.length);
-							while(counter != messages.length){//check for new emails
-								emailNumber = messages.length - counter;
-								message = messages[messages.length - emailNumber];//get the new emails
-								if(!message.isSet(Flags.Flag.SEEN)){//bold text if it is unread
-									//	bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
-									//then insert it in the front of the emailTable
-									//	JLabel sender = new JLabel(Charset.forName("UTF-8").decode(bb).toString());
-									//	sender.setText("<html><b>"+ sender.getText() + "</b></html>");
-									//	JLabel subject = new JLabel(message.getSubject());
-									//	subject.setText("<html><b>"+ subject.getText() + "</b></html>");
-									//	JLabel receivedDate = new JLabel(message.getReceivedDate().toString());
-									//	receivedDate.setText("<html><b>"+ receivedDate.getText() + "</b></html>");
-									//	model.insertRow(0, new Object[]{subject.getText(), sender.getText(), receivedDate.getText()});
-									//	counter++;
-									System.out.println("hi");
-									DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
-										Font font = new Font("Serif", Font.BOLD, 14);
-
-										@Override
-										public Component getTableCellRendererComponent(JTable table,
-												Object value, boolean isSelected, boolean hasFocus,
-												int row, int column) {
-											Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-											//super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
-											//       row, column);
-											cellComponent.setBackground(Color.yellow);
-											return cellComponent;
-										}
-
-									};
-									emailTable.getColumnModel().getColumn(1).setCellRenderer(r);
-									bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
-									//then insert it in the front of the emailTable
-									model.insertRow(0, new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
-									counter++;
-								} else{
-									bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
-									//then insert it in the front of the emailTable
-									model.insertRow(0, new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
-									counter++;
-								}
-							}
-							emailServer.setEmailCounter(counter);
-							//emailServer.wait();
-							sleep(15000);//15 seconds before checking for new emails
+					while(true){
+						messages = messageFolder.getMessages();//get the message of this folder
+						model = (DefaultTableModel) emailTable.getModel();
+						counter = emailServer.getEmailCounter();//see how many emails there are in this emailServer
+						//System.out.println(counter);
+						//System.out.println(messages.length);
+						while(counter != messages.length){//check for new emails
+							emailNumber = messages.length - counter;
+							message = messages[messages.length - emailNumber];//get the new emails
+							bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
+							//then insert it in the front of the emailTable
+							model.insertRow(0, new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
+							counter++;
 						}
+						emailServer.setEmailCounter(counter);
+						sleep(15000);
 					}
 				} catch (Exception e){
 					System.out.println("Exception in populating email table.");
