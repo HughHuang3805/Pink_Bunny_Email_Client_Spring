@@ -367,7 +367,7 @@ public class GUI extends JFrame{
 									emailServer.getEmailByNumber(row);
 									rightPanelBottom.removeAll();
 									rightPanelBottom.add(emailServer.getRightEmailContentPanel());
-									
+
 									//emailTable.clearSelection();
 									rightSplitPane.setDividerLocation(rightSplitPane.getDividerLocation());//use the current divider location
 									rightSplitPane.setBottomComponent(rightPanelBottom);
@@ -432,92 +432,47 @@ public class GUI extends JFrame{
 						while(counter != messages.length){
 							Message message = messages[messages.length - counter - 1];
 							ByteBuffer bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
-							/*DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
+							//bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
+							//then insert it in the front of the emailTable
+							//JLabel sender = new JLabel(Charset.forName("UTF-8").decode(bb).toString());
+							//sender.setText("<html><b>"+ sender.getText() + "</b></html>");
+							//JLabel subject = new JLabel(message.getSubject());
+							//subject.setText("<html><b>"+ subject.getText() + "</b></html>");
+							//JLabel receivedDate = new JLabel(message.getReceivedDate().toString());
+							//receivedDate.setText("<html><b>"+ receivedDate.getText() + "</b></html>");
+							//model.addRow(new Object[]{subject.getText(), sender.getText(), receivedDate.getText()});
+							//counter++;
+							emailTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
 
-							    @Override
-							    public Component getTableCellRendererComponent(JTable table,
-							            Object value, boolean isSelected, boolean hasFocus,
-							            int row, int column) {
-							    	Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-							        //super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
-							         //       row, column);
-							    	try {
-										if(! message.isSet(Flags.Flag.SEEN))
+								@Override
+								public Component getTableCellRendererComponent(JTable table,
+										Object value, boolean isSelected, boolean hasFocus,
+										int row, int column) {
+									Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+									try {
+										//SecureMailService x = (SecureMailService) value;
+										Message message = messages[messages.length - row - 1];
+										if(!message.isSet(Flags.Flag.SEEN)){
 											cellComponent.setFont(new Font("Serif", Font.BOLD, 14));
-										else if(message.isSet(Flags.Flag.SEEN) ){
-											cellComponent.setFont(new Font("serif", Font.PLAIN, 14));
+											System.out.println(row + " " + message.toString() + " " + cellComponent.getFont().toString());
+										} else {
+											cellComponent.setFont(new Font("Serif", Font.PLAIN, 14));
+											System.out.println(row + " " + message.toString() + " " + cellComponent.getFont().toString());
 										}
 									} catch (MessagingException e) {
 										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-							        return this;
-							    }
-
-							};*/
-							
-							if(! message.isSet(Flags.Flag.SEEN)){
-								//bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
-								//then insert it in the front of the emailTable
-								//JLabel sender = new JLabel(Charset.forName("UTF-8").decode(bb).toString());
-								//sender.setText("<html><b>"+ sender.getText() + "</b></html>");
-								//JLabel subject = new JLabel(message.getSubject());
-								//subject.setText("<html><b>"+ subject.getText() + "</b></html>");
-								//JLabel receivedDate = new JLabel(message.getReceivedDate().toString());
-								//receivedDate.setText("<html><b>"+ receivedDate.getText() + "</b></html>");
-								//model.addRow(new Object[]{subject.getText(), sender.getText(), receivedDate.getText()});
-								//counter++;
-								int counter2 = counter;
-								DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
-
-								    @Override
-								    public Component getTableCellRendererComponent(JTable table,
-								            Object value, boolean isSelected, boolean hasFocus,
-								            int row, int column) {
-								    	Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-								        //super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
-								         //       row, column);
-								    	try {
-								    		//SecureMailService x = (SecureMailService) value;
-								    		
-											if(!message.isSet(Flags.Flag.SEEN)){
-												cellComponent.setFont(new Font("Serif", Font.BOLD, 14));
-											}
-											//else if(message.isSet(Flags.Flag.SEEN) ){
-											//cellComponent.setFont(new Font("serif", Font.PLAIN, 14));
-											//}
-										} catch (MessagingException e) {
-											// TODO Auto-generated catch block
 										//	e.printStackTrace();
-										}
-								        return this;
-								    }
-
-								};
-								emailTable.setDefaultRenderer(Object.class, r);
-								model.addRow(new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
-								counter++;
-							} else{
-								/*DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
-
-								    @Override
-								    public Component getTableCellRendererComponent(JTable table,
-								            Object value, boolean isSelected, boolean hasFocus,
-								            int row, int column) {
-								    	Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-								        //super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
-								         //       row, column);
-								        return cellComponent;
-								    }
-
-								};*/
-								//emailTable.setDefaultRenderer(Object.class, r);
-								model.addRow(new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
-								counter++;
-							}
+									}
+									return this;
+								}
+							});
+							model.addRow(new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
+							counter++;
 						}
 						emailServer.setEmailCounter(counter);
 					}
+
 					Folder messageFolder = emailServer.getInboxMessagesFolder();//get the folder from the emailServer
 					Message[] messages;
 					DefaultTableModel model;
@@ -537,30 +492,30 @@ public class GUI extends JFrame{
 								emailNumber = messages.length - counter;
 								message = messages[messages.length - emailNumber];//get the new emails
 								if(!message.isSet(Flags.Flag.SEEN)){//bold text if it is unread
-								//	bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
+									//	bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
 									//then insert it in the front of the emailTable
-								//	JLabel sender = new JLabel(Charset.forName("UTF-8").decode(bb).toString());
-								//	sender.setText("<html><b>"+ sender.getText() + "</b></html>");
-								//	JLabel subject = new JLabel(message.getSubject());
-								//	subject.setText("<html><b>"+ subject.getText() + "</b></html>");
-								//	JLabel receivedDate = new JLabel(message.getReceivedDate().toString());
-								//	receivedDate.setText("<html><b>"+ receivedDate.getText() + "</b></html>");
-								//	model.insertRow(0, new Object[]{subject.getText(), sender.getText(), receivedDate.getText()});
-								//	counter++;
+									//	JLabel sender = new JLabel(Charset.forName("UTF-8").decode(bb).toString());
+									//	sender.setText("<html><b>"+ sender.getText() + "</b></html>");
+									//	JLabel subject = new JLabel(message.getSubject());
+									//	subject.setText("<html><b>"+ subject.getText() + "</b></html>");
+									//	JLabel receivedDate = new JLabel(message.getReceivedDate().toString());
+									//	receivedDate.setText("<html><b>"+ receivedDate.getText() + "</b></html>");
+									//	model.insertRow(0, new Object[]{subject.getText(), sender.getText(), receivedDate.getText()});
+									//	counter++;
 									System.out.println("hi");
 									DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
-									    Font font = new Font("Serif", Font.BOLD, 14);
+										Font font = new Font("Serif", Font.BOLD, 14);
 
-									    @Override
-									    public Component getTableCellRendererComponent(JTable table,
-									            Object value, boolean isSelected, boolean hasFocus,
-									            int row, int column) {
-									    	Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-									        //super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
-									         //       row, column);
-									        cellComponent.setBackground(Color.yellow);
-									        return cellComponent;
-									    }
+										@Override
+										public Component getTableCellRendererComponent(JTable table,
+												Object value, boolean isSelected, boolean hasFocus,
+												int row, int column) {
+											Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+											//super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+											//       row, column);
+											cellComponent.setBackground(Color.yellow);
+											return cellComponent;
+										}
 
 									};
 									emailTable.getColumnModel().getColumn(1).setCellRenderer(r);
