@@ -2,7 +2,6 @@ package client;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.GridLayout;
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,7 +37,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.LineBorder;
-import javax.swing.table.TableCellRenderer;
 
 import org.bouncycastle.openpgp.PGPException;
 
@@ -63,9 +61,10 @@ public class SecureMailService implements Serializable{
 	private String username = "";  
 	private String password = "";
 	JFrame writeFrame, secureWriteFrame, loginFrame, yubikeyFrame;
+	JEditorPane editorPane = new JEditorPane();
 	private JPanel rightPanelTop = new JPanel();
 	private JPanel rightPanelBottom = new JPanel();
-	
+	private Message[] messages;
 
 	JTable emailTable = new JTable(){
 		/**
@@ -79,7 +78,7 @@ public class SecureMailService implements Serializable{
 		};
 		
 	};
-	JPanel rightEmailContentPanel;
+	JPanel rightEmailContentPanel = new JPanel();
 	private int emailID;
 	private int numberOfMessages = 0;
 	private int emailCounter = 0;
@@ -89,6 +88,7 @@ public class SecureMailService implements Serializable{
 		rightPanelTop.setBorder(new LineBorder(Color.BLACK));
 		rightPanelBottom.setLayout(new GridLayout());
 		rightPanelBottom.setBorder(new LineBorder(Color.BLACK));
+		rightEmailContentPanel.setLayout(new BorderLayout());
 	}
 	
 	public boolean connect() throws GeneralSecurityException{
@@ -253,7 +253,7 @@ public class SecureMailService implements Serializable{
 
 	public String getEmailByNumber(int emailNumber) throws Exception {  
 		try {  
-			//1) get the session object  
+			/*//1) get the session object  
 			Properties props2=System.getProperties();
 
 			props2.setProperty("mail.store.protocol", "imaps");
@@ -276,9 +276,9 @@ public class SecureMailService implements Serializable{
 			//4) retrieve the messages from the folder in an array and print it  
 			Message[] messages = emailFolder.getMessages();  
 			//Message message = messages[messages.length - 1 - emailNumber];  
-			Message message = messages[messages.length - 1 - emailNumber]; 
-			rightEmailContentPanel = new JPanel();
-
+			Message message = messages[messages.length - 1 - emailNumber]; */
+			Message message = messages[messages.length - 1 - emailNumber];
+			rightEmailContentPanel.removeAll();
 
 			@SuppressWarnings("resource")
 			Scanner s = new Scanner(message.getInputStream()).useDelimiter("\\A");
@@ -286,9 +286,8 @@ public class SecureMailService implements Serializable{
 			System.out.println(message.getContentType());
 
 			JScrollPane emailScroll;
-			rightEmailContentPanel.setLayout(new BorderLayout());
 			if(message.isMimeType("text/html")){
-				JEditorPane editorPane = new JEditorPane();
+				editorPane.removeAll();
 				editorPane.setContentType("text/html");
 				editorPane.getDocument().putProperty("IgnoreCharsetDirective", Boolean.TRUE);
 				editorPane.setText(result);
@@ -298,7 +297,7 @@ public class SecureMailService implements Serializable{
 				rightEmailContentPanel.add(emailScroll, BorderLayout.CENTER);
 				System.out.println(message.getContentType());
 			} else if(message.isMimeType("text/plain")){
-				JEditorPane editorPane = new JEditorPane();
+				editorPane.removeAll();
 				editorPane.setContentType("text/plain");
 				//editorPane.getDocument().putProperty("IgnoreCharsetDirective", Boolean.TRUE);
 				//String x = URLDecoder.decode(result, "US-ASCII");
@@ -312,7 +311,7 @@ public class SecureMailService implements Serializable{
 				MimeMultipart mp = (MimeMultipart) message.getContent();
 				result = getTextFromMimeMultipart(mp);
 				//writePart(message);
-				JEditorPane editorPane = new JEditorPane();
+				editorPane.removeAll();
 				editorPane.setContentType("multipart/ALTERNATIVE");
 				editorPane.setText(result);
 				editorPane.setEditable(false);
@@ -326,8 +325,8 @@ public class SecureMailService implements Serializable{
 			//5) close the store and folder objects  
 			String subject = message.getSubject();
 			s.close();
-			emailFolder.close(false);  
-			emailStore.close(); 
+			//emailFolder.close(false);  
+			//emailStore.close(); 
 			return subject;
 		} /*catch (NoSuchProviderException e) {e.printStackTrace();} */  
 		catch (MessagingException e) {e.printStackTrace();}  
@@ -378,10 +377,10 @@ public class SecureMailService implements Serializable{
 			
 			//3) create the folder object and open it  
 			Folder emailFolder = emailStore.getFolder("INBOX");  
-			emailFolder.open(Folder.READ_ONLY);  
+			emailFolder.open(Folder.READ_WRITE);  
 
 			//4) retrieve the messages from the folder in an array and print it  
-			Message[] messages = emailFolder.getMessages();  
+			messages = emailFolder.getMessages();  
 			numberOfMessages = messages.length;
 			//5) close the store and folder objects  
 			//emailFolder.close(false);  
@@ -579,5 +578,13 @@ public class SecureMailService implements Serializable{
 
 	public void setRightPanelBottom(JPanel rightPanelBottom) {
 		this.rightPanelBottom = rightPanelBottom;
+	}
+	
+	public Message[] getMessages() {
+		return messages;
+	}
+
+	public void setMessages(Message[] messages) {
+		this.messages = messages;
 	}
 }

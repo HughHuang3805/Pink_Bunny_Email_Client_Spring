@@ -32,6 +32,7 @@ import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -356,8 +357,25 @@ public class GUI extends JFrame{
 			@Override
 			public void run(){
 				try{
+					String read;
+					Message message;
+					int counter;
+					String[] headerNames = {"Subject", "From", "Date", "Read"};
 					JTable emailTable = emailServer.getEmailTable();
 					JPanel rightPanelBottom = emailServer.getRightPanelBottom();
+					Folder messageFolder = emailServer.getInboxMessagesFolder();//get the folder from the emailServer
+					Message[] messages = messageFolder.getMessages();
+					DefaultTableModel model = (DefaultTableModel) emailTable.getModel();
+					model.setColumnIdentifiers(headerNames);
+					emailTable.setSelectionBackground(new Color(135,206,250));
+					emailTable.setFillsViewportHeight(true);
+					emailTable.setRowHeight(25);
+					emailTable.getTableHeader().setFont(new Font("Serif", Font.BOLD, 20));
+					//emailTable.setAutoCreateRowSorter(true);
+					//TableCellRenderer rendererFromHeader = emailTable.getTableHeader().getDefaultRenderer();
+					//JLabel headerLabel = (JLabel) rendererFromHeader;
+					//headerLabel.setHorizontalAlignment(JLabel.CENTER);//center header text
+
 					emailTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {//respond to table event
 						//add listener to the table
 						public void valueChanged(ListSelectionEvent e) {//things to do if an email is clicked
@@ -365,7 +383,8 @@ public class GUI extends JFrame{
 							if(e.getValueIsAdjusting() == false && row != -1){//this makes the event go once
 								System.out.println(row);
 								try {
-									emailServer.getEmailByNumber(row);
+									emailTable.setValueAt("Yes", row, 3);//if a row is clicked, then mark it as "Read"
+									emailServer.getEmailByNumber(row);//get the specific email, and rightEmailContentPanel is ready at the same time
 									rightPanelBottom.removeAll();
 									rightPanelBottom.add(emailServer.getRightEmailContentPanel());
 									rightSplitPane.setDividerLocation(rightSplitPane.getDividerLocation());//use the current divider location
@@ -381,6 +400,7 @@ public class GUI extends JFrame{
 							}
 						}
 					});
+
 					emailTable.addMouseListener(new java.awt.event.MouseAdapter() {//respond to mouse event
 						@Override
 						public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -407,19 +427,16 @@ public class GUI extends JFrame{
 							}
 						}
 					});
-					Folder messageFolder = emailServer.getInboxMessagesFolder();//get the folder from the emailServer
-					Message[] messages = messageFolder.getMessages();
-					String read;
-					Message message;
-					DefaultTableModel model = (DefaultTableModel) emailTable.getModel();
+
 					if(emailTable.getRowCount() == 0){//if the table has nothing
-						DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
+
+						DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {//the messages in the folder at this time instance
 							private static final long serialVersionUID = 1L;
-							
+
 							Message[] messages = messageFolder.getMessages();
 							int messageLength = messages.length;
 							Message message;
-							Flag i = Flags.Flag.SEEN;
+							Flag seenFlag = Flags.Flag.SEEN;
 							Component cellComponent;
 							boolean isSeen = false;
 							@Override
@@ -427,14 +444,14 @@ public class GUI extends JFrame{
 									Object value, boolean isSelected, boolean hasFocus,
 									int row, int column) {
 								cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
+								//setBorder(BorderFactory.createEmptyBorder(15,15,15,15));
 								try {
 									message = messages[messageLength - row - 1];
-									if(column == 0){
-										isSeen = message.isSet(i);//problem
-									}
-									if(!isSeen){//isSet is the problem
-										cellComponent.setFont(new Font("Serif", Font.BOLD, 14));
+									isSeen = message.isSet(seenFlag);//check if the message is read
+									if(!isSeen){//if it is not read, make the font bold
+										cellComponent.setFont(new Font("Serif", Font.BOLD, 16));
+									} else{//if read, make the font normal
+										cellComponent.setFont(new Font("Serif", Font.PLAIN, 16));
 									}
 								} catch (MessagingException e) {
 									// TODO Auto-generated catch block
@@ -444,19 +461,10 @@ public class GUI extends JFrame{
 							}
 						};
 						emailTable.setDefaultRenderer(Object.class, renderer);
-						String[] headerNames = {"Subject", "From", "Date", "Read"};
-						model.setColumnIdentifiers(headerNames);
-						emailTable.setFillsViewportHeight(true);
-						emailTable.setFont(new Font("Serif", Font.PLAIN, 14));
-						emailTable.setRowHeight(20);
-						//emailTable.setAutoCreateRowSorter(true);
-						emailTable.getTableHeader().setFont(new Font("Serif", Font.BOLD, 20));
-						//TableCellRenderer rendererFromHeader = emailTable.getTableHeader().getDefaultRenderer();
-						//JLabel headerLabel = (JLabel) rendererFromHeader;
-						//headerLabel.setHorizontalAlignment(JLabel.CENTER);//center header text
-						int counter = emailServer.getEmailCounter();
+
+						counter = emailServer.getEmailCounter();
 						ByteBuffer bb;
-						while(counter != messages.length){
+						while(counter != messages.length){//keep getting new messages
 							message = messages[messages.length - counter - 1];
 							bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
 							if(message.isSet(Flags.Flag.SEEN)){
@@ -469,9 +477,12 @@ public class GUI extends JFrame{
 						}
 						emailServer.setEmailCounter(counter);
 					}
-					int counter;
+
 					int emailNumber;
 					ByteBuffer bb;
+					/*second renderer is a litte bit different
+					 * it will keep getting newest messages
+					 * if there are new messages, render the fonts*/
 					DefaultTableCellRenderer renderer2 = new DefaultTableCellRenderer() {
 						private static final long serialVersionUID = 1L;
 
@@ -488,14 +499,14 @@ public class GUI extends JFrame{
 							cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
 							try {
-								messages = messageFolder.getMessages();
-								messageLength = messages.length;
-								message = messages[messageLength - row - 1];
-								if(column == 0){
-									isSeen = message.isSet(i);//problem
-								}
-								if(!isSeen){//isSet is the problem
-									cellComponent.setFont(new Font("Serif", Font.BOLD, 14));
+								messages = messageFolder.getMessages();//get newest messages
+								messageLength = messages.length;//get the messages length
+								message = messages[messageLength - row - 1];//get the specific message
+								isSeen = message.isSet(i);//check if the message is read
+								if(!isSeen){//if it is not read, make the font bold
+									cellComponent.setFont(new Font("Serif", Font.BOLD, 16));
+								} else{//if it is read, make the font normal
+									cellComponent.setFont(new Font("Serif", Font.PLAIN, 16));
 								}
 							} catch (MessagingException e) {
 								// TODO Auto-generated catch block
@@ -505,11 +516,10 @@ public class GUI extends JFrame{
 						}
 					};
 					emailTable.setDefaultRenderer(Object.class, renderer2);
-					while(true){
+
+					while(true){//this part will keep running and checking for new messages
 						messages = messageFolder.getMessages();//get the message of this folder
 						counter = emailServer.getEmailCounter();//see how many emails there are in this emailServer
-						//System.out.println(counter);
-						//System.out.println(messages.length);
 						while(counter != messages.length){//check for new emails
 							emailNumber = messages.length - counter;
 							message = messages[messages.length - emailNumber];//get the new emails
@@ -524,7 +534,8 @@ public class GUI extends JFrame{
 							counter++;
 						}
 						emailServer.setEmailCounter(counter);
-						sleep(15000);
+						messages = null;
+						sleep(15000);//sleep before checking again
 					}
 				} catch (Exception e){
 					System.out.println("Exception in populating email table.");
