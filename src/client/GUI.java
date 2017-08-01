@@ -326,30 +326,19 @@ public class GUI extends JFrame{
 	}
 
 	public void setDisplayRightPanel(SecureMailService emailServer) throws Exception{
-		//called when "Inbox" is clicked, more than one thread is possible
-		new Thread(){
-			public void run(){
-				try {
-					JScrollPane x = new JScrollPane();
-					JPanel rightPanelTop = emailServer.getRightPanelTop();
-					JPanel rightPanelBottom = emailServer.getRightPanelBottom();
-					rightPanelTop.removeAll();
-					x.getViewport().add(emailServer.getEmailTable());
-					//x.getViewport().repaint(1000000000);
-					rightPanelTop.add(x);
-					//rightSplitPane.setDividerLocation(rightSplitPane.getDividerLocation());
-					rightSplitPane.setTopComponent(rightPanelTop);
-					rightSplitPane.setBottomComponent(rightPanelBottom);
-					//rightSplitPane.setEnabled(false);
-					repaint();
-					revalidate();
-					System.out.println("Repainted right panel");
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}.start();
+		//called when "Inbox" is clicked
+		JScrollPane x = new JScrollPane();
+		JPanel rightPanelTop = emailServer.getRightPanelTop();
+		JPanel rightPanelBottom = emailServer.getRightPanelBottom();
+		rightPanelTop.removeAll();
+		x.getViewport().add(emailServer.getEmailTable());
+		rightPanelTop.add(x);
+		//rightSplitPane.setDividerLocation(rightSplitPane.getDividerLocation());
+		rightSplitPane.setTopComponent(rightPanelTop);
+		rightSplitPane.setBottomComponent(rightPanelBottom);
+		repaint();
+		revalidate();
+		System.out.println("Repainted right panel");
 	}
 
 	public void populateEmailTable(SecureMailService emailServer) throws Exception{
@@ -367,7 +356,7 @@ public class GUI extends JFrame{
 					Message[] messages = messageFolder.getMessages();
 					DefaultTableModel model = (DefaultTableModel) emailTable.getModel();
 					model.setColumnIdentifiers(headerNames);
-					emailTable.setSelectionBackground(new Color(135,206,250));
+					emailTable.setSelectionBackground(new Color(100, 149, 237));
 					emailTable.setFillsViewportHeight(true);
 					emailTable.setRowHeight(25);
 					emailTable.getTableHeader().setFont(new Font("Serif", Font.BOLD, 20));
