@@ -188,6 +188,7 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 			for(int i = 0; i < GUIController.userEmailObjects.size(); i++){
 				// Write objects to file
 				GUIController.userEmailObjects.elementAt(i).setSmtpLoggedIn(false);
+				GUIController.userEmailObjects.elementAt(i).setMessages(null);
 				oos.writeObject(GUIController.userEmailObjects.elementAt(i));
 			}
 			//oos.close();

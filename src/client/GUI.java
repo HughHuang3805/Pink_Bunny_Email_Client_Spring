@@ -32,7 +32,6 @@ import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -59,7 +58,6 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -320,25 +318,29 @@ public class GUI extends JFrame{
 		mainSplitPane.setDividerSize(2);
 		//splitPane.setDividerLocation(0.75);
 
-
 		repaint();
 		revalidate();
 	}
 
 	public void setDisplayRightPanel(SecureMailService emailServer) throws Exception{
-		//called when "Inbox" is clicked
-		JScrollPane x = new JScrollPane();
-		JPanel rightPanelTop = emailServer.getRightPanelTop();
-		JPanel rightPanelBottom = emailServer.getRightPanelBottom();
-		rightPanelTop.removeAll();
-		x.getViewport().add(emailServer.getEmailTable());
-		rightPanelTop.add(x);
-		//rightSplitPane.setDividerLocation(rightSplitPane.getDividerLocation());
-		rightSplitPane.setTopComponent(rightPanelTop);
-		rightSplitPane.setBottomComponent(rightPanelBottom);
-		repaint();
-		revalidate();
-		System.out.println("Repainted right panel");
+		//called when "Inbox" is clicked, more than one thread is possible
+		new Thread(){
+			@Override
+			public void run(){
+				JScrollPane x = new JScrollPane();
+				JPanel rightPanelTop = emailServer.getRightPanelTop();
+				JPanel rightPanelBottom = emailServer.getRightPanelBottom();
+				rightPanelTop.removeAll();
+				x.getViewport().add(emailServer.getEmailTable());
+				rightPanelTop.add(x);
+				//rightSplitPane.setDividerLocation(rightSplitPane.getDividerLocation());
+				rightSplitPane.setTopComponent(rightPanelTop);
+				rightSplitPane.setBottomComponent(rightPanelBottom);
+				repaint();
+				revalidate();
+				System.out.println("Repainted right panel");
+			}
+		}.start();
 	}
 
 	public void populateEmailTable(SecureMailService emailServer) throws Exception{
