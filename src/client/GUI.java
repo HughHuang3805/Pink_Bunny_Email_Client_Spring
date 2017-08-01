@@ -50,6 +50,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -80,6 +81,7 @@ public class GUI extends JFrame{
 	private JPanel leftPanel = new JPanel();
 	private JMenu fileMenu = new JMenu("File");
 	private JMenu toolMenu = new JMenu("Source");
+	private JPopupMenu jtreePopupMenu = new JPopupMenu();
 	private JPopupMenu emailPopupMenu = new JPopupMenu();
 	private JSplitPane mainSplitPane;
 	private JSplitPane rightSplitPane;
@@ -99,7 +101,8 @@ public class GUI extends JFrame{
 		setLocationRelativeTo(null);
 		ImageIcon img = new ImageIcon(iconFileName);
 		setIconImage(img.getImage());
-		setPopupItems(b);
+		setJtreePopupItems(b);
+		setEmailTablePopupItems(b);
 		setMainPanel(a);
 		setVisible(true);
 		setWindowListener();
@@ -414,6 +417,12 @@ public class GUI extends JFrame{
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
 								}
+							}
+							if(SwingUtilities.isRightMouseButton(e)){
+								int index = emailTable.rowAtPoint(e.getPoint());
+								emailTable.getSelectionModel().setSelectionInterval(index, index);
+								emailPopupMenu.show(emailTable, e.getX(), e.getY());
+								//need to implement what the menu does
 							}
 						}
 					});
@@ -1285,7 +1294,7 @@ public class GUI extends JFrame{
 		secureWriteFrame.setVisible(true);
 	}
 
-	public void setPopupItems(ActionListener a){
+	public void setJtreePopupItems(ActionListener a){
 		JMenuItem loginItem = new JMenuItem("Log in");
 		loginItem.addActionListener(a);
 		JMenuItem getMessageItem = new JMenuItem("Get new messages");
@@ -1294,12 +1303,41 @@ public class GUI extends JFrame{
 		deleteAccountItem.addActionListener(a);
 		JMenuItem setupYubikeyItem = new JMenuItem("Setup YubiKey");
 		setupYubikeyItem.addActionListener(a);
-		emailPopupMenu.add(loginItem);
-		emailPopupMenu.add(getMessageItem);
-		emailPopupMenu.add(deleteAccountItem);
-		emailPopupMenu.add(setupYubikeyItem);
+		jtreePopupMenu.add(loginItem);
+		jtreePopupMenu.add(getMessageItem);
+		jtreePopupMenu.add(deleteAccountItem);
+		jtreePopupMenu.add(setupYubikeyItem);
 	}
 
+	public void setEmailTablePopupItems(ActionListener a){
+		JMenu markAsMenu = new JMenu("Mark as");
+		JMenuItem deleteEmailItem = new JMenuItem("Delete message");
+		JMenuItem readItem = new JMenuItem("Read");
+		JMenuItem unreadItem = new JMenuItem("Unread");
+		JMenuItem replyItem = new JMenuItem("Reply");
+		JMenuItem openInNewWindowItem = new JMenuItem("Open email in a new window");
+		JMenuItem forwardItem = new JMenuItem("Forward");
+		
+		markAsMenu.add(readItem);
+		markAsMenu.add(unreadItem);
+		
+		deleteEmailItem.addActionListener(a);
+		readItem.addActionListener(a);
+		unreadItem.addActionListener(a);
+		replyItem.addActionListener(a);
+		openInNewWindowItem.addActionListener(a);
+		forwardItem.addActionListener(a);
+		
+		emailPopupMenu.add(openInNewWindowItem);
+		emailPopupMenu.addSeparator();
+		emailPopupMenu.add(replyItem);
+		emailPopupMenu.add(forwardItem);
+		emailPopupMenu.addSeparator();
+		emailPopupMenu.add(deleteEmailItem);
+		emailPopupMenu.add(markAsMenu);
+		
+	}
+	
 	public String getEmailFromCombobox(){
 		//get rid of any space in the username
 		return ((String) emailList.getSelectedItem()).replaceAll("\\s+", "");
@@ -1330,10 +1368,10 @@ public class GUI extends JFrame{
 	}
 
 	public JPopupMenu getEmailPopupMenu() {
-		return emailPopupMenu;
+		return jtreePopupMenu;
 	}
 
 	public void setEmailPopupMenu(JPopupMenu emailPopupMenu) {
-		this.emailPopupMenu = emailPopupMenu;
+		this.jtreePopupMenu = emailPopupMenu;
 	}
 }

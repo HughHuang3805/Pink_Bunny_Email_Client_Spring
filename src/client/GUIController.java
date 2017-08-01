@@ -26,6 +26,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.bouncycastle.openpgp.PGPException;
@@ -208,65 +209,28 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 		tree.getLastSelectedPathComponent();
 		int row = tree.getRowForLocation(e.getX(), e.getY());
 		//2 is the number of clicks, row != 0 means if it is not root, get the path of which the item is clicked
-		if(tree.getLastSelectedPathComponent() != null){
-			DefaultMutableTreeNode node;
+		DefaultMutableTreeNode node;
+		node = (DefaultMutableTreeNode)
+				tree.getLastSelectedPathComponent();
+		if(SwingUtilities.isRightMouseButton(e) && tree.getRowForLocation(e.getX(), e.getY()) == 0){
+			int index = tree.getRowForLocation(e.getX(), e.getY());
+			System.out.println(e.getX() + " " + e.getY());
+			TreePath selectedPath = tree.getPathForLocation(e.getX(), e.getY());
+			tree.setSelectionPath(selectedPath);
+			if(index > -1){
+				tree.setSelectionRow(index);
+			}
 			node = (DefaultMutableTreeNode)
-					tree.getLastSelectedPathComponent();
-			//e.getClickCount() == 1 
-			/*if(row != 0 && tree.getLastSelectedPathComponent().toString() == "Secure write"){
-				emailServer = emailObjectMap.get(node.getRoot().toString());
-				if(emailServer.isSmtpLoggedIn()){
-					myGui.setSecureWritePanel(userEmails, emailServer);
-				} else{
-					JOptionPane.showMessageDialog(myGui, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
-					//myGui.setLoginFrame(emailServer);
-				}
-				tree.clearSelection();
-				//System.out.println("double clicked");
-			} else if(row != 0 && tree.getLastSelectedPathComponent().toString() == "Write"){
-				emailServer = emailObjectMap.get(node.getRoot().toString());
-				if(emailServer.isSmtpLoggedIn()){
-					myGui.setWriteFrame(userEmails, emailServer);
-				} else{
-					JOptionPane.showMessageDialog(myGui, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
-					//myGui.setLoginFrame(emailServer);
-				}
-				tree.clearSelection();
-				//System.out.println("double clicked");
-			} else if(row != 0 && tree.getLastSelectedPathComponent().toString() == "Inbox"){
-				try {
-					//System.out.println("Root:" + node.getRoot().toString());
-					emailServer = emailObjectMap.get(node.getRoot().toString());
-					//System.out.println("email server is null" + emailServer == null);
-					if(emailServer.isSmtpLoggedIn()){
-						myGui.setDisplayRightPanel(emailServer);
-						//System.out.println(emailServer.getEmailTable() == null);
-					} else {
-						JOptionPane.showMessageDialog(myGui, "Please log in first.", "oops ...", JOptionPane.WARNING_MESSAGE);
-						//myGui.setLoginFrame(emailServer);
-					}
-					tree.clearSelection();
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			} else */
-			if(SwingUtilities.isRightMouseButton(e)){
-				if(node.isRoot()) {
-					emailServer = emailObjectMap.get(node.getRoot().toString());
-					myGui.getEmailPopupMenu().show(tree, e.getX(), e.getY());
-					String email = node.getUserObject().toString();
-					//myGui.emailTextField = new JTextField(email);
-					//emailServer = emailObjectMap.get(email);
-					System.out.println(email);
-					emailServer.setUsername(email);
-				}
-				tree.clearSelection();
-			} 
-
-			if(row == -1) //When user clicks on the "empty surface"
-				tree.getSelectionModel().clearSelection();
-		}
+					tree.getModel().getRoot();
+			emailServer = emailObjectMap.get(node.getRoot().toString());
+			myGui.getEmailPopupMenu().show(tree, e.getX(), e.getY());
+			String email = node.getUserObject().toString();
+			System.out.println(email);
+			emailServer.setUsername(email);
+			tree.clearSelection();
+		} 
+		if(row == -1) //When user clicks on the "empty surface"
+			tree.getSelectionModel().clearSelection();
 	}
 
 	@Override
