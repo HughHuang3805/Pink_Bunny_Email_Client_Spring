@@ -389,7 +389,6 @@ public class GUI extends JFrame{
 									rightPanelBottom.add(emailServer.getRightEmailContentPanel());
 									rightSplitPane.setDividerLocation(rightSplitPane.getDividerLocation());//use the current divider location
 									rightSplitPane.setBottomComponent(rightPanelBottom);
-									System.out.println(rightSplitPane.getDividerLocation() + " location");
 									repaint();
 									revalidate();
 									return;
