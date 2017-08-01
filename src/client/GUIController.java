@@ -23,11 +23,8 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 
 import org.bouncycastle.openpgp.PGPException;
 
@@ -255,36 +252,5 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 
-	}
-	public void setEmailTreeListener(MouseListener a, Vector<String> userEmails){//might not needed at all
-		int size = myGui.getTrees().size();
-		Vector<JTree> trees = myGui.getTrees();
-		for(int i = 0; i < size; i++){
-			JTree treeRoot = trees.elementAt(i);
-			treeRoot.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			treeRoot.addTreeSelectionListener(new TreeSelectionListener() {//add listener to individual tree
-				public void valueChanged(TreeSelectionEvent e) {
-					//Returns the last path element of the selection.
-					//This method is useful only when the selection model allows a single selection.
-					DefaultMutableTreeNode node;
-					node = (DefaultMutableTreeNode)
-							treeRoot.getLastSelectedPathComponent();
-					if(node.isLeaf() && node.getUserObject().toString() == "Inbox"){
-						System.out.println("leaf"); 
-						try {
-							/*if(emailServer.getEmailTable() == null){
-								myGui.setDisplayPanel(emailServer, emailServer.getEmailTable());
-							}*/
-						} catch (Exception e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						//setSecureWritePanel(userEmails);
-						return;
-					}
-
-				}});
-			treeRoot.addMouseListener(a);
-		}
 	}
 }
