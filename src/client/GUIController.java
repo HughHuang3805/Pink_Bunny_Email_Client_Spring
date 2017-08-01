@@ -20,6 +20,7 @@ import java.security.SignatureException;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.mail.MessagingException;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
@@ -101,15 +102,15 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 			myGui.setAddAccountEmailFrame();
 			break;
 
-		case "Log in":
+	/*	case "Log in":
 			if(emailServer.isSmtpLoggedIn()){
 				JOptionPane.showMessageDialog(myGui, "Already logged in", "oops ...", JOptionPane.INFORMATION_MESSAGE);
 			} else{
 				myGui.setLoginFrame(emailServer);
 			}
-			break;
+			break;*/
 
-		case "Get new messages":
+		/*case "Get new messages":
 			try {
 				//interrupt the sleeping populateEmailTables, wake them up and let them work
 				synchronized(emailServer){
@@ -120,11 +121,11 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
 			}
-			break;
+			break;*/
 
-		case "Remove account":
+		/*case "Remove account":
 			myGui.setRemoveAccountDialog(emailServer);
-			break;
+			break;*/
 
 		case "Generate Key Pair":
 			TestBCOpenPGP x = new TestBCOpenPGP();
@@ -187,6 +188,8 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 				// Write objects to file
 				GUIController.userEmailObjects.elementAt(i).setSmtpLoggedIn(false);
 				GUIController.userEmailObjects.elementAt(i).setMessages(null);
+				GUIController.userEmailObjects.elementAt(i).getInboxFolder().close(true);
+				GUIController.userEmailObjects.elementAt(i).setInboxFolder(null);
 				oos.writeObject(GUIController.userEmailObjects.elementAt(i));
 			}
 			//oos.close();
@@ -194,6 +197,9 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

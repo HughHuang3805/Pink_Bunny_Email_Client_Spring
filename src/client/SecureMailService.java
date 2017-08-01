@@ -2,6 +2,7 @@ package client;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.GridLayout;
 import java.io.BufferedReader;
 import java.io.File;
@@ -65,7 +66,8 @@ public class SecureMailService implements Serializable{
 	private JPanel rightPanelTop = new JPanel();
 	private JPanel rightPanelBottom = new JPanel();
 	private Message[] messages;
-
+	private Folder inboxFolder;
+	
 	JTable emailTable = new JTable(){
 		/**
 		 * 
@@ -76,7 +78,6 @@ public class SecureMailService implements Serializable{
 		public boolean isCellEditable(int row, int column) {
 			return false;
 		};
-		
 	};
 	JPanel rightEmailContentPanel = new JPanel();
 	private int emailID;
@@ -277,6 +278,7 @@ public class SecureMailService implements Serializable{
 			Message[] messages = emailFolder.getMessages();  
 			//Message message = messages[messages.length - 1 - emailNumber];  
 			Message message = messages[messages.length - 1 - emailNumber]; */
+			Message[] messages = inboxFolder.getMessages();
 			Message message = messages[messages.length - 1 - emailNumber];
 			rightEmailContentPanel.removeAll();
 
@@ -376,19 +378,17 @@ public class SecureMailService implements Serializable{
 			    System.out.println(">> "+fd.getName());
 			
 			//3) create the folder object and open it  
-			Folder emailFolder = emailStore.getFolder("INBOX");  
-			emailFolder.open(Folder.READ_WRITE);  
+			inboxFolder = emailStore.getFolder("INBOX");  
+			inboxFolder.open(Folder.READ_WRITE);  
 
 			//4) retrieve the messages from the folder in an array and print it  
-			messages = emailFolder.getMessages();  
+			messages = inboxFolder.getMessages();  
 			numberOfMessages = messages.length;
 			//5) close the store and folder objects  
 			//emailFolder.close(false);  
 			//emailStore.close();  
 			
-			
-			
-			return emailFolder;
+			return inboxFolder;
 		} catch (MessagingException e) {
 			e.printStackTrace();
 		}  
@@ -586,5 +586,13 @@ public class SecureMailService implements Serializable{
 
 	public void setMessages(Message[] messages) {
 		this.messages = messages;
+	}
+	
+	public Folder getInboxFolder() {
+		return inboxFolder;
+	}
+
+	public void setInboxFolder(Folder inboxFolder) {
+		this.inboxFolder = inboxFolder;
 	}
 }
