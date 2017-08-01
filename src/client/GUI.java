@@ -90,7 +90,7 @@ public class GUI extends JFrame{
 	private ActionListener b;
 
 	public GUI(MouseListener a, ActionListener b) throws Exception{
-		setTitle("Pink Bunny E-mail Client");
+		setTitle("Pink Bunny Client");
 		setSize(1250, 800);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setActionListener(b);
@@ -334,6 +334,7 @@ public class GUI extends JFrame{
 					JPanel rightPanelBottom = emailServer.getRightPanelBottom();
 					rightPanelTop.removeAll();
 					x.getViewport().add(emailServer.getEmailTable());
+					//x.getViewport().repaint(1000000000);
 					rightPanelTop.add(x);
 					//rightSplitPane.setDividerLocation(rightSplitPane.getDividerLocation());
 					rightSplitPane.setTopComponent(rightPanelTop);
@@ -367,8 +368,6 @@ public class GUI extends JFrame{
 									emailServer.getEmailByNumber(row);
 									rightPanelBottom.removeAll();
 									rightPanelBottom.add(emailServer.getRightEmailContentPanel());
-
-									//emailTable.clearSelection();
 									rightSplitPane.setDividerLocation(rightSplitPane.getDividerLocation());//use the current divider location
 									rightSplitPane.setBottomComponent(rightPanelBottom);
 									System.out.println(rightSplitPane.getDividerLocation() + " location");
@@ -390,8 +389,6 @@ public class GUI extends JFrame{
 								System.out.println(row);
 								try {
 									String subject = emailServer.getEmailByNumber(row);
-									/*rightPanel.removeAll();
-									rightPanel.add(emailServer.getRightEmailContentPanel());*/
 									JFrame emailContentFrame = new JFrame(subject);
 									emailContentFrame.add(emailServer.getRightEmailContentPanel());
 									emailContentFrame.setSize(800, 600);
@@ -400,7 +397,6 @@ public class GUI extends JFrame{
 									ImageIcon img = new ImageIcon(iconFileName);
 									emailContentFrame.setIconImage(img.getImage());
 									emailContentFrame.setVisible(true);
-									//emailTable.clearSelection();
 									repaint();
 									revalidate();
 									return;
@@ -411,44 +407,44 @@ public class GUI extends JFrame{
 							}
 						}
 					});
-					//System.out.println(emailTable.getRowCount());
 					Folder messageFolder = emailServer.getInboxMessagesFolder();//get the folder from the emailServer
 					Message[] messages = messageFolder.getMessages();
-					DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
-						private static final long serialVersionUID = 1L;
-						
-						Message[] messages = messageFolder.getMessages();
-						int messageLength = messages.length;
-						Message message;
-						Flag i = Flags.Flag.SEEN;
-						Component cellComponent;
-						@Override
-						public Component getTableCellRendererComponent(JTable table,
-								Object value, boolean isSelected, boolean hasFocus,
-								int row, int column) {
-							cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-							try {
-								/*long startTime = System.nanoTime();
-								long endTime = System.nanoTime();
-								System.out.println(endTime - startTime + "nanosecond");*/
-								message = messages[messageLength - row - 1];
-								if(!message.isSet(i)){//isSet is the problem
-									cellComponent.setFont(new Font("Serif", Font.BOLD, 14));
-									//System.out.println(row + " " + message.toString() + " " + cellComponent.getFont().toString());
-								}
-							} catch (MessagingException e) {
-								// TODO Auto-generated catch block
-								//	e.printStackTrace();
-							}
-							return this;
-						}
-						
-					};
-					emailTable.setDefaultRenderer(Object.class, renderer);
+					String read;
+					Message message;
+					DefaultTableModel model = (DefaultTableModel) emailTable.getModel();
 					if(emailTable.getRowCount() == 0){//if the table has nothing
+						DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
+							private static final long serialVersionUID = 1L;
+							
+							Message[] messages = messageFolder.getMessages();
+							int messageLength = messages.length;
+							Message message;
+							Flag i = Flags.Flag.SEEN;
+							Component cellComponent;
+							boolean isSeen = false;
+							@Override
+							public Component getTableCellRendererComponent(JTable table,
+									Object value, boolean isSelected, boolean hasFocus,
+									int row, int column) {
+								cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+								try {
+									message = messages[messageLength - row - 1];
+									if(column == 0){
+										isSeen = message.isSet(i);//problem
+									}
+									if(!isSeen){//isSet is the problem
+										cellComponent.setFont(new Font("Serif", Font.BOLD, 14));
+									}
+								} catch (MessagingException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								return this;
+							}
+						};
+						emailTable.setDefaultRenderer(Object.class, renderer);
 						String[] headerNames = {"Subject", "From", "Date", "Read"};
-						DefaultTableModel model = (DefaultTableModel) emailTable.getModel();
 						model.setColumnIdentifiers(headerNames);
 						emailTable.setFillsViewportHeight(true);
 						emailTable.setFont(new Font("Serif", Font.PLAIN, 14));
@@ -459,25 +455,58 @@ public class GUI extends JFrame{
 						//JLabel headerLabel = (JLabel) rendererFromHeader;
 						//headerLabel.setHorizontalAlignment(JLabel.CENTER);//center header text
 						int counter = emailServer.getEmailCounter();
+						ByteBuffer bb;
 						while(counter != messages.length){
-							Message message = messages[messages.length - counter - 1];
-							ByteBuffer bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
-							model.addRow(new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
+							message = messages[messages.length - counter - 1];
+							bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
+							if(message.isSet(Flags.Flag.SEEN)){
+								read = "Yes";
+							} else{
+								read = "No";
+							}
+							model.addRow(new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString(), read});
 							counter++;
 						}
 						emailServer.setEmailCounter(counter);
 					}
-
-					//Folder messageFolder = emailServer.getInboxMessagesFolder();//get the folder from the emailServer
-					//Message[] messages;
-					DefaultTableModel model;
 					int counter;
-					Message message;
 					int emailNumber;
 					ByteBuffer bb;
+					DefaultTableCellRenderer renderer2 = new DefaultTableCellRenderer() {
+						private static final long serialVersionUID = 1L;
+
+						Message[] messages;
+						int messageLength;
+						Message message;
+						Flag i = Flags.Flag.SEEN;
+						Component cellComponent;
+						boolean isSeen = false;
+						@Override
+						public Component getTableCellRendererComponent(JTable table,
+								Object value, boolean isSelected, boolean hasFocus,
+								int row, int column) {
+							cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+							try {
+								messages = messageFolder.getMessages();
+								messageLength = messages.length;
+								message = messages[messageLength - row - 1];
+								if(column == 0){
+									isSeen = message.isSet(i);//problem
+								}
+								if(!isSeen){//isSet is the problem
+									cellComponent.setFont(new Font("Serif", Font.BOLD, 14));
+								}
+							} catch (MessagingException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							return this;
+						}
+					};
+					emailTable.setDefaultRenderer(Object.class, renderer2);
 					while(true){
 						messages = messageFolder.getMessages();//get the message of this folder
-						model = (DefaultTableModel) emailTable.getModel();
 						counter = emailServer.getEmailCounter();//see how many emails there are in this emailServer
 						//System.out.println(counter);
 						//System.out.println(messages.length);
@@ -486,7 +515,12 @@ public class GUI extends JFrame{
 							message = messages[messages.length - emailNumber];//get the new emails
 							bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
 							//then insert it in the front of the emailTable
-							model.insertRow(0, new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString()});
+							if(message.isSet(Flags.Flag.SEEN)){
+								read = "Yes";
+							} else{
+								read = "No";
+							}
+							model.insertRow(0, new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString(), read});
 							counter++;
 						}
 						emailServer.setEmailCounter(counter);
