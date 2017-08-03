@@ -24,6 +24,7 @@ import javax.mail.MessagingException;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
@@ -186,9 +187,12 @@ public class GUIController implements ActionListener, MouseListener, Serializabl
 				new ObjectOutputStream(new FileOutputStream(objectFile))) {
 			for(int i = 0; i < GUIController.userEmailObjects.size(); i++){
 				// Write objects to file
-				GUIController.userEmailObjects.elementAt(i).setSmtpLoggedIn(false);
-				GUIController.userEmailObjects.elementAt(i).setMessages(null);
-				GUIController.userEmailObjects.elementAt(i).getInboxFolder().close(true);
+				GUIController.userEmailObjects.elementAt(i).setSmtpLoggedIn(false);//make isLoggedIn false
+				GUIController.userEmailObjects.elementAt(i).setMessages(null);//clear out messages
+				DefaultTableModel model = (DefaultTableModel) GUIController.userEmailObjects.elementAt(i).emailTable.getModel();//remove what's in emailTable
+				//model.setRowCount(0);
+				//GUIController.userEmailObjects.elementAt(i).setEmailCounter(0);
+				GUIController.userEmailObjects.elementAt(i).getInboxFolder().close(true);//close the email folder
 				GUIController.userEmailObjects.elementAt(i).setInboxFolder(null);
 				oos.writeObject(GUIController.userEmailObjects.elementAt(i));
 			}

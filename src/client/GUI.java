@@ -84,7 +84,7 @@ public class GUI extends JFrame{
 	private JMenu fileMenu = new JMenu("File");
 	private JMenu toolMenu = new JMenu("Source");
 	private JPopupMenu jtreePopupMenu = new JPopupMenu();
-	
+
 
 	private JPopupMenu emailPopupMenu = new JPopupMenu();
 	private JSplitPane mainSplitPane;
@@ -105,7 +105,7 @@ public class GUI extends JFrame{
 		setLocationRelativeTo(null);
 		ImageIcon img = new ImageIcon(iconFileName);
 		setIconImage(img.getImage());
-		
+
 		setMainPanel(a);
 		setVisible(true);
 		setWindowListener();
@@ -324,7 +324,7 @@ public class GUI extends JFrame{
 						tree.getSelectionModel().clearSelection();
 				}
 
-				
+
 			});
 			Font currentFont = tree.getFont();
 			//font size of the displaying email list
@@ -411,23 +411,28 @@ public class GUI extends JFrame{
 						//add listener to the table
 						public void valueChanged(ListSelectionEvent e) {//things to do if an email is clicked
 							int row = emailTable.getSelectedRow();
-							if(e.getValueIsAdjusting() == false && row != -1){//this makes the event go once
-								System.out.println(row);
-								try {
-									emailTable.setValueAt("Yes", row, 3);//if a row is clicked, then mark it as "Read"
-									emailServer.getEmailByNumber(row);//get the specific email, and rightEmailContentPanel is ready at the same time
-									rightPanelBottom.removeAll();
-									rightPanelBottom.add(emailServer.getRightEmailContentPanel());
-									rightSplitPane.setDividerLocation(rightSplitPane.getDividerLocation());//use the current divider location
-									rightSplitPane.setBottomComponent(rightPanelBottom);
-									repaint();
-									revalidate();
-									return;
-								} catch (Exception e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
+							new Thread(){
+								@Override
+								public void run(){
+									if(e.getValueIsAdjusting() == false && row != -1){//this makes the event go once
+										System.out.println(row);
+										try {
+											emailTable.setValueAt("Yes", row, 3);//if a row is clicked, then mark it as "Read"
+											emailServer.getEmailByNumber(row);//get the specific email, and rightEmailContentPanel is ready at the same time
+											rightPanelBottom.removeAll();
+											rightPanelBottom.add(emailServer.getRightEmailContentPanel());
+											rightSplitPane.setDividerLocation(rightSplitPane.getDividerLocation());//use the current divider location
+											rightSplitPane.setBottomComponent(rightPanelBottom);
+											repaint();
+											revalidate();
+											return;
+										} catch (Exception e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										}
+									}
 								}
-							}
+							}.start();
 						}
 					});
 
@@ -450,50 +455,69 @@ public class GUI extends JFrame{
 							}
 							if(SwingUtilities.isRightMouseButton(e)){
 								int index = emailTable.rowAtPoint(e.getPoint());
-								emailTable.getSelectionModel().setSelectionInterval(index, index);
-								emailPopupMenu = setEmailTablePopupItems(emailServer);
-								emailPopupMenu.show(emailTable, e.getX(), e.getY());
+								if(index != -1){
+									emailTable.getSelectionModel().setSelectionInterval(index, index);
+									emailPopupMenu = setEmailTablePopupItems(emailServer);
+									emailPopupMenu.show(emailTable, e.getX(), e.getY());
+								}
 								//need to implement what the menu does
 							}
 						}
 					});
+					DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {//the messages in the folder at this time instance
+						private static final long serialVersionUID = 1L;
 
-					if(emailTable.getRowCount() == 0){//if the table has nothing
-
-						DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {//the messages in the folder at this time instance
-							private static final long serialVersionUID = 1L;
-
-							Message[] messages;
-							int messageLength;
-							Message message;
-							Flag seenFlag = Flags.Flag.SEEN;
-							Component cellComponent;
-							boolean isSeen = false;
-							@Override
-							public Component getTableCellRendererComponent(JTable table,
-									Object value, boolean isSelected, boolean hasFocus,
-									int row, int column) {
-								cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-								//setBorder(BorderFactory.createEmptyBorder(15,15,15,15));
-								try {
+						Message[] messages = emailServer.getInboxFolder().getMessages();
+						int count = emailServer.getInboxFolder().getMessageCount();
+						int messageLength = messages.length;
+						Message message;
+						Flag seenFlag = Flags.Flag.SEEN;
+						Component cellComponent;
+						boolean isSeen = false;
+						@Override
+						public Component getTableCellRendererComponent(JTable table,
+								Object value, boolean isSelected, boolean hasFocus,
+								int row, int column) {
+							cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+							//setBorder(BorderFactory.createEmptyBorder(15,15,15,15));
+							try {
+								//if(emailServer.getInboxFolder().getMessageCount() != messageLength){
+								//	messages = emailServer.getInboxFolder().getMessages();
+								//	messageLength = messa
+								//}
+								message = messages[messageLength - row - 1];
+								if(message.isExpunged()){
 									messages = emailServer.getInboxFolder().getMessages();
+									System.out.println("in expunge");
 									messageLength = messages.length;
 									message = messages[messageLength - row - 1];
-									isSeen = message.isSet(seenFlag);//check if the message is read
-									if(!isSeen){//if it is not read, make the font bold
-										cellComponent.setFont(new Font("Serif", Font.BOLD, 16));
-									} else{//if read, make the font normal
-										cellComponent.setFont(new Font("Serif", Font.PLAIN, 16));
-									}
-								} catch (MessagingException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
 								}
-								return this;
+								if(count != messageLength){
+									System.out.println("in length");
+									messages = emailServer.getInboxFolder().getMessages();
+									count = emailServer.getInboxFolder().getMessageCount();
+									messageLength = messages.length;
+									message = messages[messageLength - row - 1];
+								}
+								isSeen = message.isSet(seenFlag);//check if the message is read
+								if(!isSeen){//if it is not read, make the font bold
+									cellComponent.setFont(new Font("Serif", Font.BOLD, 16));
+								} else{//if read, make the font normal
+									cellComponent.setFont(new Font("Serif", Font.PLAIN, 16));
+									DefaultTableModel model = (DefaultTableModel) table.getModel();
+									model.setValueAt("Yes", row, 3);
+								}
+							} catch (MessagingException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
 							}
-						};
-						emailTable.setDefaultRenderer(Object.class, renderer);
+							return this;
+						}
+					};
+					emailTable.setDefaultRenderer(Object.class, renderer);
 
+
+					if(emailTable.getRowCount() == 0){//if the table has nothing
 						counter = emailServer.getEmailCounter();
 						ByteBuffer bb;
 						while(counter != messages.length){//keep getting new messages
@@ -510,70 +534,18 @@ public class GUI extends JFrame{
 						emailServer.setEmailCounter(counter);
 					}
 
-					int emailNumber;
-					ByteBuffer bb;
+
 					/*second renderer is a litte bit different
 					 * it will keep getting newest messages
 					 * if there are new messages, render the fonts*/
-					DefaultTableCellRenderer renderer2 = new DefaultTableCellRenderer() {
-						private static final long serialVersionUID = 1L;
 
-						Message[] messages;
-						int messageLength;
-						Message message;
-						Flag i = Flags.Flag.SEEN;
-						Component cellComponent;
-						boolean isSeen = false;
-						@Override
-						public Component getTableCellRendererComponent(JTable table,
-								Object value, boolean isSelected, boolean hasFocus,
-								int row, int column) {
-							cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-							try {
-								//emailServer.getInboxFolder()
-								messages = emailServer.getInboxFolder().getMessages();//get newest messages
-								messageLength = messages.length;//get the messages length
-								message = messages[messageLength - row - 1];//get the specific message
-								//isSeen = message.isSet(i);//check if the message is read
-								
-								if(!message.isSet(i)){//if it is not read, make the font bold
-									cellComponent.setFont(new Font("Serif", Font.BOLD, 16));
-								} else{//if it is read, make the font normal
-									cellComponent.setFont(new Font("Serif", Font.PLAIN, 16));
-								}
-							} catch (MessagingException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							return this;
-						}
-					};
-					emailTable.setDefaultRenderer(Object.class, renderer2);
 					while(true){//this part will keep running and checking for new messages
 						checkForExpungedMessagesAndUpdate(emailServer, messageFolder);
-						System.out.println("Done");
-						messages = emailServer.getInboxFolder().getMessages();//get the message of this folder
-						counter = emailServer.getEmailCounter();//see how many emails there are in this emailServer
-						
-						while(emailServer.getEmailCounter() != messages.length){//check for new emails
-							System.out.println("length" + messages.length);
-							emailNumber = messages.length - counter;
-							message = messages[messages.length - emailNumber];//get the new emails
-							bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
-							//then insert it in the front of the emailTable
-							if(message.isSet(Flags.Flag.SEEN)){
-								read = "Yes";
-							} else{
-								read = "No";
-							}
-							model.insertRow(0, new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString(), read});
-							counter++;
-						}
-						emailServer.setEmailCounter(counter);
+						checkForNewMessagesAndUpdate(emailServer, messageFolder);
+
 						messages = null;
-						//repaint();
-						//revalidate();
+						repaint();
+						revalidate();
 						sleep(1000);//sleep before checking again
 					}
 				} catch (Exception e){
@@ -585,21 +557,52 @@ public class GUI extends JFrame{
 	}
 
 	public void checkForExpungedMessagesAndUpdate(SecureMailService emailServer, Folder messageFolder) throws MessagingException{
-		DefaultTableModel model = (DefaultTableModel) emailServer.getEmailTable().getModel();
-		Message[] messages = messageFolder.getMessages();
-		for(int i = 0; i < messages.length; i++){
-			if(messages[i].isExpunged()){
-				model.removeRow(messages.length - i);
-				repaint();
-				revalidate();
-				System.out.println("expunged " + i);
-				messageFolder.expunge();
-				emailServer.setEmailCounter(messageFolder.getMessageCount());
-				break;
+		if(messageFolder.isOpen()){
+			DefaultTableModel model = (DefaultTableModel) emailServer.getEmailTable().getModel();
+			Message[] messages = messageFolder.getMessages();
+			for(int i = 0; i < messages.length; i++){
+				if(messages[i].isExpunged()){
+					model.removeRow(messages.length - i - 1);
+					repaint();
+					revalidate();
+					System.out.println("expunged " + i);
+					messageFolder.expunge();
+					emailServer.setEmailCounter(messageFolder.getMessageCount());
+					break;
+				}
 			}
 		}
 	}
-	
+
+	public void checkForNewMessagesAndUpdate(SecureMailService emailServer, Folder messageFolder) throws MessagingException{
+		if(messageFolder.isOpen()){
+			Message[] messages = emailServer.getInboxFolder().getMessages();//get the message of this folder
+			int counter = emailServer.getEmailCounter();//see how many emails there are in this emailServer
+			int emailNumber;
+			ByteBuffer bb;
+			Message message;
+			String read;
+			DefaultTableModel model = (DefaultTableModel) emailServer.getEmailTable().getModel();
+
+			while(counter != messages.length){//check for new emails
+				System.out.println("length" + messages.length);
+				System.out.println("counter" + counter);
+				emailNumber = messages.length - counter;
+				message = messages[messages.length - emailNumber];//get the new emails
+				bb = ByteBuffer.wrap(InternetAddress.toString(message.getFrom()).getBytes());
+				//then insert it in the front of the emailTable
+				if(message.isSet(Flags.Flag.SEEN)){
+					read = "Yes";
+				} else{
+					read = "No";
+				}
+				model.insertRow(0, new Object[]{message.getSubject(), Charset.forName("UTF-8").decode(bb).toString(), message.getReceivedDate().toString(), read});
+				counter++;
+				emailServer.setEmailCounter(counter);
+			}
+		}
+	}
+
 	public void setAddAccountEmailFrame(){//ask for email on emailPanel
 
 		JFrame emailFrame = new JFrame("Email");
@@ -1356,7 +1359,7 @@ public class GUI extends JFrame{
 		JMenuItem deleteAccountItem = new JMenuItem("Remove account");
 		JMenuItem setupYubikeyItem = new JMenuItem("Setup YubiKey");
 		JPopupMenu jtreePopupMenu = new JPopupMenu();
-		
+
 		loginItem.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent a) {
@@ -1368,7 +1371,7 @@ public class GUI extends JFrame{
 				}
 			}
 		});
-		
+
 		getMessageItem.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent a) {
@@ -1376,7 +1379,7 @@ public class GUI extends JFrame{
 				//to be implemented
 			}
 		});
-		
+
 		deleteAccountItem.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent a) {
@@ -1384,7 +1387,7 @@ public class GUI extends JFrame{
 				setRemoveAccountDialog(emailServer);
 			}
 		});
-		
+
 		setupYubikeyItem.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent a) {
@@ -1392,12 +1395,12 @@ public class GUI extends JFrame{
 				//to be implemented
 			}
 		});
-		
+
 		jtreePopupMenu.add(loginItem);
 		jtreePopupMenu.add(getMessageItem);
 		jtreePopupMenu.add(deleteAccountItem);
 		jtreePopupMenu.add(setupYubikeyItem);
-		
+
 		return jtreePopupMenu;
 	}
 
@@ -1410,16 +1413,16 @@ public class GUI extends JFrame{
 		JMenuItem replyItem = new JMenuItem("Reply");
 		JMenuItem openInNewWindowItem = new JMenuItem("Open email in a new window");
 		JMenuItem forwardItem = new JMenuItem("Forward");
-		
+
 		markAsMenu.add(readItem);
 		markAsMenu.add(unreadItem);
-		
+
 		deleteEmailItem.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				int toBeDeletedRow = emailServer.getEmailTable().getSelectedRow();
-				
+
 				DefaultTableModel model = (DefaultTableModel) emailServer.getEmailTable().getModel();
 				try {
 					Message[] messages = emailServer.getInboxFolder().getMessages();
@@ -1435,14 +1438,58 @@ public class GUI extends JFrame{
 					e.printStackTrace();
 				}
 			}
-			
+
 		});
-		//readItem.addActionListener(a);
-		//unreadItem.addActionListener(a);
+		readItem.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				int toBeMarkedRow = emailServer.getEmailTable().getSelectedRow();
+				DefaultTableModel model = (DefaultTableModel) emailServer.getEmailTable().getModel();
+				try {
+					Message[] messages = emailServer.getInboxFolder().getMessages();
+					Message message = messages[messages.length - toBeMarkedRow - 1];
+					if(!message.isSet(Flags.Flag.SEEN)){
+						message.setFlag(Flags.Flag.SEEN, true);
+						model.setValueAt("Yes", toBeMarkedRow, 3);
+						emailServer.getEmailTable().clearSelection();
+					}
+					repaint();
+					revalidate();
+				} catch (MessagingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		});
+		unreadItem.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				int toBeMarkedRow = emailServer.getEmailTable().getSelectedRow();
+				DefaultTableModel model = (DefaultTableModel) emailServer.getEmailTable().getModel();
+				try {
+					Message[] messages = emailServer.getInboxFolder().getMessages();
+					Message message = messages[messages.length - toBeMarkedRow - 1];
+					if(message.isSet(Flags.Flag.SEEN)){
+						message.setFlag(Flags.Flag.SEEN, false);
+						model.setValueAt("No", toBeMarkedRow, 3);
+						emailServer.getEmailTable().clearSelection();
+					}
+					repaint();
+					revalidate();
+				} catch (MessagingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		});
 		//replyItem.addActionListener(a);
 		//openInNewWindowItem.addActionListener(a);
 		//forwardItem.addActionListener(a);
-		
+
 		emailPopupMenu.add(openInNewWindowItem);
 		emailPopupMenu.addSeparator();
 		emailPopupMenu.add(replyItem);
@@ -1450,10 +1497,10 @@ public class GUI extends JFrame{
 		emailPopupMenu.addSeparator();
 		emailPopupMenu.add(deleteEmailItem);
 		emailPopupMenu.add(markAsMenu);
-		
+
 		return emailPopupMenu;
 	}
-	
+
 	public void openEmailInANewFrame(String subject, SecureMailService emailServer){
 		JFrame emailContentFrame = new JFrame(subject);
 		emailContentFrame.add(emailServer.getRightEmailContentPanel());
@@ -1464,11 +1511,7 @@ public class GUI extends JFrame{
 		emailContentFrame.setIconImage(img.getImage());
 		emailContentFrame.setVisible(true);
 	}
-	
-	public void checkExpungedMessages(SecureMailService emailServer){
-		
-	}
-	
+
 	public String getEmailFromCombobox(){
 		//get rid of any space in the username
 		return ((String) emailList.getSelectedItem()).replaceAll("\\s+", "");
@@ -1505,7 +1548,7 @@ public class GUI extends JFrame{
 	public void setEmailPopupMenu(JPopupMenu emailPopupMenu) {
 		this.jtreePopupMenu = emailPopupMenu;
 	}
-	
+
 	public JPopupMenu getJtreePopupMenu() {
 		return jtreePopupMenu;
 	}
@@ -1513,7 +1556,7 @@ public class GUI extends JFrame{
 	public void setJtreePopupMenu(JPopupMenu jtreePopupMenu) {
 		this.jtreePopupMenu = jtreePopupMenu;
 	}
-	
+
 	public GUI getGUI(){
 		return this;
 	}
