@@ -501,9 +501,9 @@ public class GUI extends JFrame{
 								}
 								isSeen = message.isSet(seenFlag);//check if the message is read
 								if(!isSeen){//if it is not read, make the font bold
-									cellComponent.setFont(new Font("Serif", Font.BOLD, 16));
+									cellComponent.setFont(new Font("Serif", Font.BOLD, 14));
 								} else{//if read, make the font normal
-									cellComponent.setFont(new Font("Serif", Font.PLAIN, 16));
+									//cellComponent.setFont(new Font("Serif", Font.PLAIN, 16));
 									DefaultTableModel model = (DefaultTableModel) table.getModel();
 									model.setValueAt("Yes", row, 3);
 								}
