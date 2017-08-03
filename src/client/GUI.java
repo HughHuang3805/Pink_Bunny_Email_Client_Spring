@@ -481,10 +481,6 @@ public class GUI extends JFrame{
 							cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 							//setBorder(BorderFactory.createEmptyBorder(15,15,15,15));
 							try {
-								//if(emailServer.getInboxFolder().getMessageCount() != messageLength){
-								//	messages = emailServer.getInboxFolder().getMessages();
-								//	messageLength = messa
-								//}
 								message = messages[messageLength - row - 1];
 								if(message.isExpunged()){//check if the message is removed by other application
 									messages = emailServer.getInboxFolder().getMessages();//update the messages array
