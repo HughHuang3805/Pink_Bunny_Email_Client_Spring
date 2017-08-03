@@ -486,11 +486,11 @@ public class GUI extends JFrame{
 								//	messageLength = messa
 								//}
 								message = messages[messageLength - row - 1];
-								if(message.isExpunged()){
-									messages = emailServer.getInboxFolder().getMessages();
+								if(message.isExpunged()){//if the message if removed
+									messages = emailServer.getInboxFolder().getMessages();//update the messages array
 									System.out.println("in expunge");
-									messageLength = messages.length;
-									message = messages[messageLength - row - 1];
+									messageLength = messages.length;//update messageLength
+									message = messages[messageLength - row - 1];//get the correct message
 								}
 								if(count != messageLength){
 									System.out.println("in length");
