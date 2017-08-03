@@ -532,8 +532,6 @@ public class GUI extends JFrame{
 					while(true){//this part will keep running and checking for new messages
 						checkForExpungedMessagesAndUpdate(emailServer, messageFolder);
 						checkForNewMessagesAndUpdate(emailServer, messageFolder);
-
-						messages = null;
 						repaint();
 						revalidate();
 						sleep(1000);//sleep before checking again
