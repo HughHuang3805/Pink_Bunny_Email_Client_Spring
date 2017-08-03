@@ -547,17 +547,17 @@ public class GUI extends JFrame{
 	}
 
 	public void checkForExpungedMessagesAndUpdate(SecureMailService emailServer, Folder messageFolder) throws MessagingException{
-		if(messageFolder.isOpen()){
+		if(messageFolder.isOpen()){//if the message folder is open
 			DefaultTableModel model = (DefaultTableModel) emailServer.getEmailTable().getModel();
 			Message[] messages = messageFolder.getMessages();
 			for(int i = 0; i < messages.length; i++){
-				if(messages[i].isExpunged()){
-					model.removeRow(messages.length - i - 1);
+				if(messages[i].isExpunged()){//if the message is expunged
+					model.removeRow(messages.length - i - 1);//remove the appropriate row
 					repaint();
 					revalidate();
 					System.out.println("expunged " + i);
-					messageFolder.expunge();
-					emailServer.setEmailCounter(messageFolder.getMessageCount());
+					messageFolder.expunge();//update the messageFolder
+					emailServer.setEmailCounter(messageFolder.getMessageCount());//update email counter
 					break;
 				}
 			}
@@ -565,7 +565,7 @@ public class GUI extends JFrame{
 	}
 
 	public void checkForNewMessagesAndUpdate(SecureMailService emailServer, Folder messageFolder) throws MessagingException{
-		if(messageFolder.isOpen()){
+		if(messageFolder.isOpen()){//if the message folder is open
 			Message[] messages = emailServer.getInboxFolder().getMessages();//get the message of this folder
 			int counter = emailServer.getEmailCounter();//see how many emails there are in this emailServer
 			int emailNumber;
