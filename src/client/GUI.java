@@ -455,7 +455,7 @@ public class GUI extends JFrame{
 							}
 							if(SwingUtilities.isRightMouseButton(e)){
 								int index = emailTable.rowAtPoint(e.getPoint());
-								if(index != -1){
+								if(index != -1){//if the user right clicks on a table row
 									emailTable.getSelectionModel().setSelectionInterval(index, index);
 									emailPopupMenu = setEmailTablePopupItems(emailServer);
 									emailPopupMenu.show(emailTable, e.getX(), e.getY());
@@ -486,13 +486,13 @@ public class GUI extends JFrame{
 								//	messageLength = messa
 								//}
 								message = messages[messageLength - row - 1];
-								if(message.isExpunged()){//if the message if removed
+								if(message.isExpunged()){//check if the message is removed by other application
 									messages = emailServer.getInboxFolder().getMessages();//update the messages array
 									System.out.println("in expunge");
 									messageLength = messages.length;//update messageLength
 									message = messages[messageLength - row - 1];//get the correct message
 								}
-								if(count != messageLength){
+								if(count != messageLength){//check if there is new message
 									System.out.println("in length");
 									messages = emailServer.getInboxFolder().getMessages();
 									count = emailServer.getInboxFolder().getMessageCount();
@@ -516,7 +516,6 @@ public class GUI extends JFrame{
 					};
 					emailTable.setDefaultRenderer(Object.class, renderer);
 
-
 					if(emailTable.getRowCount() == 0){//if the table has nothing
 						counter = emailServer.getEmailCounter();
 						ByteBuffer bb;
@@ -533,11 +532,6 @@ public class GUI extends JFrame{
 						}
 						emailServer.setEmailCounter(counter);
 					}
-
-
-					/*second renderer is a litte bit different
-					 * it will keep getting newest messages
-					 * if there are new messages, render the fonts*/
 
 					while(true){//this part will keep running and checking for new messages
 						checkForExpungedMessagesAndUpdate(emailServer, messageFolder);
